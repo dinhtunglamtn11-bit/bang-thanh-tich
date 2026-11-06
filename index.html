@@ -62,6 +62,7 @@ button.red{background:var(--orange)} button.green{background:var(--lime)} button
 .chip.on .ci{filter:none}
 .next{margin-top:10px;font-size:24px;color:var(--cyan);text-shadow:2px 2px 0 var(--ink)}
 .empty{padding:30px;text-align:center}
+.sync{font-size:20px;color:var(--cyan);text-shadow:2px 2px 0 var(--ink)}
 
 /* modal */
 .modal{position:fixed;inset:0;background:#000b;display:none;align-items:flex-start;justify-content:center;padding:16px;overflow:auto;z-index:50}
@@ -87,7 +88,7 @@ input[type=color]{padding:0;height:40px;width:70px}
 <div class="wrap">
   <header>
     <div><h1 id="title"></h1><div class="period" id="period"></div></div>
-    <div style="display:flex;gap:10px"><button class="green" id="btnReplay">▶ Chạy lại</button><button id="btnSet">⚙ Cài đặt</button></div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center"><span id="sync" class="sync"></span><button class="red" id="btnLogin" style="display:none">Đăng nhập Google</button><button class="green" id="btnReplay">▶ Chạy lại</button><button id="btnSet">⚙ Cài đặt</button></div>
   </header>
   <div class="pix card"><div class="chart" id="chart"></div></div>
 </div>
@@ -108,7 +109,8 @@ const defaults=()=>({
 });
 let S; try{S=JSON.parse(localStorage.getItem(KEY))}catch(e){}
 if(!S||!S.students) S=defaults();
-const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}};
+const save=()=>{S.updatedAt=Date.now();try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){} if(window.onLocalSave)window.onLocalSave();};
+function applyRemote(d){S=d;try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){} render(); if(!modal.classList.contains('open'))return; }
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const num=v=>Math.max(0,Number(v)||0);
 const maxScore=()=>num(S.plannedSessions)*num(S.qps)+num(S.game);
@@ -227,6 +229,55 @@ document.getElementById('btnSet').onclick=openSettings;
 document.getElementById('btnReplay').onclick=()=>render();
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&modal.classList.contains('open'))closeSettings()});
 render();
+</script>
+<script type="module">
+import {initializeApp} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
+import {getAuth,GoogleAuthProvider,signInWithPopup,signInWithRedirect,signOut,onAuthStateChanged} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
+import {getFirestore,doc,setDoc,onSnapshot} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
+
+const firebaseConfig={
+  apiKey:"AIzaSyDOHGGes8fuB_rzycXMJ9-j4JPW94Qm9Wg",
+  authDomain:"achievement-af589.firebaseapp.com",
+  projectId:"achievement-af589",
+  storageBucket:"achievement-af589.firebasestorage.app",
+  messagingSenderId:"372173432162",
+  appId:"1:372173432162:web:db85b51ff9c7bfeda7783b"
+};
+const app=initializeApp(firebaseConfig), auth=getAuth(app), db=getFirestore(app);
+const btn=document.getElementById('btnLogin'), st=document.getElementById('sync');
+let user=null, unsub=null, timer=null, firstSnap=true;
+btn.style.display='';
+const setSt=t=>st.textContent=t;
+const push=async()=>{
+  if(!user)return;
+  try{setSt('☁ Đang lưu...');await setDoc(doc(db,'users',user.uid),JSON.parse(JSON.stringify(S)));setSt('☁ Đã đồng bộ ✔');}
+  catch(e){console.error(e);setSt('⚠ Lỗi đồng bộ');}
+};
+window.onLocalSave=()=>{ if(!user)return; setSt('☁ Chờ lưu...'); clearTimeout(timer); timer=setTimeout(push,800); };
+
+btn.onclick=async()=>{
+  if(user){ if(confirm('Đăng xuất? Dữ liệu vẫn được giữ trên tài khoản Google.')) await signOut(auth); return; }
+  const p=new GoogleAuthProvider();
+  try{await signInWithPopup(auth,p);}
+  catch(e){ if(e.code==='auth/popup-blocked'||e.code==='auth/operation-not-supported-in-this-environment') signInWithRedirect(auth,p); else if(e.code!=='auth/popup-closed-by-user'&&e.code!=='auth/cancelled-popup-request'){alert('Không đăng nhập được: '+e.code);} }
+};
+
+onAuthStateChanged(auth,u=>{
+  user=u; if(unsub){unsub();unsub=null;}
+  if(!u){btn.textContent='Đăng nhập Google';setSt('');return;}
+  btn.textContent='Đăng xuất ('+(u.displayName||u.email||'').split(' ').slice(-1)[0]+')';
+  setSt('☁ Đang tải...'); firstSnap=true;
+  unsub=onSnapshot(doc(db,'users',u.uid),snap=>{
+    if(snap.metadata.hasPendingWrites)return;
+    const d=snap.data();
+    if(!d||!d.students){ push(); return; }            // tài khoản mới: đưa dữ liệu trên máy lên
+    const local=num(S.updatedAt), remote=num(d.updatedAt);
+    if(remote>local){ applyRemote(d); setSt('☁ Đã đồng bộ ✔'); }
+    else if(local>remote){ push(); }
+    else setSt('☁ Đã đồng bộ ✔');
+    firstSnap=false;
+  },err=>{console.error(err);setSt('⚠ Lỗi: '+(err.code||''));});
+});
 </script>
 </body>
 </html>
