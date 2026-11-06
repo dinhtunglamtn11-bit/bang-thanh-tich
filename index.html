@@ -190,8 +190,11 @@ function drawModal(){
       <button class="green" id="done">✔ XONG</button></div><input type="file" id="file" accept=".json" hidden>`;
   box.innerHTML=h;
 }
+let downOnModal=false;
+modal.addEventListener('mousedown',e=>{downOnModal=e.target===modal});
+modal.addEventListener('touchstart',e=>{downOnModal=e.target===modal},{passive:true});
 modal.addEventListener('click',e=>{
-  const t=e.target.closest('button'); if(!t){ if(e.target===modal)closeSettings(); return;}
+  const t=e.target.closest('button'); if(!t){ if(e.target===modal&&downOnModal)closeSettings(); return;}
   if(t.dataset.tab){tab=t.dataset.tab;drawModal();}
   else if(t.id==='done')closeSettings();
   else if(t.id==='addM'){S.milestones.push({v:max2(),name:'Phần thưởng',icon:'🎁'});save();drawModal();}
