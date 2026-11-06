@@ -1,0 +1,229 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Bảng Thành Tích Pixel</title>
+<link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#1a1c2c; --panel:#29366f; --panel2:#3b5dc9; --sky:#41a6f6; --cyan:#73eff7;
+  --gold:#ffcd75; --orange:#ef7d57; --red:#b13e53; --green:#38b764; --lime:#a7f070;
+  --white:#f4f4f4; --grey:#94b0c2; --dark:#333c57;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{
+  font-family:'VT323','Courier New',monospace; color:var(--white); font-size:24px;
+  background:
+    radial-gradient(circle at 20% 10%, #ffffff22 0 2px, transparent 3px) 0 0/90px 90px,
+    radial-gradient(circle at 70% 60%, #ffffff18 0 2px, transparent 3px) 0 0/130px 130px,
+    linear-gradient(#1a1c2c,#29366f 70%,#3b5dc9);
+  background-attachment:fixed; min-height:100vh; padding:20px;
+}
+.wrap{max-width:1100px;margin:0 auto}
+.pix{border:4px solid var(--ink); box-shadow:0 0 0 4px var(--white), 8px 8px 0 4px var(--ink); background:var(--panel)}
+header{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:8px 4px 28px}
+h1{margin:0;font-size:clamp(24px,5vw,58px);letter-spacing:2px;color:var(--gold);text-shadow:4px 4px 0 var(--ink),-2px -2px 0 var(--red)}
+.period{font-size:30px;color:var(--cyan);text-shadow:2px 2px 0 var(--ink)}
+button{font-family:inherit;font-size:24px;cursor:pointer;color:var(--ink);background:var(--gold);border:4px solid var(--ink);
+  padding:6px 14px;box-shadow:inset -4px -4px 0 #0003, inset 4px 4px 0 #fff6, 4px 4px 0 var(--ink);transition:transform .05s}
+button:hover{background:#ffe0a0} button:active{transform:translate(3px,3px);box-shadow:inset -4px -4px 0 #0003,inset 4px 4px 0 #fff6,1px 1px 0 var(--ink)}
+button.red{background:var(--orange)} button.green{background:var(--lime)} button.small{font-size:15px;padding:2px 8px}
+
+.card{padding:18px 22px 22px;margin:0 8px 40px}
+.chart{position:relative;padding-top:116px}
+.ruler{position:absolute;left:0;right:0;top:0;height:110px}
+.flag{position:absolute;top:0;transform:translateX(-50%);text-align:center;width:90px;line-height:1.1}
+.flag.edge-r{transform:translateX(-85%)} .flag.edge-l{transform:translateX(-15%)}
+.flag .ic{font-size:30px;display:block} .flag .nm{display:block;white-space:nowrap;font-size:20px;color:var(--gold);text-shadow:2px 2px 0 var(--ink)}
+.flag .vl{font-size:28px;background:var(--ink);display:inline-block;padding:0 8px;border:2px solid var(--gold);color:var(--white);margin-top:2px}
+.lines{position:absolute;left:0;right:0;top:110px;bottom:0;pointer-events:none;z-index:3}
+.line{position:absolute;top:0;bottom:0;width:0;border-left:4px dashed #ffffffaa}
+.line.max{border-left:4px solid var(--gold)}
+.student{margin-bottom:34px;position:relative}
+.student:last-child{margin-bottom:0}
+.who{display:flex;align-items:center;gap:12px;margin-bottom:10px;flex-wrap:wrap}
+.ava{width:52px;height:52px;display:grid;place-items:center;font-size:32px;border:4px solid var(--ink);background:var(--c);box-shadow:inset -4px -4px 0 #0004,inset 4px 4px 0 #fff5}
+.name{font-size:36px;text-shadow:3px 3px 0 var(--ink)}
+.crown{font-size:26px;animation:bob .8s steps(2) infinite}
+.score{margin-left:auto;font-size:40px;color:var(--gold);text-shadow:3px 3px 0 var(--ink)}
+.score small{font-size:24px;color:var(--grey)}
+.track{position:relative;height:56px;background:var(--ink);border:4px solid var(--ink);outline:4px solid var(--white);box-shadow:6px 6px 0 4px var(--ink)}
+.fill{position:absolute;left:0;top:0;bottom:0;width:0;background:var(--c);transition:width 1.6s steps(30);box-shadow:inset 0 8px 0 #fff4, inset 0 -8px 0 #0004}
+.seg{position:absolute;inset:0;background:repeating-linear-gradient(90deg,transparent 0 14px,#0000003a 14px 18px);z-index:1;pointer-events:none}
+.runner{position:absolute;top:-34px;transform:translateX(-50%);font-size:34px;z-index:5;transition:left 1.6s steps(30);animation:bob .5s steps(2) infinite;filter:drop-shadow(3px 3px 0 var(--ink))}
+@keyframes bob{50%{margin-top:-6px}}
+@keyframes pop{0%,100%{transform:scale(1)}50%{transform:scale(1.15)}}
+.rewards{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}
+.chip{display:flex;align-items:center;gap:8px;padding:4px 10px;border:3px solid var(--ink);background:var(--dark);color:var(--grey);font-size:22px;box-shadow:3px 3px 0 var(--ink)}
+.chip .ci{font-size:22px;filter:grayscale(1) brightness(.6)}
+.chip.on{background:var(--green);color:var(--ink);animation:pop 1s steps(2) infinite}
+.chip.on .ci{filter:none}
+.next{margin-top:10px;font-size:24px;color:var(--cyan);text-shadow:2px 2px 0 var(--ink)}
+.empty{padding:30px;text-align:center}
+
+/* modal */
+.modal{position:fixed;inset:0;background:#000b;display:none;align-items:flex-start;justify-content:center;padding:16px;overflow:auto;z-index:50}
+.modal.open{display:flex}
+.box{width:min(860px,100%);padding:18px 22px;margin:20px 0}
+.box h2{margin:0 0 10px;color:var(--gold);font-size:28px}
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.tabs button.act{background:var(--cyan)}
+label{display:block;font-size:15px;color:var(--cyan);margin:8px 0 2px}
+input,select{font-family:inherit;font-size:24px;color:var(--ink);background:var(--white);border:4px solid var(--ink);padding:4px 8px;width:100%;min-width:0}
+input[type=color]{padding:0;height:40px;width:70px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px}
+.row{display:grid;gap:8px;align-items:end;margin-bottom:8px}
+.row.ms{grid-template-columns:70px 110px 1fr auto}
+.row.ss{grid-template-columns:1fr 110px auto}
+.note{font-size:15px;color:var(--grey);margin:8px 0}
+.sum{background:var(--ink);padding:6px 10px;border:3px solid var(--gold);color:var(--gold);display:inline-block;margin:8px 0}
+.foot{display:flex;gap:10px;flex-wrap:wrap;justify-content:space-between;margin-top:16px}
+@media(max-width:600px){.row.ms{grid-template-columns:60px 90px 1fr auto}.flag{width:84px}.flag .nm{display:block;white-space:nowrap;font-size:12px}.score{width:100%}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div><h1 id="title"></h1><div class="period" id="period"></div></div>
+    <div style="display:flex;gap:10px"><button class="green" id="btnReplay">▶ Chạy lại</button><button id="btnSet">⚙ Cài đặt</button></div>
+  </header>
+  <div class="pix card"><div class="chart" id="chart"></div></div>
+</div>
+
+<div class="modal" id="modal"><div class="pix box" id="box"></div></div>
+
+<script>
+const KEY='pixel-barchart-v1';
+const AVATARS=['🐱','🐶','🦊','🐼','🐸','🐵','🦄','🐲','🐰','🐯','🚀','⭐'];
+const defaults=()=>({
+  title:'BẢNG THÀNH TÍCH', period:'Tháng 11/2026',
+  qps:10, plannedSessions:9, game:30, bonusLabel:'Chơi trò chơi',
+  milestones:[{v:75,name:'Quà nhỏ',icon:'🍬'},{v:90,name:'Quà vừa',icon:'🎁'},{v:120,name:'Quà lớn',icon:'🏆'}],
+  students:[
+    {name:'Bạn A',avatar:'🐱',color:'#ef7d57',game:20,sessions:[3,10,17,24].map((d,i)=>({date:'2026-11-'+String(d).padStart(2,'0'),score:[8,9,7,10][i]}))},
+    {name:'Bạn B',avatar:'🐸',color:'#41a6f6',game:25,sessions:[3,10,17,24].map((d,i)=>({date:'2026-11-'+String(d).padStart(2,'0'),score:[9,7,10,8][i]}))}
+  ]
+});
+let S; try{S=JSON.parse(localStorage.getItem(KEY))}catch(e){}
+if(!S||!S.students) S=defaults();
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}};
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const num=v=>Math.max(0,Number(v)||0);
+const maxScore=()=>num(S.plannedSessions)*num(S.qps)+num(S.game);
+const total=st=>st.sessions.reduce((a,x)=>a+num(x.score),0)+num(st.game);
+const fmtDate=d=>{if(!d)return'';const p=d.split('-');return p.length===3?`${p[2]}/${p[1]}`:d};
+
+function render(replay){
+  document.getElementById('title').textContent=S.title;
+  document.getElementById('period').textContent=S.period;
+  const max=Math.max(1,maxScore());
+  const ms=[...S.milestones].filter(m=>num(m.v)>0).sort((a,b)=>a.v-b.v);
+  const pct=v=>Math.min(100,v/max*100);
+  const totals=S.students.map(total);
+  const top=Math.max(...totals);
+  let h='<div class="ruler">'+ms.map(m=>{const p=pct(m.v);const c=p>88?' edge-r':p<12?' edge-l':'';
+    return `<div class="flag${c}" style="left:${p}%"><span class="ic">${esc(m.icon)}</span><span class="nm">${esc(m.name)}</span><span class="vl">${num(m.v)}</span></div>`}).join('')+'</div>';
+  h+='<div class="lines">'+ms.map(m=>`<div class="line${num(m.v)>=max?' max':''}" style="left:${pct(m.v)}%"></div>`).join('')+'</div>';
+  S.students.forEach((st,i)=>{
+    const t=totals[i], p=pct(t);
+    const next=ms.find(m=>t<m.v);
+    const crown=S.students.length>1&&t===top&&t>0&&totals.filter(x=>x===top).length===1?'<span class="crown">👑</span>':'';
+    h+=`<div class="student" style="--c:${esc(st.color)}">
+      <div class="who"><div class="ava">${esc(st.avatar)}</div><div class="name">${esc(st.name)}</div>${crown}
+      <div class="score">${t} <small>/ ${max} câu</small></div></div>
+      <div class="track"><div class="fill" data-w="${p}"></div><div class="seg"></div><div class="runner" data-w="${p}" style="left:0">${esc(st.avatar)}</div></div>
+      <div class="rewards">${ms.map(m=>`<div class="chip${t>=m.v?' on':''}"><span class="ci">${esc(m.icon)}</span>${esc(m.name)} (${num(m.v)})</div>`).join('')}</div>
+      <div class="next">${next?`▶ Còn ${next.v-t} câu nữa để nhận "${esc(next.name)}" ${esc(next.icon)}`:(ms.length?'★ Đã nhận tất cả phần thưởng! ★':'')}</div>
+    </div>`;
+  });
+  const chart=document.getElementById('chart'); chart.innerHTML=h;
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{
+    chart.querySelectorAll('.fill').forEach(e=>e.style.width=e.dataset.w+'%');
+    chart.querySelectorAll('.runner').forEach(e=>e.style.left=e.dataset.w+'%');
+  }));
+}
+
+/* ---------- settings modal ---------- */
+let tab='general';
+const modal=document.getElementById('modal'), box=document.getElementById('box');
+const openSettings=()=>{modal.classList.add('open');drawModal()};
+const closeSettings=()=>{modal.classList.remove('open');render()};
+function drawModal(){
+  const max=maxScore();
+  const tabs=[['general','Chung'],['ms','Mốc thưởng'],...S.students.map((s,i)=>['s'+i,s.name||('HS '+(i+1))])];
+  let h=`<h2>⚙ CÀI ĐẶT</h2><div class="tabs">${tabs.map(([k,n])=>`<button class="${tab===k?'act':''}" data-tab="${k}">${esc(n)}</button>`).join('')}</div>`;
+  if(tab==='general'){
+    h+=`<div class="grid">
+      <div><label>Tiêu đề</label><input data-k="title" value="${esc(S.title)}"></div>
+      <div><label>Thời gian (VD: Tháng 11)</label><input data-k="period" value="${esc(S.period)}"></div>
+      <div><label>Số buổi học</label><input type="number" min="0" data-k="plannedSessions" value="${S.plannedSessions}"></div>
+      <div><label>Số câu kiểm tra mỗi buổi</label><input type="number" min="0" data-k="qps" value="${S.qps}"></div>
+      <div><label>Số câu tối đa từ trò chơi</label><input type="number" min="0" data-k="game" value="${S.game}"></div>
+    </div>
+    <div class="sum" id="maxsum">Điểm tối đa = ${S.plannedSessions} × ${S.qps} + ${S.game} = ${max}</div>
+    <div class="note">Thanh sẽ chạy từ 0 đến điểm tối đa này.</div>`;
+  } else if(tab==='ms'){
+    h+=`<div class="note">Mỗi mốc là một phần thưởng. Học sinh đạt đủ số câu sẽ mở khóa.</div>`;
+    S.milestones.forEach((m,i)=>{h+=`<div class="row ms"><div><label>Icon</label><input data-m="${i}" data-f="icon" value="${esc(m.icon)}"></div>
+      <div><label>Số câu</label><input type="number" min="1" data-m="${i}" data-f="v" value="${num(m.v)}"></div>
+      <div><label>Tên phần thưởng</label><input data-m="${i}" data-f="name" value="${esc(m.name)}"></div>
+      <button class="red small" data-delm="${i}">✕</button></div>`});
+    h+=`<button class="green" id="addM">+ Thêm mốc</button>`;
+  } else {
+    const i=+tab.slice(1), st=S.students[i];
+    h+=`<div class="grid">
+      <div><label>Tên học sinh</label><input data-s="${i}" data-f="name" value="${esc(st.name)}"></div>
+      <div><label>Hình đại diện</label><select data-s="${i}" data-f="avatar">${AVATARS.map(a=>`<option ${a===st.avatar?'selected':''}>${a}</option>`).join('')}</select></div>
+      <div><label>Màu thanh</label><input type="color" data-s="${i}" data-f="color" value="${esc(st.color)}"></div>
+      <div><label>Câu từ trò chơi (tối đa ${S.game})</label><input type="number" min="0" data-s="${i}" data-f="game" value="${num(st.game)}"></div>
+    </div><label style="margin-top:16px">Kết quả từng buổi (tối đa ${S.qps} câu/buổi)</label>`;
+    st.sessions.forEach((x,j)=>{h+=`<div class="row ss"><div><input type="date" data-s="${i}" data-j="${j}" data-f="date" value="${esc(x.date)}"></div>
+      <div><input type="number" min="0" data-s="${i}" data-j="${j}" data-f="score" value="${num(x.score)}"></div>
+      <button class="red small" data-dels="${i}.${j}">✕</button></div>`});
+    h+=`<button class="green" data-adds="${i}">+ Thêm buổi học</button>
+      <div class="sum" id="stsum">Tổng: ${total(st)} / ${max} câu</div>`;
+  }
+  h+=`<div class="foot"><div style="display:flex;gap:8px;flex-wrap:wrap">
+      <button class="small" id="exp">⬇ Xuất file</button><button class="small" id="imp">⬆ Nhập file</button><button class="red small" id="reset">↺ Đặt lại mẫu</button></div>
+      <button class="green" id="done">✔ XONG</button></div><input type="file" id="file" accept=".json" hidden>`;
+  box.innerHTML=h;
+}
+modal.addEventListener('click',e=>{
+  const t=e.target.closest('button'); if(!t){ if(e.target===modal)closeSettings(); return;}
+  if(t.dataset.tab){tab=t.dataset.tab;drawModal();}
+  else if(t.id==='done')closeSettings();
+  else if(t.id==='addM'){S.milestones.push({v:max2(),name:'Phần thưởng',icon:'🎁'});save();drawModal();}
+  else if(t.dataset.delm){S.milestones.splice(+t.dataset.delm,1);save();drawModal();}
+  else if(t.dataset.adds){const st=S.students[+t.dataset.adds];const last=st.sessions.at(-1);
+    st.sessions.push({date:new Date().toISOString().slice(0,10),score:0});save();drawModal();}
+  else if(t.dataset.dels){const [i,j]=t.dataset.dels.split('.').map(Number);S.students[i].sessions.splice(j,1);save();drawModal();}
+  else if(t.id==='reset'){if(confirm('Đặt lại toàn bộ dữ liệu về mẫu?')){S=defaults();tab='general';save();drawModal();}}
+  else if(t.id==='exp'){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(S,null,2)],{type:'application/json'}));a.download='thanh-tich.json';a.click();}
+  else if(t.id==='imp')document.getElementById('file').click();
+});
+const max2=()=>Math.max(1,maxScore());
+modal.addEventListener('input',e=>{
+  const el=e.target;
+  if(el.dataset.k){S[el.dataset.k]=el.type==='number'?num(el.value):el.value;
+    const m=document.getElementById('maxsum'); if(m)m.textContent=`Điểm tối đa = ${S.plannedSessions} × ${S.qps} + ${S.game} = ${maxScore()}`;}
+  else if(el.dataset.m!==undefined){const m=S.milestones[+el.dataset.m];m[el.dataset.f]=el.dataset.f==='v'?num(el.value):el.value;}
+  else if(el.dataset.s!==undefined){const st=S.students[+el.dataset.s];
+    if(el.dataset.j!==undefined){const x=st.sessions[+el.dataset.j];x[el.dataset.f]=el.dataset.f==='score'?num(el.value):el.value;}
+    else st[el.dataset.f]=el.dataset.f==='game'?num(el.value):el.value;
+    const s=document.getElementById('stsum'); if(s)s.textContent=`Tổng: ${total(st)} / ${maxScore()} câu`;}
+  save();
+});
+modal.addEventListener('change',e=>{
+  if(e.target.id==='file'){const f=e.target.files[0];if(!f)return;const r=new FileReader();
+    r.onload=()=>{try{const d=JSON.parse(r.result);if(!d.students||!d.milestones)throw 0;S=d;save();tab='general';drawModal();}catch(_){alert('File không hợp lệ.')}};r.readAsText(f);}
+  else if(e.target.tagName==='SELECT'){/* handled by input */}
+});
+document.getElementById('btnSet').onclick=openSettings;
+document.getElementById('btnReplay').onclick=()=>render();
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&modal.classList.contains('open'))closeSettings()});
+render();
+</script>
+</body>
+</html>
