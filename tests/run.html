@@ -1,0 +1,138 @@
+<!doctype html><meta charset="utf-8"><title>Kiểm thử</title>
+<body style="font:14px monospace;background:#111;color:#eee"><pre id="out"></pre>
+<script src="../js/sample.js"></script><script src="../js/core.js"></script><script src="../js/qparser.js"></script>
+<script src="../js/g_memory.js"></script><script src="../js/g_anagram.js"></script><script src="../js/g_listen.js"></script><script src="../js/g_cross.js"></script><script src="../js/g_arena.js"></script>
+<script src="fixtures/questions.sample.js"></script>
+<script>
+const NS=PG, out=document.getElementById('out'); let pass=0, fail=0;
+const log=s=>out.textContent+=s+'\n';
+function ok(c,m){ if(c){pass++;} else {fail++; log('  ✘ '+m);} }
+async function test(name,fn){ log('• '+name); try{ await fn(); }catch(e){ fail++; log('  ✘ EXCEPTION '+(e&&e.stack||e)); } }
+(async()=>{
+NS.setVocab(NS.SAMPLE_VOCAB,'mẫu'); NS.cfg.topics=[]; NS.cfg.phrases=true;
+
+await test('Parser từ vựng',()=>{
+  const v=NS.vocab; ok(v.topics.length===4,'4 chủ đề: '+v.topics.length); ok(v.words.length>=90,'số từ '+v.words.length);
+  ok(new Set(v.words.map(w=>w.text.toLowerCase())).size===v.words.length,'không trùng');
+  const lr=v.words.find(w=>w.text==='living room'); ok(lr&&lr.isPhrase&&lr.length===10&&lr.ipa,'cụm từ living room');
+  ok(v.words.find(w=>w.text==='Vietnam').isProper,'tên riêng'); ok(v.words.find(w=>w.text==='parents').maybePlural,'số nhiều'); ok(!v.words.find(w=>w.text==='sometimes').maybePlural,'ngoại lệ số nhiều');
+  ok(v.words.find(w=>w.text==='window').hasBannedSub,'window chứa "in"'); ok(!v.words.find(w=>w.text==='lamp').hasBannedSub,'lamp không banned');
+  const r=NS.parseVocab('## 1. A (99 từ)\n```\nx :: y\nx /e/ :: z\nbad line\n```\n## 2. B\n```\nx :: dup\nq :: r\n```');
+  ok(r.words.length===2&&r.words[0].topics.length===2&&r.warn.length===1,'trùng + dòng lỗi: '+JSON.stringify(r.words.map(w=>w.topics))+r.warn.length);
+  ok(NS.parseVocab('').words.length===0&&NS.parseVocab('rác 💥 <script>').words.length===0,'đầu vào rác');
+});
+await test('Đáp án nhiễu 1000 lần',()=>{
+  const pool=NS.pool(); let bad=0;
+  for(let i=0;i<1000;i++){ const w=NS.pick(pool), lv=1+i%3, dir=['vi2en','en2vi','spell'][i%3];
+    const q=NS.makeMC(w,dir,lv,pool); if(!q){bad++;continue;}
+    const o=q.options;
+    if(new Set(o.map(x=>x.toLowerCase())).size!==4) bad++;
+    if(q.options[q.answer]!==(dir==='en2vi'?w.meaning:w.text)) bad++;
+    if(dir!=='en2vi'){ const ms=o.map(t=>pool.find(p=>p.text===t).meaning.toLowerCase()); if(new Set(ms).size!==4) bad++; }
+  } ok(bad===0,'lỗi '+bad);
+});
+await test('Túi trộn không lặp',()=>{
+  const pool=NS.pool(), bag=NS.makeBag(pool), seen=new Set(); let last=null, rep=0, dup=0;
+  for(let i=0;i<pool.length;i++){ const w=bag.next(); if(seen.has(w.id))dup++; seen.add(w.id); if(last&&last.id===w.id)rep++; last=w; }
+  ok(dup===0,'trùng trước khi hết kho '+dup); ok(rep===0,'liên tiếp');
+  let r2=0,l2=null; for(let i=0;i<500;i++){const w=bag.next(); if(l2&&l2.id===w.id)r2++; l2=w;} ok(r2===0,'liên tiếp sau nạp lại '+r2);
+});
+await test('Xáo chữ',()=>{
+  const pool=NS.pool({phrases:true}); let bad=0;
+  pool.forEach(w=>{ for(let k=0;k<20;k++){ const s=NS.scrambleLetters(w.text); const a=w.text.toUpperCase().replace(/[^A-Z]/g,''); if(s.join('')===a && new Set(a).size>1) bad++; if([...s].sort().join('')!==[...a].sort().join('')) bad++; } });
+  ok(bad===0,'lỗi '+bad); ok(NS.scrambleLetters('aaa').join('')==='AAA','chữ giống nhau');
+});
+await test('checkAnswer',()=>{
+  ok(NS.checkAnswer({answer:2},2)&&!NS.checkAnswer({answer:2},1),'generated');
+  ok(NS.checkAnswer({type:'dien-tu',answers:['Flat','apartment']},'  apartment. '),'điền từ'); ok(!NS.checkAnswer({type:'dien-tu',answers:['flat']},'flats'),'sai');
+  ok(NS.checkAnswer({type:'dung-sai',answers:['Sai']},'false')&&!NS.checkAnswer({type:'dung-sai',answers:['Sai']},'Đúng'),'đúng sai');
+  const q={type:'trac-nghiem',options:[{key:'A'},{key:'B'}],answers:['B']}; ok(NS.checkAnswer(q,1)&&NS.checkAnswer(q,'b')&&!NS.checkAnswer(q,0),'trắc nghiệm');
+  ok(NS.checkAnswer({type:'sap-xep-cau',answers:['I brush my teeth every morning.']},"i brush  my teeth every morning"),'sắp xếp câu');
+});
+let parsed;
+await test('Parser câu hỏi (tệp mẫu vàng)',()=>{
+  const t=performance.now(); parsed=NS.parseQuestions(window.FIXTURE); const dt=performance.now()-t;
+  const codes=parsed.errors.map(e=>e.code), has=c=>codes.includes(c);
+  log('  → '+parsed.total+' khối, '+parsed.questions.length+' câu, '+parsed.cardSets.length+' bộ thẻ, '+parsed.puzzles.length+' ô chữ; lỗi: '+codes.join(',')+'; cảnh báo: '+parsed.warnings.map(e=>e.code).join(','));
+  ['E021','E020','E022','E030','E040','E052'].forEach(c=>ok(has(c),'thiếu lỗi '+c));
+  ok(parsed.questions.length===12,'12 câu hợp lệ (có '+parsed.questions.length+')');
+  const q1=parsed.questions[0]; ok(q1.type==='trac-nghiem'&&q1.answers[0]==='B'&&q1.difficulty===3&&q1.topic===3&&q1.tags.join()==='lop5,on-tap,nha-o'&&q1.explanation.includes('Dòng thứ hai'),'câu 1: '+JSON.stringify([q1.type,q1.answers,q1.difficulty,q1.topic,q1.tags]));
+  const q2=parsed.questions[1]; ok(q2.answers[0]==='C'&&q2.difficulty===1,'câu 2 nhãn không dấu');
+  ok(parsed.questions[2].answers[0]==='B'&&parsed.questions[2].difficulty===3,'câu 3 (đúng)');
+  const dt8=parsed.questions.find(q=>q.type==='dien-tu'); ok(dt8&&dt8.answers.length===2&&dt8.wordId==='lamp','điền từ nhiều đáp án');
+  ok(parsed.questions.find(q=>q.type==='dung-sai').answers[0]==='Sai','đúng/sai');
+  const sx=parsed.questions.find(q=>q.type==='sap-xep-chu'); ok(sx&&sx.scramble.join(' ')==='m p l a','xáo cố định');
+  const sc=parsed.questions.find(q=>q.type==='sap-xep-cau'); ok(sc&&sc.chunks.length===4,'tách câu');
+  const ng=parsed.questions.find(q=>q.type==='nghe'); ok(ng&&ng.say==='kitchen'&&ng.answers[0]==='B','nghe');
+  const auto=parsed.questions.find(q=>q.wordId==='washing-machine'); ok(auto&&auto.options.length===4&&auto.answers.length===1&&auto.stem.includes('máy giặt'),'tự sinh từ Từ:');
+  const q15=parsed.questions.find(q=>q.extra&&q.extra['Rubric']); ok(q15&&q15.extra['Bài mẫu']&&q15.extra['Màu sắc'],'giữ nhãn lạ + rubric'); ok(parsed.warnings.some(w=>w.code==='W002'),'W002');
+  const q16=parsed.questions.find(q=>q.explanation==='ok'); ok(q16&&q16.topic===2&&q16.tags.length===0&&q16.difficulty===2,'@hết xóa chỉ thị');
+  const q7=parsed.questions.find(q=>q.options&&q.options.some(o=>/tiếp tục dòng hai/.test(o.text))); ok(q7,'lựa chọn nhiều dòng');
+  ok(parsed.cardSets.length===1&&parsed.cardSets[0].pairs.length===4&&parsed.cardSets[0].pairs[0].ipa==='læmp','bộ thẻ'); ok(parsed.warnings.some(w=>w.code==='W011'),'thẻ thiếu ::');
+  ok(parsed.puzzles.length===1&&parsed.puzzles[0].keyword==='LAMP','ô chữ hợp lệ');
+  ok(dt<500,'hiệu năng '+dt.toFixed(0)+'ms');
+});
+await test('Chế độ dòng trống, BOM, CRLF, rỗng, rác',()=>{
+  const r=NS.parseQuestions('﻿Đề một?\r\nA. x\r\nB. y*\r\n\r\nĐề hai?\r\nA. p*\r\nB. q\r\n');
+  ok(r.questions.length===2&&r.errors.length===0,'blank-line mode '+JSON.stringify(r.errors));
+  ok(NS.parseQuestions('').total===0,'rỗng'); ok(NS.parseQuestions('// chỉ chú thích\n// nữa').total===0,'chỉ chú thích');
+  const g=NS.parseQuestions('Câu 1: ok\nA. a*\nB. b\n\n\u0000\u0001 rác <img onerror=1> \\\\ ::: @@@\nCâu 3: z'); ok(g.questions.length===1&&g.errors.length>=1,'rác không làm sập: '+g.errors.length);
+  const big=[]; for(let i=0;i<5000;i++) big.push('Câu '+(i+1)+': Q'+i+'?\nA. a*\nB. b\nĐộ khó: Dễ\n'); const t=performance.now(); const rb=NS.parseQuestions(big.join('\n')); const dt=performance.now()-t;
+  ok(rb.questions.length===5000,'5000 khối: '+rb.questions.length); ok(dt<500,'5000 khối '+dt.toFixed(0)+'ms');
+  ok(NS.parseQuestions('x'.repeat(2100000)).errors[0].code==='E900','file quá lớn');
+});
+await test('Round-trip parse∘serialize',()=>{
+  const a=parsed, text=NS.serializeQuestions(a), b=NS.parseQuestions(text);
+  const strip=r=>JSON.stringify({q:r.questions.map(q=>Object.assign({},q,{sourceLine:0})),c:r.cardSets.map(c=>Object.assign({},c,{line:0})),p:r.puzzles.map(p=>Object.assign({},p,{line:0}))});
+  const sa=strip(a), sb=strip(b);
+  if(sa!==sb){ for(let i=0;i<Math.min(sa.length,sb.length);i++) if(sa[i]!==sb[i]){ log('  khác tại '+i+': …'+sa.slice(Math.max(0,i-80),i+120)+'\n  vs …'+sb.slice(Math.max(0,i-80),i+120)); break; } }
+  ok(sa===sb,'round-trip khác nhau'); ok(b.errors.length===0,'bản xuất lại có lỗi: '+JSON.stringify(b.errors.map(e=>e.code+'@'+e.line)));
+  const c=NS.serializeQuestions(b); ok(NS.serializeQuestions(NS.parseQuestions(c))===c,'serialize ổn định');
+});
+await test('Bộ tạo ô chữ',()=>{
+  const kws=['ANNIVERSARY','LIVING ROOM','SKIPPING ROPE','HIDE AND SEEK','SING KARAOKE','FAMILY','KITCHEN','FESTIVAL','BIRTHDAY','HOMEWORK','CULTURE','FRIENDS'];
+  let good=0; const failed=[];
+  for(const k of kws){ NS.clearPuzzleUsed(); const r=NS.genPuzzle(k,{noUsed:true}); if(r.error){ failed.push(k+' → '+r.error.slice(0,70)); continue; }
+    const bad=NS.validatePuzzle(r.puzzle); if(bad.length){ ok(false,k+': '+bad.join('; ')); continue; }
+    const rule=r.puzzle.rows.every(x=>/^[a-z]+$/i.test(x.word)&&!/in|on|at|the/i.test(x.word)&&!x.clue.toLowerCase().includes(x.word.toLowerCase()));
+    ok(rule,k+' vi phạm quy tắc'); const txt=NS.puzzleToText(r.puzzle), back=NS.parseQuestions(txt); ok(back.puzzles.length===1&&back.errors.length===0,k+' xuất/nhập lại: '+JSON.stringify(back.errors)); good++; }
+  log('  → tạo được '+good+'/'+kws.length+' từ khóa với kho MẪU'+(failed.length?'; không tạo được: '+failed.join(' | '):''));
+  ok(good>=6,'quá ít từ khóa tạo được với kho mẫu ('+good+')');
+  const e=NS.genPuzzle('QQQQQQ',{noUsed:true}); ok(e.error&&/chữ "Q"/.test(e.error),'báo lỗi rõ khi thiếu chữ');
+  ok(NS.validatePuzzle({keyword:'AB',rows:[{word:'cat',hi:1,slot:1},{word:'cat',hi:1,slot:1}]}).length>0,'validate bắt lỗi');
+});
+await test('Bảng đấu trường 1000 seed',()=>{
+  const BAD=['trap','ice','hole']; let bad=0;
+  for(let s=1;s<=1000;s++){ const b=NS.arenaBoard(NS.mulberry(s)); let p=true;
+    if(b.length!==20||b[0]!=='start'||b[19]!=='finish') p=false;
+    for(let i=1;i<=2;i++) if(BAD.includes(b[i])) p=false;
+    for(let i=2;i<19;i++) if(BAD.includes(b[i])&&BAD.includes(b[i-1])) p=false;
+    const w=b.map((t,i)=>t==='warp'?i:-1).filter(i=>i>=0); if(w.length!==2||Math.abs(w[0]-w[1])<5) p=false;
+    if(!b.slice(1,7).includes('bonus')) p=false;
+    const cnt={}; b.forEach(t=>cnt[t]=(cnt[t]||0)+1); if(cnt.bonus!==3||cnt.trap!==3||cnt.swap!==2||cnt.steal!==2||cnt.mystery!==3||cnt.treasure!==1||cnt.ice!==1||cnt.hole!==1) p=false;
+    if(!p) bad++; } ok(bad===0,'vi phạm ở '+bad+' seed');
+});
+await test('Mô phỏng 200 ván đấu trường (bot)',async()=>{
+  let ops=0; const guard=()=>{ if(++ops>5e6) throw new Error('vòng lặp vô hạn?'); };
+  const mk=()=>({updated(S){guard(); if(S.score.some(x=>x<0)) throw new Error('điểm âm'); if(S.pos.some(x=>x<0||x>19)) throw new Error('vị trí ngoài bảng '+S.pos);},
+    say:async()=>{guard();},turnStart:async()=>{guard();},chooseLevel:async()=>NS.randInt(0,2),choose:async(t,ti,o)=>NS.randInt(0,o.length-1),
+    ask:async(t,lv,o)=>({correct:Math.random()<[.85,.65,.45][lv],used:(o.cards||[]).filter(()=>Math.random()<.3)}),race:async()=>NS.randInt(0,1),move:async()=>{},showDice:async()=>{},swapPos:async()=>{},reveal(){}});
+  const wins=[0,0,0]; let rounds=0, fin=0;
+  const t0=performance.now();
+  for(let g=0;g<200;g++){ const r=await NS.arenaRun(mk(),{rnd:NS.mulberry(1000+g)}); wins[r.winner<0?2:r.winner]++; rounds+=r.rounds; if(r.finished>=0)fin++; if(r.scores.some(x=>x<0)) ok(false,'điểm âm cuối ván'); }
+  log('  → thắng Cam '+wins[0]+', Xanh '+wins[1]+', khác '+wins[2]+'; TB '+(rounds/200).toFixed(1)+' vòng; có đội về đích: '+fin+'/200; '+(performance.now()-t0).toFixed(0)+'ms');
+  ok(Math.abs(wins[0]-wins[1])<=60,'lệch tỉ lệ thắng quá 15 điểm % ('+wins+')'); ok(wins[2]===0,'có ván không có người thắng');
+});
+await test('Khiên + Bẫy, Về đích',async()=>{
+  const board=['start','trap'].concat(Array(17).fill('bonus'),['finish']);
+  const log2=[]; const mk=()=>({updated(){},say:async m=>{log2.push(m);},turnStart:async()=>{},chooseLevel:async()=>0,choose:async(t,ti,o)=>/Khiên/.test(ti)?0:0,
+    ask:async()=>({correct:true,used:[]}),race:async()=>0,move:async()=>{},showDice:async()=>{},swapPos:async()=>{},reveal(){}});
+  const r=await NS.arenaRun(mk(),{board,maxRounds:2,rnd:()=>0.0});
+  ok(r.S.pos[0]>=1,'đã di chuyển'); ok(log2.some(m=>/Bẫy/.test(m)),'vào ô bẫy'); ok(r.scores.every(x=>x>=0),'điểm không âm');
+  const fb=['start'].concat(Array(18).fill('bonus'),['finish']);
+  const r3=await NS.arenaRun(mk(),{board:fb,maxRounds:10,rnd:()=>0.99});
+  ok(r3.finished>=0,'có đội về đích'); ok(r3.rounds<10,'kết thúc sớm khi có người về đích'); ok(r3.S.pos[0]===19||r3.S.pos[1]===19,'một đội ở ô 19');
+});
+log('\n==== '+pass+' đạt, '+fail+' lỗi ===='); document.title=fail?('FAIL '+fail):'PASS '+pass;
+})();
+</script></body>

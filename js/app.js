@@ -1,0 +1,136 @@
+/* ===== Menu game, cài đặt, nhập từ vựng / câu hỏi ===== */
+(function () {
+'use strict';
+const NS = window.PG, h = NS.h;
+let root = null;
+
+function loadHand() {
+  const t = NS.LS.get('pg-questions-text', '');
+  NS.hand = t ? NS.parseQuestions(t) : { questions: [], cardSets: [], puzzles: [] };
+  NS.handText = t;
+}
+NS.loadHand = loadHand;
+
+function modal(title, body, onClose) {
+  const m = h('div', { class: 'gmodal' }, h('div', { class: 'gbox pix' }, h('div', { class: 'ghead' }, h('h2', {}, title), h('button', { class: 'small red', type: 'button', onclick: () => { m.remove(); onClose && onClose(); } }, '✕')), body));
+  root.append(m); return m;
+}
+const toggle = (label, val, on) => { const c = h('input', { type: 'checkbox' }); c.checked = !!val; c.addEventListener('change', () => on(c.checked)); return h('label', { class: 'tg' }, c, ' ' + label); };
+const select = (choices, val, on) => { const s = h('select', {}, choices.map(([v, t]) => h('option', { value: v }, t))); s.value = String(val); s.addEventListener('change', () => on(s.value)); return s; };
+
+function renderMenu() {
+  if (NS.curShell) NS.curShell.destroy();
+  root.innerHTML = '';
+  const v = NS.vocab;
+  const cards = h('div', { class: 'gcards' }, NS.games.map(g => {
+    const c = h('button', { class: 'gcard', type: 'button' }, h('span', { class: 'gic' }, g.icon), h('b', {}, g.name), h('small', {}, g.desc));
+    c.addEventListener('click', () => startDialog(g)); return c;
+  }));
+  const status = h('div', { class: 'gstatus' }, '📚 Từ vựng: ' + v.words.length + ' từ · ' + v.topics.length + ' chủ đề · nguồn: ' + v.source + (NS.hand.questions.length + NS.hand.cardSets.length + NS.hand.puzzles.length ? ' · ✍ ' + NS.hand.questions.length + ' câu, ' + NS.hand.cardSets.length + ' bộ thẻ, ' + NS.hand.puzzles.length + ' ô chữ soạn tay' : ''));
+  const tools = h('div', { class: 'gtools' },
+    h('button', { type: 'button', onclick: settingsDialog }, '⚙ Cài đặt chung'),
+    h('button', { type: 'button', onclick: vocabDialog }, '📚 Từ vựng'),
+    h('button', { type: 'button', onclick: questionDialog }, '📝 Soạn câu hỏi'),
+    h('button', { type: 'button', onclick: voiceTest }, '🔊 Thử giọng đọc'));
+  const how = h('div', { class: 'ghow' }, '👫 Hai bạn ngồi hai bên: ', h('b', {}, NS.TEAM_ICON[0] + ' ' + NS.cfg.teams[0]), ' (CAM) và ', h('b', {}, NS.TEAM_ICON[1] + ' ' + NS.cfg.teams[1]), ' (XANH). Chọn một trò chơi để bắt đầu!');
+  root.append(h('h2', { class: 'gh2' }, '🎮 CHỌN TRÒ CHƠI'), how, cards, status, tools);
+}
+NS.renderMenu = renderMenu;
+
+function startDialog(g) {
+  const saved = NS.LS.get('pg-opt-' + g.id, {}), opt = {};
+  g.options.forEach(o => { opt[o.key] = saved[o.key] !== undefined ? saved[o.key] : o.def; });
+  const body = h('div', { class: 'gform' });
+  g.options.forEach(o => {
+    if (o.type === 'select') body.append(h('label', {}, o.label), select(o.choices, opt[o.key], v => { opt[o.key] = isNaN(+v) ? v : +v; }));
+    else if (o.type === 'toggle') body.append(toggle(o.label, opt[o.key], v => { opt[o.key] = v; }));
+    else if (o.type === 'text') {
+      const inp = h('input', { type: 'text', value: opt[o.key] || '', maxlength: 24 }); inp.addEventListener('input', () => { opt[o.key] = inp.value; });
+      body.append(h('label', {}, o.label), inp, o.suggest ? h('div', { class: 'sugg' }, o.suggest.map(s => h('button', { class: 'small', type: 'button', onclick: () => { inp.value = s; opt[o.key] = s; } }, s))) : null);
+    }
+  });
+  const m = modal(g.icon + ' ' + g.name, h('div', {}, h('p', {}, g.desc), body, h('div', { class: 'rbtns' }, h('button', { class: 'green', type: 'button', onclick: () => { NS.LS.set('pg-opt-' + g.id, opt); m.remove(); launch(g, opt); } }, '▶ BẮT ĐẦU'))));
+}
+function launch(g, opt) {
+  NS.handUsed.clear();
+  const go = () => { root.innerHTML = ''; g.start({ root, opt, restart: () => launch(g, opt), exit: renderMenu }); };
+  go();
+}
+
+function settingsDialog() {
+  const c = NS.cfg, save = () => NS.saveCfg();
+  const topics = h('div', { class: 'tgrid' }, NS.vocab.topics.map((t, i) => {
+    const n = NS.vocab.words.filter(w => w.topics.includes(i)).length;
+    return toggle(t + ' (' + n + ')', !c.topics.length || c.topics.includes(i), on => {
+      let cur = c.topics.length ? c.topics.slice() : NS.vocab.topics.map((_, k) => k);
+      cur = on ? [...new Set(cur.concat(i))] : cur.filter(x => x !== i);
+      c.topics = cur.length === NS.vocab.topics.length ? [] : cur; save();
+    });
+  }));
+  const n0 = h('input', { type: 'text', value: c.teams[0], maxlength: 14 }), n1 = h('input', { type: 'text', value: c.teams[1], maxlength: 14 });
+  [n0, n1].forEach((e, i) => e.addEventListener('input', () => { c.teams[i] = e.value.trim() || NS.TEAM_TAG[i]; save(); }));
+  const body = h('div', { class: 'gform' },
+    h('label', {}, 'Tên hai đội'), h('div', { class: 'two' }, h('span', {}, NS.TEAM_ICON[0] + ' CAM', n0), h('span', {}, NS.TEAM_ICON[1] + ' XANH', n1)),
+    (typeof S !== 'undefined' && S.students && S.students.length > 1) ? h('button', { class: 'small', type: 'button', onclick: () => { c.teams = [S.students[0].name, S.students[1].name]; n0.value = c.teams[0]; n1.value = c.teams[1]; save(); } }, '↧ Lấy tên từ bảng thành tích') : null,
+    h('label', {}, 'Chủ đề từ vựng'), topics,
+    toggle('Bao gồm cụm từ (nhiều từ)', c.phrases, v => { c.phrases = v; save(); }),
+    h('label', {}, 'Độ khó đáp án nhiễu'), select([[1, 'Dễ (ngẫu nhiên)'], [2, 'Vừa (cùng chủ đề)'], [3, 'Khó (gần giống)']], c.level, v => { c.level = +v; save(); }),
+    h('label', {}, 'Chiều hỏi'), select([['mix', 'Xen kẽ'], ['vi2en', 'Việt → Anh'], ['en2vi', 'Anh → Việt']], c.dir, v => { c.dir = v; save(); }),
+    h('label', {}, 'Nguồn câu hỏi'), select([['auto', 'Tự sinh từ kho từ vựng'], ['hand', 'Chỉ dùng câu soạn tay'], ['mix', 'Trộn cả hai']], c.source, v => { c.source = v; save(); }),
+    toggle('Âm thanh hiệu ứng', c.sound, v => { c.sound = v; save(); }), toggle('Rung khi chạm', c.vibrate, v => { c.vibrate = v; save(); }),
+    toggle('Ưu tiên file âm thanh thu sẵn audio/<từ>.mp3', c.audioFiles, v => { c.audioFiles = v; save(); }),
+    h('div', { class: 'rbtns' }, h('button', { class: 'small red', type: 'button', onclick: () => { NS.clearWrong(); NS.clearPuzzleUsed && NS.clearPuzzleUsed(); alert('Đã xóa thống kê từ hay sai và lịch sử ô chữ.'); } }, 'Xóa thống kê từ sai / lịch sử ô chữ')));
+  modal('⚙ Cài đặt chung', body, renderMenu);
+}
+
+function vocabDialog() {
+  const v = NS.vocab;
+  const ta = h('textarea', { class: 'bigta', placeholder: '## 1. Tên chủ đề\n```\nlamp /læmp/ :: đèn\n```' });
+  const msg = h('div', { class: 'gmsg' });
+  const body = h('div', { class: 'gform' },
+    h('p', {}, 'Đang dùng: ', h('b', {}, v.words.length + ' từ'), ' · ' + v.topics.length + ' chủ đề · nguồn ' + v.source + (v.warn.length ? ' · ⚠ ' + v.warn.length + ' dòng bị bỏ qua' : '')),
+    h('ul', { class: 'tl' }, v.topics.map((t, i) => h('li', {}, t + ': ' + v.words.filter(w => w.topics.includes(i)).length + ' từ'))),
+    h('p', { class: 'note' }, 'Để dùng từ vựng thật: đặt file ', h('code', {}, 'data/vocab.txt'), ' cạnh index.html (rồi đẩy lên GitHub), hoặc dán nội dung vào ô dưới.'),
+    ta, msg,
+    h('div', { class: 'rbtns' },
+      h('button', { class: 'green', type: 'button', onclick: () => { const r = NS.parseVocab(ta.value); if (!r.words.length) { msg.textContent = '❌ Không đọc được từ nào. Kiểm tra định dạng (tiêu đề "## 1. ..." và khối ```).'; return; } NS.LS.set('pg-vocab-text', ta.value); NS.setVocab(ta.value, 'đã nhập tay'); msg.textContent = '✔ Đã dùng ' + r.words.length + ' từ, ' + r.topics.length + ' chủ đề' + (r.warn.length ? ' (bỏ qua ' + r.warn.length + ' dòng lỗi: ' + r.warn.slice(0, 3).join('; ') + ')' : ''); NS.cfg.topics = []; NS.saveCfg(); } }, 'Dùng bộ từ này'),
+      h('button', { class: 'small red', type: 'button', onclick: async () => { NS.LS.set('pg-vocab-text', null); try { localStorage.removeItem('pg-vocab-text'); } catch (e) {} await NS.loadVocab(); msg.textContent = '↺ Đã quay về nguồn: ' + NS.vocab.source + ' (' + NS.vocab.words.length + ' từ)'; } }, 'Bỏ từ đã nhập')));
+  modal('📚 Từ vựng', body, renderMenu);
+}
+
+function questionDialog() {
+  const ta = h('textarea', { class: 'bigta', spellcheck: 'false' }); ta.value = NS.handText || '';
+  const rep = h('div', { class: 'report' });
+  const check = () => {
+    const r = NS.parseQuestions(ta.value), st = r.stats;
+    rep.innerHTML = '';
+    rep.append(h('div', { class: 'rsum' }, '📊 ' + r.total + ' khối · ✔ ' + (r.questions.length + r.cardSets.length + r.puzzles.length) + ' hợp lệ (' + r.questions.length + ' câu, ' + r.cardSets.length + ' bộ thẻ, ' + r.puzzles.length + ' ô chữ) · ❌ ' + r.errors.length + ' lỗi · ⚠ ' + r.warnings.length + ' cảnh báo'),
+      Object.keys(st.type).length ? h('div', { class: 'rsub' }, 'Theo dạng: ' + Object.keys(st.type).map(k => k + '=' + st.type[k]).join(', ') + ' · Độ khó: ' + Object.keys(st.diff).map(k => ['', 'Dễ', 'Vừa', 'Khó'][k] + '=' + st.diff[k]).join(', ')) : null);
+    const item = (e, cls) => h('button', { class: 'ritem ' + cls, type: 'button', onclick: () => { const ls = ta.value.split(/\r\n|\r|\n/); let pos = 0; for (let i = 0; i < e.line - 1; i++) pos += ls[i].length + 1; ta.focus(); ta.setSelectionRange(pos, pos + (ls[e.line - 1] || '').length); } },
+      h('b', {}, e.code + ' · dòng ' + e.line), ' ' + e.msg, e.excerpt ? h('code', {}, e.excerpt) : null, e.hint ? h('i', {}, '💡 ' + e.hint) : null);
+    r.errors.slice(0, 60).forEach(e => rep.append(item(e, 'err'))); r.warnings.slice(0, 40).forEach(e => rep.append(item(e, 'wrn')));
+    return r;
+  };
+  const body = h('div', { class: 'gform' },
+    h('p', { class: 'note' }, 'Dán câu hỏi theo cú pháp: ', h('code', {}, 'Câu 1: ...  A. ...  B. ...*  Giải thích: ...'), '; thẻ ', h('code', {}, 'Bộ thẻ: tên'), ' + dòng ', h('code', {}, 'từ :: nghĩa'), '; ô chữ ', h('code', {}, 'Ô chữ: TỪ KHÓA'), ' + dòng ', h('code', {}, 'Hàng: từ | ô cam | ô số | gợi ý'), '.'),
+    ta, rep,
+    h('div', { class: 'rbtns' },
+      h('button', { type: 'button', onclick: check }, '🔍 Kiểm tra'),
+      h('button', { class: 'green', type: 'button', onclick: () => { const r = check(); NS.LS.set('pg-questions-text', ta.value); loadHand(); rep.prepend(h('div', { class: 'rsum ok' }, '✔ Đã nhập ' + (r.questions.length + r.cardSets.length + r.puzzles.length) + ' mục hợp lệ. Khối lỗi bị bỏ qua. Chọn "Nguồn câu hỏi" trong Cài đặt để dùng.')); } }, '✔ Nhập các khối hợp lệ'),
+      h('button', { class: 'small', type: 'button', onclick: () => { const r = NS.parseQuestions(ta.value), t = NS.serializeQuestions(r); const a = h('a', { href: URL.createObjectURL(new Blob([t], { type: 'text/plain;charset=utf-8' })), download: 'cau-hoi-da-sua.txt' }); document.body.append(a); a.click(); a.remove(); } }, '⬇ Tải bản đã sửa'),
+      h('button', { class: 'small red', type: 'button', onclick: () => { if (confirm('Xóa toàn bộ câu hỏi soạn tay?')) { ta.value = ''; try { localStorage.removeItem('pg-questions-text'); } catch (e) {} loadHand(); rep.innerHTML = ''; } } }, 'Xóa hết')));
+  modal('📝 Soạn câu hỏi', body, renderMenu);
+}
+
+function voiceTest() {
+  if (!NS.hasTTS()) { alert('Trình duyệt này không hỗ trợ giọng đọc.'); return; }
+  const v = NS.enVoice(); NS.speak('Hello! This is a test of the English voice.');
+  if (!v) alert('Chưa tìm thấy giọng tiếng Anh. Hãy cài giọng English (US/UK) trong phần cài đặt giọng nói của thiết bị.');
+}
+
+NS.initGameUI = async function () {
+  root = document.getElementById('gameRoot'); if (!root) return;
+  await NS.loadVocab(); loadHand(); renderMenu();
+  if (NS.hasTTS()) { try { speechSynthesis.getVoices(); } catch (e) {} }
+};
+})();

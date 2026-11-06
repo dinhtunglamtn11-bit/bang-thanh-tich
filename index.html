@@ -5,6 +5,10 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Bảng Thành Tích Pixel</title>
 <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/game.css">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#1a1c2c">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
 <style>
 :root{
   --ink:#1a1c2c; --panel:#29366f; --panel2:#3b5dc9; --sky:#41a6f6; --cyan:#73eff7;
@@ -90,7 +94,9 @@ input[type=color]{padding:0;height:40px;width:70px}
     <div><h1 id="title"></h1><div class="period" id="period"></div></div>
     <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center"><span id="sync" class="sync"></span><button class="red" id="btnLogin" style="display:none">Đăng nhập Google</button><button class="green" id="btnReplay">▶ Chạy lại</button><button id="btnSet">⚙ Cài đặt</button></div>
   </header>
-  <div class="pix card"><div class="chart" id="chart"></div></div>
+  <nav class="tabs2"><button id="tabLearn" class="act" type="button">📈 Quá trình học</button><button id="tabGame" type="button">🎮 Game</button></nav>
+  <div id="viewLearn"><div class="pix card"><div class="chart" id="chart"></div></div></div>
+  <div id="viewGame" hidden><div id="gameRoot"></div></div>
 </div>
 
 <div class="modal" id="modal"><div class="pix box" id="box"></div></div>
@@ -229,6 +235,26 @@ document.getElementById('btnSet').onclick=openSettings;
 document.getElementById('btnReplay').onclick=()=>render();
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&modal.classList.contains('open'))closeSettings()});
 render();
+</script>
+<script src="js/sample.js"></script>
+<script src="js/core.js"></script>
+<script src="js/qparser.js"></script>
+<script src="js/g_memory.js"></script>
+<script src="js/g_anagram.js"></script>
+<script src="js/g_listen.js"></script>
+<script src="js/g_cross.js"></script>
+<script src="js/g_arena.js"></script>
+<script src="js/app.js"></script>
+<script>
+(function(){
+  var tl=document.getElementById("tabLearn"),tg=document.getElementById("tabGame"),vl=document.getElementById("viewLearn"),vg=document.getElementById("viewGame"),inited=false;
+  function show(w){var g=w==="game";vl.hidden=g;vg.hidden=!g;tl.classList.toggle("act",!g);tg.classList.toggle("act",g);try{localStorage.setItem("pg-tab",w)}catch(e){}
+    if(g&&!inited){inited=true;PG.initGameUI();} else if(!g){if(PG.curShell)PG.curShell.destroy();render();}}
+  tl.onclick=function(){show("learn")};tg.onclick=function(){show("game")};
+  var last="learn";try{last=localStorage.getItem("pg-tab")||"learn"}catch(e){}
+  show(last);
+  if("serviceWorker" in navigator&&location.protocol.indexOf("http")===0)navigator.serviceWorker.register("sw.js").catch(function(){});
+})();
 </script>
 <script type="module">
 import {initializeApp} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
