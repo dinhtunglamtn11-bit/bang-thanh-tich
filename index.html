@@ -86,6 +86,25 @@ input[type=color]{padding:0;height:40px;width:70px}
 .note{font-size:15px;color:var(--grey);margin:8px 0}
 .sum{background:var(--ink);padding:6px 10px;border:3px solid var(--gold);color:var(--gold);display:inline-block;margin:8px 0}
 .foot{display:flex;gap:10px;flex-wrap:wrap;justify-content:space-between;margin-top:16px}
+/* thanh theo dõi tháng / ngày */
+#timeline{padding-top:14px}
+.tlh{margin:0 0 8px;font-size:30px;color:var(--gold);text-shadow:3px 3px 0 var(--ink)}
+.tl-year{display:flex;align-items:center;gap:12px;margin-bottom:8px;font-size:26px}
+.tl-months{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:6px;margin-bottom:14px}
+.tl-m{display:flex;flex-direction:column;align-items:center;gap:2px;padding:4px 2px;font-size:20px;min-width:0;background:var(--dark);color:var(--white);box-shadow:inset -3px -3px 0 #0003,3px 3px 0 var(--ink)}
+.tl-m.sel{background:var(--cyan);color:var(--ink)}.tl-m.now{outline:3px solid var(--gold)}
+.tl-m i{font-style:normal;font-size:15px;line-height:1.1;padding:0 3px;border:2px solid var(--ink);color:var(--ink);min-width:80%;text-align:center}
+.tl-m i.zero{background:transparent!important;color:var(--grey);border-color:#ffffff22}
+.tl-days{display:grid;grid-template-columns:repeat(auto-fill,minmax(64px,1fr));gap:5px}
+.tl-d{min-height:68px;border:3px solid var(--ink);background:#0003;padding:2px 3px;font-size:17px;line-height:1.05;position:relative}
+.tl-d b{display:block;font-size:20px;color:var(--grey)}.tl-d small{color:var(--grey);font-size:13px;margin-left:3px}
+.tl-d.we{background:#0005}.tl-d.has{border-color:var(--lime);background:#38b76422}.tl-d.today{outline:3px solid var(--gold)}.tl-d.today b{color:var(--gold)}
+.tl-d span{display:block;white-space:nowrap}
+.tl-prog{margin-top:14px;display:grid;gap:8px}.tl-row{display:grid;grid-template-columns:150px 1fr 150px;gap:10px;align-items:center;font-size:20px}
+.tl-bar{height:22px;background:var(--ink);border:3px solid var(--ink);outline:2px solid var(--grey);position:relative}.tl-bar i{display:block;height:100%;background:var(--c)}
+.tl-bar u{position:absolute;top:-8px;bottom:-8px;width:0;border-left:3px solid var(--gold);text-decoration:none}
+.tl-legend{font-size:15px;color:var(--grey);margin-top:6px}
+@media(max-width:700px){.tl-months{grid-template-columns:repeat(6,minmax(0,1fr))}.tl-row{grid-template-columns:1fr}}
 @media(max-width:600px){.row.ms{grid-template-columns:60px 90px 1fr auto}.flag{width:84px}.flag .nm{display:block;white-space:nowrap;font-size:12px}.score{width:100%}}
 </style>
 </head>
@@ -96,7 +115,7 @@ input[type=color]{padding:0;height:40px;width:70px}
     <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center"><span id="sync" class="sync"></span><button class="red" id="btnLogin" style="display:none">Đăng nhập Google</button><button class="green" id="btnReplay">▶ Chạy lại</button><button id="btnSet">⚙ Cài đặt</button></div>
   </header>
   <nav class="tabs2"><button id="tabLearn" class="act" type="button">📈 Quá trình học</button><button id="tabGame" type="button">🎮 Game</button></nav>
-  <div id="viewLearn"><div class="pix card"><div class="chart" id="chart"></div></div></div>
+  <div id="viewLearn"><div class="pix card"><div class="chart" id="chart"></div></div><div class="pix card" id="timeline"></div></div>
   <div id="viewGame" hidden><div id="gameRoot"></div></div>
 </div>
 
@@ -152,7 +171,45 @@ function render(replay){
     chart.querySelectorAll('.fill').forEach(e=>e.style.width=e.dataset.w+'%');
     chart.querySelectorAll('.runner').forEach(e=>e.style.left=e.dataset.w+'%');
   }));
+  renderTimeline();
 }
+
+/* ---------- thanh theo dõi tháng / ngày ---------- */
+let tlMonth=null;
+const pad2=n=>String(n).padStart(2,'0');
+function renderTimeline(){
+  const el=document.getElementById('timeline'); if(!el)return;
+  const all=[]; S.students.forEach((st,i)=>(st.sessions||[]).forEach(x=>{ if(/^\d{4}-\d{2}-\d{2}$/.test(x.date||'')) all.push({i,date:x.date,score:num(x.score)}); }));
+  const now=new Date(), todayStr=`${now.getFullYear()}-${pad2(now.getMonth()+1)}-${pad2(now.getDate())}`;
+  if(!tlMonth){ const last=all.map(x=>x.date).sort().pop(); tlMonth=(last||todayStr).slice(0,7); }
+  const [Y,M]=tlMonth.split('-').map(Number), dim=new Date(Y,M,0).getDate();
+  const stu=S.students;
+  let h=`<h2 class="tlh">📅 TIẾN ĐỘ THEO THÁNG &amp; NGÀY</h2><div class="tl-year"><button class="small" data-ty="-1">◀</button><b>Năm ${Y}</b><button class="small" data-ty="1">▶</button></div><div class="tl-months">`;
+  for(let m=1;m<=12;m++){
+    const key=`${Y}-${pad2(m)}`;
+    h+=`<button class="tl-m${key===tlMonth?' sel':''}${key===todayStr.slice(0,7)?' now':''}" data-tm="${key}"><span>T${m}</span>`+stu.map((st,i)=>{ const xs=all.filter(x=>x.i===i&&x.date.startsWith(key)), t=xs.reduce((a,x)=>a+x.score,0); return `<i class="${xs.length?'':'zero'}" style="background:${esc(st.color)}" title="${esc(st.name)}: ${xs.length} buổi">${xs.length?esc(st.avatar)+t:'·'}</i>`; }).join('')+`</button>`;
+  }
+  h+=`</div><div class="tl-days">`;
+  const wd=['CN','T2','T3','T4','T5','T6','T7'];
+  for(let d=1;d<=dim;d++){
+    const ds=`${Y}-${pad2(M)}-${pad2(d)}`, dow=new Date(Y,M-1,d).getDay(), xs=all.filter(x=>x.date===ds);
+    h+=`<div class="tl-d${dow===0||dow===6?' we':''}${xs.length?' has':''}${ds===todayStr?' today':''}"><b>${d}<small>${wd[dow]}</small></b>`+xs.map(x=>`<span style="color:${esc(stu[x.i].color)}">${esc(stu[x.i].avatar)} ${x.score}</span>`).join('')+`</div>`;
+  }
+  h+=`</div><div class="tl-prog">`;
+  const target=Math.max(1,num(S.qps)*num(S.plannedSessions)), isNow=tlMonth===todayStr.slice(0,7);
+  const timePct=isNow?now.getDate()/dim*100:(tlMonth<todayStr.slice(0,7)?100:0);
+  stu.forEach((st,i)=>{
+    const xs=all.filter(x=>x.i===i&&x.date.startsWith(tlMonth)), t=xs.reduce((a,x)=>a+x.score,0), p=Math.min(100,t/target*100);
+    h+=`<div class="tl-row" style="--c:${esc(st.color)}"><div>${esc(st.avatar)} ${esc(st.name)}</div><div class="tl-bar"><i style="width:${p}%"></i><u style="left:${timePct}%" title="Hôm nay"></u></div><div>${t}/${target} câu · ${xs.length} buổi</div></div>`;
+  });
+  h+=`</div><div class="tl-legend">Vạch vàng = ngày hôm nay trong tháng (${isNow?`ngày ${now.getDate()}/${dim}`:'tháng này không phải tháng hiện tại'}). Thanh = điểm các buổi học trong tháng trên mục tiêu ${S.plannedSessions} buổi × ${S.qps} câu. Bấm một tháng để xem chi tiết từng ngày.</div>`;
+  el.innerHTML=h;
+}
+document.addEventListener('click',e=>{
+  const b=e.target.closest&&e.target.closest('#timeline button'); if(!b)return;
+  if(b.dataset.tm){tlMonth=b.dataset.tm;renderTimeline();}
+  else if(b.dataset.ty){const [Y,M]=tlMonth.split('-').map(Number); tlMonth=`${Y+Number(b.dataset.ty)}-${pad2(M)}`;renderTimeline();}
+});
 
 /* ---------- settings modal ---------- */
 let tab='general';

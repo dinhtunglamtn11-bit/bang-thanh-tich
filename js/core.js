@@ -63,15 +63,16 @@ NS.parseVocab = function (text) {
     if (!inCode || cur < 0 || !line) return;
     const i = line.indexOf('::');
     if (i < 0) { warn.push('Dòng ' + (ln + 1) + ': thiếu "::"'); return; }
-    let left = line.slice(0, i).trim(); const meaning = line.slice(i + 2).trim();
+    let left = line.slice(0, i).trim(), meaning = line.slice(i + 2).trim(), def;
+    const j = meaning.indexOf('::'); if (j >= 0) { def = meaning.slice(j + 2).trim() || undefined; meaning = meaning.slice(0, j).trim(); } /* từ /ipa/ :: nghĩa :: định nghĩa tiếng Anh */
     if (!left || !meaning) { warn.push('Dòng ' + (ln + 1) + ': thiếu vế trái hoặc phải'); return; }
     let ipa; const mm = left.match(/^(.*?)\s*\/([^\/]+)\/\s*$/);
     if (mm) { left = mm[1].trim(); ipa = mm[2].trim(); }
     const key = left.toLowerCase();
-    if (map.has(key)) { const w = map.get(key); if (!w.topics.includes(cur)) w.topics.push(cur); return; }
+    if (map.has(key)) { const w = map.get(key); if (!w.topics.includes(cur)) w.topics.push(cur); if (!w.def && def) w.def = def; return; }
     const letters = left.replace(/[^A-Za-z]/g, '');
     map.set(key, {
-      id: NS.slug(left), text: left, ipa, meaning, topics: [cur],
+      id: NS.slug(left), text: left, ipa, meaning, def, topics: [cur],
       isPhrase: /[\s-]/.test(left), length: letters.length,
       hasBannedSub: /in|on|at|the/i.test(letters),
       maybePlural: /[^s]s$/i.test(left) && !PLURAL_OK.has(key),
@@ -146,12 +147,12 @@ NS.makeMC = function (word, dir, level, pool) {
   }
   if (ds.length < 3) return null;
   const items = NS.shuffle([word, ...ds]);
-  const vi2en = dir === 'vi2en' || dir === 'spell';
+  const vi2en = dir === 'vi2en' || dir === 'spell' || dir === 'def';
   return {
     kind: 'mc', dir, word, say: word.text,
     stem: dir === 'vi2en' ? 'Từ tiếng Anh nào có nghĩa là "' + word.meaning + '"?'
-        : dir === 'en2vi' ? 'Nghĩa của "' + word.text + '" là gì?' : 'Bạn nghe thấy từ nào?',
-    sub: dir === 'en2vi' && word.ipa ? '/' + word.ipa + '/' : '',
+        : dir === 'en2vi' ? 'Nghĩa của "' + word.text + '" là gì?' : dir === 'def' ? 'Từ nào được miêu tả như sau?' : 'Bạn nghe thấy từ nào?',
+    sub: dir === 'def' ? '“' + word.def + '”' : dir === 'en2vi' && word.ipa ? '/' + word.ipa + '/' : '',
     options: items.map(o => vi2en ? o.text : o.meaning),
     answer: items.indexOf(word), explanation: word.text + (word.ipa ? ' /' + word.ipa + '/' : '') + ' = ' + word.meaning
   };
@@ -186,11 +187,35 @@ NS.nextMC = function (o) {
     }
   }
   for (let i = 0; i < 20; i++) {
-    const w = genBag.next(); if (!w) return null;
+    const w = genBag.next(o.dir === 'def' ? (x => !!x.def) : null); if (!w) return null;
     let dir = o.dir || (NS.cfg.dir === 'mix' ? (NS.rand() < 0.5 ? 'vi2en' : 'en2vi') : NS.cfg.dir);
     const q = NS.makeMC(w, dir, level, pool); if (q) return q;
   }
   return null;
+};
+
+/* ---------- Câu hỏi theo mức: Dễ = gõ từ · Vừa = nghe, chọn nghĩa · Khó = đọc mô tả tiếng Anh, chọn từ ---------- */
+let typedBag = null, typedKey = '';
+NS.typedOk = w => /^[A-Za-z' -]+$/.test(w.text) && w.length >= 3 && w.length <= 18;
+NS.typedQ = function (o) {
+  o = o || {};
+  const hand = NS.hand.questions.filter(q => q.type === 'dien-tu' && !NS.handUsed.has(q.id) && q.answers && q.answers[0] && /^[A-Za-z' -]+$/.test(q.answers[0]));
+  if (hand.length && NS.cfg.source !== 'auto' && (NS.cfg.source === 'hand' || NS.rand() < 0.5)) {
+    const q = NS.pick(hand); NS.handUsed.add(q.id);
+    return { kind: 'type', hand: true, id: q.id, text: q.answers[0], stem: q.stem, sub: q.hint || '', word: null, explanation: q.explanation, timeLimit: q.timeLimit };
+  }
+  const pool = NS.pool({ phrases: o.phrases !== false }).filter(NS.typedOk), key = pool.map(w => w.id).join(',');
+  if (!pool.length) return null;
+  if (!typedBag || typedKey !== key) { typedBag = NS.makeBag(pool); typedKey = key; }
+  const w = typedBag.next(); if (!w) return null;
+  return { kind: 'type', word: w, text: w.text, stem: 'Gõ từ tiếng Anh có nghĩa là:', sub: '“' + w.meaning + '”' + (w.ipa ? '   /' + w.ipa + '/' : ''), explanation: w.text + (w.ipa ? ' /' + w.ipa + '/' : '') + ' = ' + w.meaning };
+};
+/* lv: 0 dễ, 1 vừa, 2 khó. Trả về câu hỏi kind 'type' hoặc 'mc' (mc có thể có listen:true) */
+NS.levelQ = function (lv) {
+  if (lv === 0) { const q = NS.typedQ(); if (q) return q; }
+  if (lv === 1) { const q = NS.nextMC({ listen: true, dir: 'en2vi', level: 2, phrases: false }); if (q) { q.listen = true; q.stem = q.hand ? q.stem : 'Nghe và chọn nghĩa đúng.'; if (!q.hand) q.sub = ''; return q; } }
+  if (lv === 2 && NS.pool({ phrases: false }).some(w => w.def)) { const q = NS.nextMC({ dir: 'def', level: 3, phrases: false }); if (q && (q.dir === 'def' || q.hand)) return q; }
+  return NS.nextMC({ level: lv + 1 });
 };
 
 /* ---------- Chấm đáp án dùng chung ---------- */
@@ -227,6 +252,35 @@ NS.sfx = function (name) {
     });
   } catch (e) {}
 };
+/* ---------- Nhạc nền: đặt file trong thư mục music/ và ghi tên vào music/list.txt (mỗi dòng "Tên bài | file.mp3" hoặc chỉ "file.mp3") ---------- */
+NS.music = {
+  list: [], idx: 0, audio: null, loaded: false,
+  get on() { return LS.get('pg-music', true); }, set on(v) { LS.set('pg-music', !!v); },
+  get vol() { return LS.get('pg-music-vol', 0.5); }, set vol(v) { LS.set('pg-music-vol', v); if (this.audio) this.audio.volume = v; },
+  async load() {
+    if (this.loaded) return; this.loaded = true;
+    try {
+      const r = await fetch('music/list.txt', { cache: 'no-cache' }); if (!r.ok) return;
+      this.list = (await r.text()).replace(/^﻿/, '').split(/\r?\n/).map(l => l.trim()).filter(l => l && !l.startsWith('#')).map(l => { const p = l.split('|').map(x => x.trim()); return p.length > 1 ? { name: p[0], file: p[1] } : { name: p[0].replace(/\.[^.]+$/, ''), file: p[0] }; });
+    } catch (e) {}
+  },
+  play(next, at) {
+    if (!this.on || !this.list.length) return;
+    try {
+      if (this.audio) { this.audio.onended = null; this.audio.pause(); }
+      if (typeof at === 'number') this.idx = at; else if (next) this.idx = (this.idx + 1) % this.list.length; else if (!this.audio) this.idx = Math.floor(Math.random() * this.list.length);
+      const t = this.list[this.idx], a = new Audio('music/' + encodeURIComponent(t.file).replace(/%2F/g, '/'));
+      a.volume = this.vol; a.onended = () => this.play(true); a.onerror = () => { if (this.list.length > 1) setTimeout(() => this.play(true), 300); };
+      this.audio = a; a.play().catch(() => {});
+    } catch (e) {}
+  },
+  pause() { try { this.audio && this.audio.pause(); } catch (e) {} },
+  resume() { try { if (this.on && this.audio) this.audio.play().catch(() => {}); else this.play(); } catch (e) {} },
+  stop() { try { if (this.audio) { this.audio.onended = null; this.audio.pause(); } } catch (e) {} this.audio = null; },
+  duck(d) { try { if (this.audio) this.audio.volume = d ? this.vol * 0.25 : this.vol; } catch (e) {} },
+  toggle() { this.on = !this.on; if (this.on) this.play(); else this.stop(); return this.on; },
+  get title() { return this.list.length && this.audio ? this.list[this.idx].name : ''; }
+};
 NS.vibe = ms => { try { if (NS.cfg.vibrate && navigator.vibrate) navigator.vibrate(ms); } catch (e) {} };
 NS.hasTTS = () => typeof speechSynthesis !== 'undefined' && typeof SpeechSynthesisUtterance !== 'undefined';
 NS.enVoice = function () {
@@ -242,7 +296,7 @@ NS.speak = function (text, o) {
       speechSynthesis.cancel();
       const u = new SpeechSynthesisUtterance(text); u.lang = 'en-US'; u.rate = o.rate || .9;
       const v = NS.enVoice(); if (v) u.voice = v;
-      let done = false; const fin = ok => { if (!done) { done = true; res(ok); } };
+      let done = false; const fin = ok => { if (!done) { done = true; NS.music.duck(false); res(ok); } }; NS.music.duck(true);
       u.onend = () => fin(true); u.onerror = () => fin(false);
       setTimeout(() => fin(true), 5000);
       speechSynthesis.speak(u);
@@ -351,14 +405,18 @@ NS.shell = function (root, o) {
   sh.overlay = (node, team) => { ov.innerHTML = ''; node.classList.toggle('flip', !!(sh.split && team === 1)); ov.append(node); ov.classList.add('show'); };
   sh.closeOverlay = () => { ov.classList.remove('show'); ov.innerHTML = ''; };
   sh.sleep = ms => new Promise(res => { if (sh.dead) return res(false); NS.timer(Math.max(1, ms), null, () => res(!sh.dead)); sh.sleepers = (sh.sleepers || []).concat(res); });
-  sh.destroy = () => { sh.dead = true; sh.timers.forEach(s => s()); sh.timers.clear(); try { speechSynthesis.cancel(); } catch (e) {} (sh.sleepers || []).forEach(r => r(false)); document.body.classList.remove('playing'); if (NS.curShell === sh) NS.curShell = null; };
+  sh.destroy = () => { sh.dead = true; sh.timers.forEach(s => s()); sh.timers.clear(); try { speechSynthesis.cancel(); } catch (e) {} (sh.sleepers || []).forEach(r => r(false)); NS.music.stop(); document.body.classList.remove('playing'); if (NS.curShell === sh) NS.curShell = null; };
   sh.toast = (msg, ms) => { const t = h('div', { class: 'gtoast' }, msg); el.append(t); setTimeout(() => t.remove(), ms || 1500); };
   pauseBtn.addEventListener('click', () => {
-    sh.paused = true;
+    sh.paused = true; NS.music.pause();
+    const mbtn = h('button', { class: 'small', type: 'button' }, NS.music.on ? '🎵 Nhạc: BẬT' : '🎵 Nhạc: TẮT');
+    mbtn.addEventListener('click', () => { const on = NS.music.toggle(); NS.music.pause(); mbtn.textContent = on ? '🎵 Nhạc: BẬT' : '🎵 Nhạc: TẮT'; });
+    const resume = () => { sh.paused = false; sh.closeOverlay(); NS.music.resume(); };
     sh.overlay(h('div', { class: 'gdlg' }, h('h2', {}, '⏸ Tạm dừng'),
-      h('button', { class: 'green', onclick: () => { sh.paused = false; sh.closeOverlay(); } }, '▶ Tiếp tục'), ' ',
+      h('button', { class: 'green', onclick: resume }, '▶ Tiếp tục'), ' ',
       h('button', { onclick: () => { sh.destroy(); o.onRestart && o.onRestart(); } }, '↺ Chơi lại'), ' ',
-      h('button', { class: 'red', onclick: () => { sh.destroy(); o.onExit && o.onExit(); } }, '⌂ Về menu')));
+      h('button', { class: 'red', onclick: () => { sh.destroy(); o.onExit && o.onExit(); } }, '⌂ Về menu'),
+      h('div', { class: 'rbtns' }, mbtn, o.onGuide ? h('button', { class: 'small', type: 'button', onclick: o.onGuide }, '📖 Hướng dẫn ký hiệu') : null)));
   });
   sh.result = function (r) {
     sh.setActive(-1);
@@ -366,7 +424,7 @@ NS.shell = function (root, o) {
     let head, cls = '';
     const tb = r.tie && sc[0] === sc[1] && r.tie[0] !== r.tie[1] ? (r.tie[0] > r.tie[1] ? 0 : 1) : -1;
     if (sc[0] === sc[1] && tb < 0) head = '🤝 HÒA!'; else { const w = tb >= 0 ? tb : (sc[0] > sc[1] ? 0 : 1); head = '🏆 ' + (names[w] || NS.TEAM_TAG[w]).toUpperCase() + ' THẮNG!'; cls = 't' + w; }
-    NS.sfx('win');
+    NS.sfx('win'); NS.music.stop();
     const col = i => h('div', { class: 'rcol t' + i }, h('div', { class: 'rname' }, NS.TEAM_ICON[i] + ' ' + (names[i] || NS.TEAM_TAG[i])), h('div', { class: 'rpts' }, sc[i] + ' điểm'),
       h('div', {}, '✔ ' + st[i].right + '  ✘ ' + st[i].wrong + (st[i].avg ? '  ⏱ ' + st[i].avg.toFixed(1) + 's' : '')));
     const wr = r.wrong || [];
@@ -381,7 +439,7 @@ NS.shell = function (root, o) {
       h('div', { class: 'rbtns' }, addBtn(0), addBtn(1)),
       h('div', { class: 'rbtns' }, h('button', { class: 'green', onclick: () => { sh.destroy(); o.onRestart && o.onRestart(); } }, '↺ Chơi lại'), h('button', { onclick: () => { sh.destroy(); o.onExit && o.onExit(); } }, '⌂ Về menu'))));
   };
-  NS.curShell = sh; document.body.classList.add('playing');
+  NS.curShell = sh; document.body.classList.add('playing'); NS.music.play();
   return sh;
 };
 

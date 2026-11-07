@@ -32,6 +32,8 @@ function renderMenu() {
     h('button', { type: 'button', onclick: settingsDialog }, '⚙ Cài đặt chung'),
     h('button', { type: 'button', onclick: vocabDialog }, '📚 Từ vựng'),
     h('button', { type: 'button', onclick: questionDialog }, '📝 Soạn câu hỏi'),
+    h('button', { type: 'button', onclick: () => guideDialog() }, '📖 Ký hiệu Đấu trường'),
+    h('button', { type: 'button', onclick: musicDialog }, '🎵 Nhạc nền'),
     h('button', { type: 'button', onclick: voiceTest }, '🔊 Thử giọng đọc'));
   const how = h('div', { class: 'ghow' }, '👫 Hai bạn ngồi hai bên: ', h('b', {}, NS.TEAM_ICON[0] + ' ' + NS.cfg.teams[0]), ' và ', h('b', {}, NS.TEAM_ICON[1] + ' ' + NS.cfg.teams[1]), (NS.cfg.split ? ' (màn hình chia đôi: bạn thứ nhất ngồi phía dưới, bạn thứ hai ngồi phía đối diện). ' : '. '), 'Chọn một trò chơi để bắt đầu!');
   root.append(h('h2', { class: 'gh2' }, '🎮 CHỌN TRÒ CHƠI'), how, cards, status, tools);
@@ -50,7 +52,8 @@ function startDialog(g) {
       body.append(h('label', {}, o.label), inp, o.suggest ? h('div', { class: 'sugg' }, o.suggest.map(s => h('button', { class: 'small', type: 'button', onclick: () => { inp.value = s; opt[o.key] = s; } }, s))) : null);
     }
   });
-  const m = modal(g.icon + ' ' + g.name, h('div', {}, h('p', {}, g.desc), body, h('div', { class: 'rbtns' }, h('button', { class: 'green', type: 'button', onclick: () => { NS.LS.set('pg-opt-' + g.id, opt); m.remove(); launch(g, opt); } }, '▶ BẮT ĐẦU'))));
+  const guideBtn = g.guide ? h('button', { type: 'button', onclick: () => guideDialog(opt.map) }, '📖 Hướng dẫn ký hiệu') : null;
+  const m = modal(g.icon + ' ' + g.name, h('div', {}, h('p', {}, g.desc), body, h('div', { class: 'rbtns' }, guideBtn, h('button', { class: 'green', type: 'button', onclick: () => { NS.LS.set('pg-opt-' + g.id, opt); m.remove(); launch(g, opt); } }, '▶ BẮT ĐẦU'))));
 }
 function launch(g, opt) {
   NS.handUsed.clear();
@@ -133,7 +136,28 @@ function voiceTest() {
 
 NS.initGameUI = async function () {
   root = document.getElementById('gameRoot'); if (!root) return;
-  await NS.loadVocab(); loadHand(); renderMenu();
+  await NS.loadVocab(); loadHand(); NS.music.load(); renderMenu();
   if (NS.hasTTS()) { try { speechSynthesis.getVoices(); } catch (e) {} }
 };
+})();
+
+/* ===== Hướng dẫn ký hiệu + nhạc nền (mở từ menu) ===== */
+(function () {
+  const NS = window.PG, h = NS.h;
+  const root = () => document.getElementById('gameRoot');
+  const mod = (title, body, onClose) => {
+    const m = h('div', { class: 'gmodal' }, h('div', { class: 'gbox pix' }, h('div', { class: 'ghead' }, h('h2', {}, title), h('button', { class: 'small red', type: 'button', onclick: () => { m.remove(); onClose && onClose(); } }, '✕')), body));
+    root().append(m); return m;
+  };
+  window.guideDialog = function (mapId) { mod('📖 Hướng dẫn ký hiệu — Đấu trường', NS.arenaGuide(mapId)); };
+  window.musicDialog = async function () {
+    await NS.music.load();
+    const M = NS.music, st = h('div', { class: 'gmsg' });
+    const vol = h('input', { type: 'range', min: 0, max: 100, value: Math.round(M.vol * 100) }); vol.addEventListener('input', () => { M.vol = vol.value / 100; });
+    const tg = h('label', { class: 'tg' }), cb = h('input', { type: 'checkbox' }); cb.checked = M.on; cb.addEventListener('change', () => { M.on = cb.checked; if (!cb.checked) M.stop(); });
+    tg.append(cb, ' Bật nhạc nền khi chơi game');
+    const list = M.list.length ? h('ol', { class: 'tl' }, M.list.map((t, i) => h('li', {}, h('span', {}, t.name + ' '), h('button', { class: 'small', type: 'button', onclick: () => { M.on = true; cb.checked = true; M.play(false, i); st.textContent = '▶ Đang nghe thử: ' + t.name; } }, '▶ Nghe thử')))) :
+      h('p', { class: 'note' }, 'Chưa có bài nào. Để thêm nhạc: (1) chép file mp3 vào thư mục ', h('code', {}, 'music/'), ' cạnh index.html; (2) tạo file ', h('code', {}, 'music/list.txt'), ', mỗi dòng một bài, dạng ', h('code', {}, 'Tên bài | ten-file.mp3'), ' hoặc chỉ ', h('code', {}, 'ten-file.mp3'), '; (3) đẩy lên GitHub. Nhạc sẽ tự phát khi chơi, tự giảm nhỏ khi máy đọc từ.');
+    mod('🎵 Nhạc nền', h('div', { class: 'gform' }, tg, h('label', {}, 'Âm lượng'), vol, list, st, h('div', { class: 'rbtns' }, h('button', { class: 'small', type: 'button', onclick: () => { M.stop(); st.textContent = '■ Đã dừng'; } }, '■ Dừng'))), () => M.stop());
+  };
 })();

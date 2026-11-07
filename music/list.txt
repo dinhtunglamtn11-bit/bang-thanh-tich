@@ -1,0 +1,3 @@
+# Danh sách nhạc nền. Mỗi dòng một bài:  Tên bài | ten-file.mp3   (hoặc chỉ ghi ten-file.mp3)
+# Chép file mp3 vào thư mục music/ rồi bỏ dấu # ở đầu dòng ví dụ bên dưới và sửa cho đúng tên file.
+# Vui nhộn | vui-nhon.mp3

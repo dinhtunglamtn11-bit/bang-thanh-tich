@@ -46,3 +46,27 @@ Bật trong **Game → Cài đặt chung** (mặc định bật). Với các gam
 ## Đấu trường
 
 Bản đồ có ngã rẽ (đường trên an toàn, đường giữa ngắn nhiều bẫy, đường dưới nhiều hộp kỹ năng), cầu nối giữa các đường và cổng dịch chuyển 🌀. Ô ❓ cho thẻ kỹ năng; thẻ được **giữ lại**, dùng ngay đầu lượt (Đóng băng, Xúc xắc đôi, Giày bay, Nam châm) hoặc lúc trả lời (50/50, Đổi câu) hoặc khi bị tấn công (Khiên).
+
+## Đấu trường: 6 bản đồ, ô và luật mới
+
+Chọn bản đồ trước khi chơi (hoặc "Ngẫu nhiên"): 🏰 Vương quốc ba ngả, 🏝️ Đảo Kho Báu (điểm thưởng cộng thêm), 🌋 Núi Lửa (dung nham dâng mỗi 2 vòng, nhiều cột mốc), ❄️ Băng Địa (băng làm trượt thêm 1 ô, đường xoắn ốc với lối tắt), 🪞 Mê Cung Gương (nhiều ngã rẽ, 3 cổng gương, sự kiện mỗi 2 vòng), 🏙️ Thành Phố Tốc Độ (điểm x2, thời gian 60%).
+Ô mới: 🚀 tên lửa, ⚔️ đấu tay đôi, 🛒 cửa hàng, 🚩 cột mốc (không bị lùi qua), 🎡 vòng quay, 🌋 dung nham.
+Bảng giải thích đầy đủ ở nút **📖 Hướng dẫn ký hiệu** (menu Game, hộp chọn game, nút "📖 Ký hiệu" trên bản đồ, menu tạm dừng).
+
+## Ba mức câu hỏi trong Đấu trường
+
+- 🟢 **Dễ:** nhìn nghĩa tiếng Việt, GÕ từ tiếng Anh bằng bàn phím trong game (có thể dùng câu `dien-tu` soạn tay).
+- 🟡 **Vừa:** NGHE phát âm, chọn nghĩa tiếng Việt.
+- 🔴 **Khó:** ĐỌC mô tả bằng tiếng Anh, chọn từ đúng. Định nghĩa nằm ở vế thứ ba của dòng từ vựng: `từ /phiên âm/ :: nghĩa :: định nghĩa tiếng Anh`.
+
+## Nhạc nền
+
+Chép mp3 vào `music/`, ghi tên vào `music/list.txt` (xem ví dụ trong file), đẩy lên GitHub. Bật/tắt và chỉnh âm lượng ở **🎵 Nhạc nền** trong menu Game hoặc menu tạm dừng. Nhạc tự nhỏ đi khi máy đọc từ.
+
+## Lật thẻ: thẻ đặc biệt
+
+Tùy chọn "Thẻ đặc biệt": *Cổ điển* (⭐ cặp sao +3, 💣 bom) hoặc *Nhiều thẻ*: ⚡ lượt thêm, 🧊 đóng băng đối thủ, 👁 soi bài, 🎁 quà +2, 🔀 xáo bài, 💣 bom.
+
+## Thanh tiến độ theo tháng và ngày
+
+Tab Quá trình học có thêm thanh 12 tháng của năm, dải từng ngày trong tháng đang chọn (ngày có buổi học được tô và ghi điểm từng bạn, ngày hôm nay có viền vàng) và thanh điểm của tháng với vạch "hôm nay".

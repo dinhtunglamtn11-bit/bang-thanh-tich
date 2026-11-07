@@ -1,391 +1,391 @@
 ## 1. Myself and my family
 ```
-full name /ˌfʊl ˈneɪm/ :: họ và tên đầy đủ
-nickname /ˈnɪkneɪm/ :: biệt danh
-age /eɪdʒ/ :: tuổi
-grade /ɡreɪd/ :: lớp
-birthday /ˈbɜːθdeɪ/ :: sinh nhật
-hometown /ˈhəʊmtaʊn/ :: quê hương
-address /əˈdres/ :: địa chỉ
+full name /ˌfʊl ˈneɪm/ :: họ và tên đầy đủ :: your first name, middle name and family name all together
+nickname /ˈnɪkneɪm/ :: biệt danh :: a short or funny name that friends and family call you instead of your real name
+age /eɪdʒ/ :: tuổi :: how many years old a person is
+grade /ɡreɪd/ :: lớp :: the year or level of study at school
+birthday /ˈbɜːθdeɪ/ :: sinh nhật :: the day each year when you celebrate the day you were born
+hometown /ˈhəʊmtaʊn/ :: quê hương :: the town or city where you were born or grew up
+address /əˈdres/ :: địa chỉ :: the name of the street, number and city where someone lives
 tall / short /tɔːl – ʃɔːt/ :: cao / thấp
 curly / straight hair /ˈkɜːli – streɪt heə(r)/ :: tóc xoăn / tóc thẳng
-friendly /ˈfrendli/ :: thân thiện
-talkative /ˈtɔːkətɪv/ :: nói nhiều
-shy /ʃaɪ/ :: nhút nhát
-funny /ˈfʌni/ :: hài hước
-hard-working /ˌhɑːd ˈwɜːkɪŋ/ :: chăm chỉ
-caring /ˈkeərɪŋ/ :: quan tâm, chu đáo
-parents /ˈpeərənts/ :: bố mẹ
-siblings /ˈsɪblɪŋz/ :: anh chị em
+friendly /ˈfrendli/ :: thân thiện :: kind and happy to talk to other people
+talkative /ˈtɔːkətɪv/ :: nói nhiều :: liking to talk a lot
+shy /ʃaɪ/ :: nhút nhát :: feeling nervous and quiet when you meet new people
+funny /ˈfʌni/ :: hài hước :: making people laugh
+hard-working /ˌhɑːd ˈwɜːkɪŋ/ :: chăm chỉ :: putting a lot of effort into your work
+caring /ˈkeərɪŋ/ :: quan tâm, chu đáo :: kind to others and worried about their feelings
+parents /ˈpeərənts/ :: bố mẹ :: your mother and father
+siblings /ˈsɪblɪŋz/ :: anh chị em :: your brothers and sisters
 the eldest / the youngest /ði ˈeldɪst – ðə ˈjʌŋɡɪst/ :: con cả / con út
-only child /ˈəʊnli tʃaɪld/ :: con một
-relatives /ˈrelətɪvz/ :: họ hàng
-generation /ˌdʒenəˈreɪʃn/ :: thế hệ
-get along with /ɡet əˈlɒŋ wɪð/ :: hòa hợp với
-take care of /teɪk keər əv/ :: chăm sóc
-office worker /ˈɒfɪs ˌwɜːkə(r)/ :: nhân viên văn phòng
-businessman/woman /ˈbɪznəsmən – ˈbɪznəswʊmən/ :: doanh nhân
-housewife /ˈhaʊswaɪf/ :: nội trợ
-retired /rɪˈtaɪəd/ :: đã nghỉ hưu
-self-employed /ˌself ɪmˈplɔɪd/ :: tự kinh doanh
-cousin /ˈkʌzn/ :: anh/chị/em họ
-uncle /ˈʌŋkl/ :: chú/bác/cậu
-aunt /ɑːnt/ :: cô/dì/thím
-grandparents /ˈɡrænpeərənts/ :: ông bà
-neighbor /ˈneɪbə(r)/ :: hàng xóm
-pet /pet/ :: thú cưng
-married /ˈmærid/ :: đã kết hôn
-twin /twɪn/ :: sinh đôi
-strict /strɪkt/ :: nghiêm khắc
-gentle /ˈdʒentl/ :: dịu dàng
-generous /ˈdʒenərəs/ :: hào phóng
-honest /ˈɒnɪst/ :: trung thực
-polite /pəˈlaɪt/ :: lễ phép
-helpful /ˈhelpfl/ :: hay giúp đỡ
-active /ˈæktɪv/ :: năng động
-quiet /ˈkwaɪət/ :: trầm tính
-love /lʌv/ :: yêu thương
-miss /mɪs/ :: nhớ (ai đó)
-proud of /ˈpraʊd əv/ :: tự hào về
-close to /kləʊs tuː/ :: thân thiết với
-similar /ˈsɪmələ(r)/ :: giống nhau
-different /ˈdɪfrənt/ :: khác nhau
-support /səˈpɔːt/ :: ủng hộ, hỗ trợ
-weekend /ˌwiːkˈend/ :: cuối tuần
-hug /hʌɡ/ :: ôm
-smile /smaɪl/ :: mỉm cười
-visit /ˈvɪzɪt/ :: đi thăm
-cook /kʊk/ :: nấu ăn
-clean the house /kliːn ðə haʊs/ :: dọn nhà
-take a walk /teɪk ə wɔːk/ :: đi dạo
+only child /ˈəʊnli tʃaɪld/ :: con một :: a person with no brothers or sisters
+relatives /ˈrelətɪvz/ :: họ hàng :: people in your wider family, such as aunts, uncles and cousins
+generation /ˌdʒenəˈreɪʃn/ :: thế hệ :: all the people in a family who are about the same age
+get along with /ɡet əˈlɒŋ wɪð/ :: hòa hợp với :: to have a good, friendly relationship with someone
+take care of /teɪk keər əv/ :: chăm sóc :: to look after someone or something so they stay safe and well
+office worker /ˈɒfɪs ˌwɜːkə(r)/ :: nhân viên văn phòng :: a person who works at a desk in an office
+businessman/woman /ˈbɪznəsmən – ˈbɪznəswʊmən/ :: doanh nhân :: a person who works in trade or runs a company
+housewife /ˈhaʊswaɪf/ :: nội trợ :: a woman who looks after her home and family and does not work outside
+retired /rɪˈtaɪəd/ :: đã nghỉ hưu :: no longer working because you are old
+self-employed /ˌself ɪmˈplɔɪd/ :: tự kinh doanh :: working for yourself, not for a company
+cousin /ˈkʌzn/ :: anh/chị/em họ :: the child of your uncle or aunt
+uncle /ˈʌŋkl/ :: chú/bác/cậu :: the brother of your mother or father
+aunt /ɑːnt/ :: cô/dì/thím :: the sister of your mother or father
+grandparents /ˈɡrænpeərənts/ :: ông bà :: the mother and father of your mother or father
+neighbor /ˈneɪbə(r)/ :: hàng xóm :: a person who lives next door or near your home
+pet /pet/ :: thú cưng :: an animal that you keep at home for company
+married /ˈmærid/ :: đã kết hôn :: having a husband or wife
+twin /twɪn/ :: sinh đôi :: one of two children born at the same time to the same mother
+strict /strɪkt/ :: nghiêm khắc :: making people follow the rules carefully
+gentle /ˈdʒentl/ :: dịu dàng :: soft and kind, never rough
+generous /ˈdʒenərəs/ :: hào phóng :: happy to give things to other people
+honest /ˈɒnɪst/ :: trung thực :: always telling the truth
+polite /pəˈlaɪt/ :: lễ phép :: having good manners
+helpful /ˈhelpfl/ :: hay giúp đỡ :: ready to give help to others
+active /ˈæktɪv/ :: năng động :: always moving and doing things
+quiet /ˈkwaɪət/ :: trầm tính :: making very little noise
+love /lʌv/ :: yêu thương :: a very strong feeling of liking someone
+miss /mɪs/ :: nhớ (ai đó) :: to feel sad because someone is not with you
+proud of /ˈpraʊd əv/ :: tự hào về :: feeling very pleased about something good that you or others did
+close to /kləʊs tuː/ :: thân thiết với :: having a strong, warm friendship with someone
+similar /ˈsɪmələ(r)/ :: giống nhau :: almost the same but not exactly
+different /ˈdɪfrənt/ :: khác nhau :: not the same as another thing
+support /səˈpɔːt/ :: ủng hộ, hỗ trợ :: to help and encourage someone
+weekend /ˌwiːkˈend/ :: cuối tuần :: Saturday and Sunday
+hug /hʌɡ/ :: ôm :: to hold someone tightly in your arms to show love
+smile /smaɪl/ :: mỉm cười :: to turn up the corners of your mouth when you are happy
+visit /ˈvɪzɪt/ :: đi thăm :: to go to see a person or a place for a short time
+cook /kʊk/ :: nấu ăn :: to prepare food by heating it
+clean the house /kliːn ðə haʊs/ :: dọn nhà :: to make every room tidy and free from dirt
+take a walk /teɪk ə wɔːk/ :: đi dạo :: to go outside and walk slowly for pleasure
 ```
 
 ## 2. Một ngày bình thường của tôi
 ```
-wake up /weɪk ʌp/ :: thức dậy
-get up /ɡet ʌp/ :: ra khỏi giường
-brush my teeth /brʌʃ maɪ tiːθ/ :: đánh răng
-wash my face /wɒʃ maɪ feɪs/ :: rửa mặt
-get dressed /ɡet drest/ :: mặc quần áo
-have breakfast /hæv ˈbrekfəst/ :: ăn sáng
-comb my hair /kəʊm maɪ heə(r)/ :: chải tóc
-make the bed /meɪk ðə bed/ :: dọn giường
-go to school /ɡəʊ tə skuːl/ :: đi học
-study /ˈstʌdi/ :: học bài
-have lunch /hæv lʌntʃ/ :: ăn trưa
-take a nap /teɪk ə næp/ :: ngủ trưa
-play with friends /pleɪ wɪð frendz/ :: chơi với bạn
-come home /kʌm həʊm/ :: về nhà
-do homework /duː ˈhəʊmwɜːk/ :: làm bài tập
-have a snack /hæv ə snæk/ :: ăn nhẹ
-practice the piano /ˈpræktɪs ðə piˈænəʊ/ :: luyện đàn piano
-have dinner /hæv ˈdɪnə(r)/ :: ăn tối
-take a shower /teɪk ə ˈʃaʊə(r)/ :: tắm
-watch TV (television) /wɒtʃ ˌtiːˈviː/ :: xem ti vi (truyền hình)
-read a book /riːd ə bʊk/ :: đọc sách
-go to bed /ɡəʊ tə bed/ :: đi ngủ (lên giường)
-fall asleep /fɔːl əˈsliːp/ :: chìm vào giấc ngủ
-turn off the light /tɜːn ɒf ðə laɪt/ :: tắt đèn
-in the morning /ɪn ðə ˈmɔːnɪŋ/ :: vào buổi sáng
-in the afternoon /ɪn ði ˌɑːftəˈnuːn/ :: vào buổi chiều
-in the evening /ɪn ði ˈiːvnɪŋ/ :: vào buổi tối
-at night /ət naɪt/ :: vào ban đêm
-always /ˈɔːlweɪz/ :: luôn luôn
-usually /ˈjuːʒuəli/ :: thường thường
-sometimes /ˈsʌmtaɪmz/ :: thỉnh thoảng
-never /ˈnevə(r)/ :: không bao giờ
-every day /ˈevri deɪ/ :: mỗi ngày
+wake up /weɪk ʌp/ :: thức dậy :: to stop sleeping
+get up /ɡet ʌp/ :: ra khỏi giường :: to leave your bed after you wake
+brush my teeth /brʌʃ maɪ tiːθ/ :: đánh răng :: to clean your teeth with a small brush and toothpaste
+wash my face /wɒʃ maɪ feɪs/ :: rửa mặt :: to clean your face with water and soap
+get dressed /ɡet drest/ :: mặc quần áo :: to put clothes on your body
+have breakfast /hæv ˈbrekfəst/ :: ăn sáng :: to eat the first meal of the day
+comb my hair /kəʊm maɪ heə(r)/ :: chải tóc :: to make your hair neat with a flat tool with teeth
+make the bed /meɪk ðə bed/ :: dọn giường :: to arrange the sheets and blanket so the bed looks neat
+go to school /ɡəʊ tə skuːl/ :: đi học :: to travel to the place where you study
+study /ˈstʌdi/ :: học bài :: to learn about a subject by reading and practising
+have lunch /hæv lʌntʃ/ :: ăn trưa :: to eat the meal in the middle of the day
+take a nap /teɪk ə næp/ :: ngủ trưa :: to sleep for a short time during the day
+play with friends /pleɪ wɪð frendz/ :: chơi với bạn :: to do games and fun activities together with your classmates
+come home /kʌm həʊm/ :: về nhà :: to arrive back at your house
+do homework /duː ˈhəʊmwɜːk/ :: làm bài tập :: to finish the school work your teacher gives you to do at home
+have a snack /hæv ə snæk/ :: ăn nhẹ :: to eat a small amount of food between meals
+practice the piano /ˈpræktɪs ðə piˈænəʊ/ :: luyện đàn piano :: to play a musical instrument with black and white keys again and again
+have dinner /hæv ˈdɪnə(r)/ :: ăn tối :: to eat the main meal in the evening
+take a shower /teɪk ə ˈʃaʊə(r)/ :: tắm :: to wash your body under falling water
+watch TV (television) /wɒtʃ ˌtiːˈviː/ :: xem ti vi (truyền hình) :: to look at programmes on a screen at home
+read a book /riːd ə bʊk/ :: đọc sách :: to look at the words in a story and understand them
+go to bed /ɡəʊ tə bed/ :: đi ngủ (lên giường) :: to lie down in your bed to sleep
+fall asleep /fɔːl əˈsliːp/ :: chìm vào giấc ngủ :: to start sleeping
+turn off the light /tɜːn ɒf ðə laɪt/ :: tắt đèn :: to press a switch so a room becomes dark
+in the morning /ɪn ðə ˈmɔːnɪŋ/ :: vào buổi sáng :: during the first part of the day
+in the afternoon /ɪn ði ˌɑːftəˈnuːn/ :: vào buổi chiều :: during the part of the day after lunch
+in the evening /ɪn ði ˈiːvnɪŋ/ :: vào buổi tối :: during the part of the day before night
+at night /ət naɪt/ :: vào ban đêm :: when it is dark outside
+always /ˈɔːlweɪz/ :: luôn luôn :: every time, without any exception
+usually /ˈjuːʒuəli/ :: thường thường :: most of the time
+sometimes /ˈsʌmtaɪmz/ :: thỉnh thoảng :: not often, only on some days
+never /ˈnevə(r)/ :: không bao giờ :: not at any time
+every day /ˈevri deɪ/ :: mỗi ngày :: on each day of the week
 on weekdays / on weekends /ɒn ˈwiːkdeɪz – ɒn ˌwiːkˈendz/ :: vào ngày thường / cuối tuần
 ```
 
 ## 3. Our Homes
 ```
-house /haʊs/ :: ngôi nhà
-apartment /əˈpɑːtmənt/ :: căn hộ (Mỹ)
-flat /flæt/ :: căn hộ (Anh)
-villa /ˈvɪlə/ :: biệt thự
-cottage /ˈkɒtɪdʒ/ :: nhà nhỏ ở nông thôn
-farmhouse /ˈfɑːmhaʊs/ :: nhà nông trại
-dormitory /ˈdɔːmɪtri/ :: ký túc xá
-mansion /ˈmænʃn/ :: dinh thự
-bungalow /ˈbʌŋɡələʊ/ :: nhà một tầng
-block of flats /blɒk əv flæts/ :: tòa chung cư
-living room /ˈlɪvɪŋ ruːm/ :: phòng khách
-bedroom /ˈbedruːm/ :: phòng ngủ
-kitchen /ˈkɪtʃɪn/ :: nhà bếp
-bathroom /ˈbɑːθruːm/ :: phòng tắm
-dining room /ˈdaɪnɪŋ ruːm/ :: phòng ăn
-study room /ˈstʌdi ruːm/ :: phòng học/làm việc
-balcony /ˈbælkəni/ :: ban công
-attic /ˈætɪk/ :: gác mái
-basement /ˈbeɪsmənt/ :: tầng hầm
-garage /ˈɡærɑːʒ/ :: nhà để xe
-sofa /ˈsəʊfə/ :: ghế sofa
-table /ˈteɪbl/ :: cái bàn
-chair /tʃeə(r)/ :: cái ghế
-wardrobe /ˈwɔːdrəʊb/ :: tủ quần áo
-bookshelf /ˈbʊkʃelf/ :: kệ sách
-refrigerator /rɪˈfrɪdʒəreɪtə(r)/ :: tủ lạnh
-washing machine /ˈwɒʃɪŋ məʃiːn/ :: máy giặt
-air conditioner /eə(r) kənˈdɪʃənə(r)/ :: máy điều hòa
-television /ˈtelɪvɪʒn/ :: tivi
-microwave /ˈmaɪkrəweɪv/ :: lò vi sóng
-lamp /læmp/ :: đèn
-mirror /ˈmɪrə(r)/ :: gương
-sweep the floor /swiːp ðə flɔː(r)/ :: quét nhà
-mop the floor /mɒp ðə flɔː(r)/ :: lau nhà
-wash the dishes /wɒʃ ðə ˈdɪʃɪz/ :: rửa bát
-do the laundry /duː ðə ˈlɔːndri/ :: giặt đồ
-take out the trash /teɪk aʊt ðə træʃ/ :: đổ rác
-water the plants /ˈwɔːtə(r) ðə plɑːnts/ :: tưới cây
-tidy up /ˈtaɪdi ʌp/ :: dọn dẹp
-vacuum the floor /ˈvækjuəm ðə flɔː(r)/ :: hút bụi sàn nhà
-dust the furniture /dʌst ðə ˈfɜːnɪtʃə(r)/ :: lau bụi đồ nội thất
-make the bed /meɪk ðə bed/ :: dọn giường
-cook meals /kʊk miːlz/ :: nấu ăn
-iron clothes /ˈaɪən kləʊðz/ :: ủi quần áo
-spacious /ˈspeɪʃəs/ :: rộng rãi
-cozy /ˈkəʊzi/ :: ấm cúng
-comfortable /ˈkʌmftəbl/ :: thoải mái
-tidy /ˈtaɪdi/ :: gọn gàng
-messy /ˈmesi/ :: bừa bộn
-modern /ˈmɒdn/ :: hiện đại
-traditional /trəˈdɪʃənl/ :: truyền thống
-peaceful /ˈpiːsfl/ :: yên bình
-crowded /ˈkraʊdɪd/ :: đông đúc, chật chội
-bright /braɪt/ :: sáng sủa
-airy /ˈeəri/ :: thoáng khí
-convenient /kənˈviːniənt/ :: tiện lợi
-next to /nekst tə/ :: bên cạnh
-in front of /ɪn frʌnt əv/ :: phía trước
-behind /bɪˈhaɪnd/ :: phía sau
-near /nɪə(r)/ :: gần
-opposite /ˈɒpəzɪt/ :: đối diện
-upstairs /ˌʌpˈsteəz/ :: trên lầu
-downstairs /ˌdaʊnˈsteəz/ :: dưới lầu
-in the corner /ɪn ðə ˈkɔːnə(r)/ :: ở góc
-on the wall /ɒn ðə wɔːl/ :: trên tường
-on the floor /ɒn ðə flɔː(r)/ :: trên sàn nhà
+house /haʊs/ :: ngôi nhà :: a building where a family lives
+apartment /əˈpɑːtmənt/ :: căn hộ (Mỹ) :: a set of rooms for living in on one floor of a big building
+flat /flæt/ :: căn hộ (Anh) :: a British word for a set of rooms on one floor of a building
+villa /ˈvɪlə/ :: biệt thự :: a large, beautiful house, often with a garden
+cottage /ˈkɒtɪdʒ/ :: nhà nhỏ ở nông thôn :: a small house, usually in the countryside
+farmhouse /ˈfɑːmhaʊs/ :: nhà nông trại :: the house where a farmer lives
+dormitory /ˈdɔːmɪtri/ :: ký túc xá :: a building where students sleep and live at school
+mansion /ˈmænʃn/ :: dinh thự :: a very big and expensive house
+bungalow /ˈbʌŋɡələʊ/ :: nhà một tầng :: a house that has only one floor
+block of flats /blɒk əv flæts/ :: tòa chung cư :: a tall building with many apartments inside
+living room /ˈlɪvɪŋ ruːm/ :: phòng khách :: the room in a house where the family sits and relaxes
+bedroom /ˈbedruːm/ :: phòng ngủ :: the room where you sleep
+kitchen /ˈkɪtʃɪn/ :: nhà bếp :: the room where food is cooked
+bathroom /ˈbɑːθruːm/ :: phòng tắm :: the room with a bath or shower and a toilet
+dining room /ˈdaɪnɪŋ ruːm/ :: phòng ăn :: the room where a family eats meals
+study room /ˈstʌdi ruːm/ :: phòng học/làm việc :: a quiet room for reading and doing homework
+balcony /ˈbælkəni/ :: ban công :: a small platform with a fence outside an upstairs window
+attic /ˈætɪk/ :: gác mái :: the room under the roof of a house
+basement /ˈbeɪsmənt/ :: tầng hầm :: a room below the ground floor of a building
+garage /ˈɡærɑːʒ/ :: nhà để xe :: a place where a car is kept
+sofa /ˈsəʊfə/ :: ghế sofa :: a long, soft seat for two or three people
+table /ˈteɪbl/ :: cái bàn :: a piece of furniture with a flat top and legs
+chair /tʃeə(r)/ :: cái ghế :: a seat for one person with a back
+wardrobe /ˈwɔːdrəʊb/ :: tủ quần áo :: a tall cupboard for hanging clothes
+bookshelf /ˈbʊkʃelf/ :: kệ sách :: a piece of furniture with shelves for books
+refrigerator /rɪˈfrɪdʒəreɪtə(r)/ :: tủ lạnh :: a machine that keeps food cold
+washing machine /ˈwɒʃɪŋ məʃiːn/ :: máy giặt :: a machine that cleans dirty clothes with water
+air conditioner /eə(r) kənˈdɪʃənə(r)/ :: máy điều hòa :: a machine that makes the air in a room cool
+television /ˈtelɪvɪʒn/ :: tivi :: a machine with a screen that shows programmes
+microwave /ˈmaɪkrəweɪv/ :: lò vi sóng :: an oven that heats food very quickly
+lamp /læmp/ :: đèn :: a light that stands on a table or the floor
+mirror /ˈmɪrə(r)/ :: gương :: a glass in which you can see yourself
+sweep the floor /swiːp ðə flɔː(r)/ :: quét nhà :: to clean the floor with a broom
+mop the floor /mɒp ðə flɔː(r)/ :: lau nhà :: to clean the floor with a wet cloth on a stick
+wash the dishes /wɒʃ ðə ˈdɪʃɪz/ :: rửa bát :: to clean plates and bowls after a meal
+do the laundry /duː ðə ˈlɔːndri/ :: giặt đồ :: to wash and dry dirty clothes
+take out the trash /teɪk aʊt ðə træʃ/ :: đổ rác :: to carry rubbish from the house to the bin outside
+water the plants /ˈwɔːtə(r) ðə plɑːnts/ :: tưới cây :: to give flowers and trees the water they need
+tidy up /ˈtaɪdi ʌp/ :: dọn dẹp :: to put things back in their places
+vacuum the floor /ˈvækjuəm ðə flɔː(r)/ :: hút bụi sàn nhà :: to clean the floor with a machine that sucks up dust
+dust the furniture /dʌst ðə ˈfɜːnɪtʃə(r)/ :: lau bụi đồ nội thất :: to wipe the dust from tables and shelves
+make the bed /meɪk ðə bed/ :: dọn giường :: to arrange the sheets and blanket so the bed looks neat
+cook meals /kʊk miːlz/ :: nấu ăn :: to prepare lunch and dinner for the family
+iron clothes /ˈaɪən kləʊðz/ :: ủi quần áo :: to make clothes flat and smooth with a hot tool
+spacious /ˈspeɪʃəs/ :: rộng rãi :: having a lot of room inside
+cozy /ˈkəʊzi/ :: ấm cúng :: warm, small and comfortable
+comfortable /ˈkʌmftəbl/ :: thoải mái :: giving you a pleasant feeling, not hard or tight
+tidy /ˈtaɪdi/ :: gọn gàng :: neat, with everything in its place
+messy /ˈmesi/ :: bừa bộn :: untidy and dirty
+modern /ˈmɒdn/ :: hiện đại :: new and using the latest ideas
+traditional /trəˈdɪʃənl/ :: truyền thống :: following the old customs of a country
+peaceful /ˈpiːsfl/ :: yên bình :: calm and quiet
+crowded /ˈkraʊdɪd/ :: đông đúc, chật chội :: full of too many people
+bright /braɪt/ :: sáng sủa :: full of light
+airy /ˈeəri/ :: thoáng khí :: with plenty of fresh air and space
+convenient /kənˈviːniənt/ :: tiện lợi :: easy to use or reach and saving time
+next to /nekst tə/ :: bên cạnh :: at the side of, very close
+in front of /ɪn frʌnt əv/ :: phía trước :: at the face side of something, before it
+behind /bɪˈhaɪnd/ :: phía sau :: at the back of something
+near /nɪə(r)/ :: gần :: not far away
+opposite /ˈɒpəzɪt/ :: đối diện :: on the other side, facing something
+upstairs /ˌʌpˈsteəz/ :: trên lầu :: on a higher floor of a building
+downstairs /ˌdaʊnˈsteəz/ :: dưới lầu :: on a lower floor of a building
+in the corner /ɪn ðə ˈkɔːnə(r)/ :: ở góc :: at the place where two walls meet
+on the wall /ɒn ðə wɔːl/ :: trên tường :: fixed to the side of a room
+on the floor /ɒn ðə flɔː(r)/ :: trên sàn nhà :: lying on the ground of a room
 ```
 
 ## 4. My Foreign Friends
 ```
-country /ˈkʌntri/ :: đất nước
-nationality /ˌnæʃəˈnæləti/ :: quốc tịch
-continent /ˈkɒntɪnənt/ :: châu lục
-Asia /ˈeɪʒə/ :: châu Á
-Europe /ˈjʊərəp/ :: châu Âu
-Africa /ˈæfrɪkə/ :: châu Phi
-Vietnam /ˌviːetˈnæm/ :: Việt Nam
-England /ˈɪŋɡlənd/ :: nước Anh
-America /əˈmerɪkə/ :: nước Mỹ
-Japan /dʒəˈpæn/ :: Nhật Bản
-Korea /kəˈriːə/ :: Hàn Quốc
-China /ˈtʃaɪnə/ :: Trung Quốc
-Australia /ɒˈstreɪliə/ :: Úc
-France /frɑːns/ :: Pháp
-Vietnamese /ˌvjetnəˈmiːz/ :: người/thuộc về Việt Nam
-English /ˈɪŋɡlɪʃ/ :: người Anh / tiếng Anh
-American /əˈmerɪkən/ :: người Mỹ
-Japanese /ˌdʒæpəˈniːz/ :: người Nhật
-Korean /kəˈriːən/ :: người Hàn Quốc
-Chinese /ˌtʃaɪˈniːz/ :: người Trung Quốc
-Australian /ɒˈstreɪliən/ :: người Úc
-French /frentʃ/ :: người Pháp
-Thai /taɪ/ :: người Thái
-Indian /ˈɪndiən/ :: người Ấn Độ
-language /ˈlæŋɡwɪdʒ/ :: ngôn ngữ
-speak /spiːk/ :: nói (một ngôn ngữ)
-mother tongue /ˈmʌðə(r) tʌŋ/ :: tiếng mẹ đẻ
-foreign language /ˈfɒrən ˈlæŋɡwɪdʒ/ :: ngoại ngữ
-translate /trænsˈleɪt/ :: dịch
-fluent /ˈfluːənt/ :: lưu loát
-bilingual /baɪˈlɪŋɡwəl/ :: song ngữ
-accent /ˈæksent/ :: giọng, ngữ điệu
-pen pal /ˈpen pæl/ :: bạn qua thư
-greeting /ˈɡriːtɪŋ/ :: lời chào
-introduce /ˌɪntrəˈdjuːs/ :: giới thiệu
-shake hands /ʃeɪk hændz/ :: bắt tay
-bow /baʊ/ :: cúi chào
-exchange /ɪksˈtʃeɪndʒ/ :: trao đổi
-keep in touch /kiːp ɪn tʌtʃ/ :: giữ liên lạc
-video call /ˈvɪdiəʊ kɔːl/ :: gọi video
-online friend /ˌɒnˈlaɪn frend/ :: bạn qua mạng
-get to know /ɡet tə nəʊ/ :: làm quen, tìm hiểu
-culture /ˈkʌltʃə(r)/ :: văn hóa
-custom /ˈkʌstəm/ :: phong tục
-tradition /trəˈdɪʃn/ :: truyền thống
-similar /ˈsɪmələ(r)/ :: giống nhau
-different /ˈdɪfrənt/ :: khác nhau
-interesting /ˈɪntrəstɪŋ/ :: thú vị
-surprised /səˈpraɪzd/ :: ngạc nhiên
-curious /ˈkjʊəriəs/ :: tò mò
-respect /rɪˈspekt/ :: tôn trọng
-learn about /lɜːn əˈbaʊt/ :: tìm hiểu về
-chat online /tʃæt ˈɒnlaɪn/ :: trò chuyện trực tuyến
-share photos /ʃeə(r) ˈfəʊtəʊz/ :: chia sẻ ảnh
-send a letter /send ə ˈletə(r)/ :: gửi thư
-visit /ˈvɪzɪt/ :: đi thăm
-invite /ɪnˈvaɪt/ :: mời
-celebrate together /ˈselɪbreɪt təˈɡeðə(r)/ :: cùng ăn mừng
-teach each other /tiːtʃ iːtʃ ˈʌðə(r)/ :: dạy lẫn nhau
-play games together /pleɪ ɡeɪmz təˈɡeðə(r)/ :: chơi cùng nhau
-learn new words /lɜːn njuː wɜːdz/ :: học từ mới
-become friends /bɪˈkʌm frendz/ :: trở thành bạn
+country /ˈkʌntri/ :: đất nước :: an area of land with its own people and government
+nationality /ˌnæʃəˈnæləti/ :: quốc tịch :: the country that you belong to officially
+continent /ˈkɒntɪnənt/ :: châu lục :: one of the seven very large areas of land on Earth
+Asia /ˈeɪʒə/ :: châu Á :: the biggest continent, where Vietnam, Japan and China are
+Europe /ˈjʊərəp/ :: châu Âu :: the continent where France and England are
+Africa /ˈæfrɪkə/ :: châu Phi :: the continent with the Sahara Desert and many wild animals
+Vietnam /ˌviːetˈnæm/ :: Việt Nam :: the country shaped like an S in Southeast Asia
+England /ˈɪŋɡlənd/ :: nước Anh :: the country in the United Kingdom whose capital is London
+America /əˈmerɪkə/ :: nước Mỹ :: the country with fifty states and the city of New York
+Japan /dʒəˈpæn/ :: Nhật Bản :: the island country in Asia with Tokyo as its capital
+Korea /kəˈriːə/ :: Hàn Quốc :: the country in East Asia with Seoul as its capital
+China /ˈtʃaɪnə/ :: Trung Quốc :: the biggest country in East Asia with the Great Wall
+Australia /ɒˈstreɪliə/ :: Úc :: the country and continent with kangaroos
+France /frɑːns/ :: Pháp :: the European country with the Eiffel Tower
+Vietnamese /ˌvjetnəˈmiːz/ :: người/thuộc về Việt Nam :: a person or language from the country of Hanoi
+English /ˈɪŋɡlɪʃ/ :: người Anh / tiếng Anh :: the language from London, spoken in many countries
+American /əˈmerɪkən/ :: người Mỹ :: a person from the United States
+Japanese /ˌdʒæpəˈniːz/ :: người Nhật :: a person or language from Tokyo
+Korean /kəˈriːən/ :: người Hàn Quốc :: a person or language from Seoul
+Chinese /ˌtʃaɪˈniːz/ :: người Trung Quốc :: a person or language from Beijing
+Australian /ɒˈstreɪliən/ :: người Úc :: a person from the country of kangaroos
+French /frentʃ/ :: người Pháp :: a person or language from Paris
+Thai /taɪ/ :: người Thái :: a person or language from Bangkok
+Indian /ˈɪndiən/ :: người Ấn Độ :: a person from the country of New Delhi
+language /ˈlæŋɡwɪdʒ/ :: ngôn ngữ :: the words people use to speak or write to each other
+speak /spiːk/ :: nói (một ngôn ngữ) :: to use your voice to say words
+mother tongue /ˈmʌðə(r) tʌŋ/ :: tiếng mẹ đẻ :: the first language you learn as a child
+foreign language /ˈfɒrən ˈlæŋɡwɪdʒ/ :: ngoại ngữ :: a language from another country
+translate /trænsˈleɪt/ :: dịch :: to change words from one language into another
+fluent /ˈfluːənt/ :: lưu loát :: able to speak a language easily and well
+bilingual /baɪˈlɪŋɡwəl/ :: song ngữ :: able to speak two languages well
+accent /ˈæksent/ :: giọng, ngữ điệu :: the special way people from a place pronounce words
+pen pal /ˈpen pæl/ :: bạn qua thư :: a friend you write letters to but may never meet
+greeting /ˈɡriːtɪŋ/ :: lời chào :: a word or gesture you use when you meet someone, like "hello"
+introduce /ˌɪntrəˈdjuːs/ :: giới thiệu :: to tell people the name of someone they have not met before
+shake hands /ʃeɪk hændz/ :: bắt tay :: to hold someone's hand and move it up and down as a greeting
+bow /baʊ/ :: cúi chào :: to bend the top of your body forward to show respect
+exchange /ɪksˈtʃeɪndʒ/ :: trao đổi :: to give something and get something else in return
+keep in touch /kiːp ɪn tʌtʃ/ :: giữ liên lạc :: to stay in contact with someone by writing or calling
+video call /ˈvɪdiəʊ kɔːl/ :: gọi video :: a phone talk in which you can see the other person's face
+online friend /ˌɒnˈlaɪn frend/ :: bạn qua mạng :: a friend you know only through the internet
+get to know /ɡet tə nəʊ/ :: làm quen, tìm hiểu :: to learn more about a person
+culture /ˈkʌltʃə(r)/ :: văn hóa :: the way of life, ideas and customs of a group of people
+custom /ˈkʌstəm/ :: phong tục :: something people in a group usually do in a special way
+tradition /trəˈdɪʃn/ :: truyền thống :: a belief or habit passed down for many years
+similar /ˈsɪmələ(r)/ :: giống nhau :: almost the same but not exactly
+different /ˈdɪfrənt/ :: khác nhau :: not the same as another thing
+interesting /ˈɪntrəstɪŋ/ :: thú vị :: making you want to learn or know more
+surprised /səˈpraɪzd/ :: ngạc nhiên :: feeling shocked because something happened that you did not expect
+curious /ˈkjʊəriəs/ :: tò mò :: wanting to find out about things
+respect /rɪˈspekt/ :: tôn trọng :: a feeling of admiring and being polite to someone
+learn about /lɜːn əˈbaʊt/ :: tìm hiểu về :: to find out facts about something
+chat online /tʃæt ˈɒnlaɪn/ :: trò chuyện trực tuyến :: to talk to someone by typing messages on the internet
+share photos /ʃeə(r) ˈfəʊtəʊz/ :: chia sẻ ảnh :: to let other people see your pictures
+send a letter /send ə ˈletə(r)/ :: gửi thư :: to post a written message to someone
+visit /ˈvɪzɪt/ :: đi thăm :: to go to see a person or a place for a short time
+invite /ɪnˈvaɪt/ :: mời :: to ask someone to come to a party or event
+celebrate together /ˈselɪbreɪt təˈɡeðə(r)/ :: cùng ăn mừng :: to enjoy a special day with other people
+teach each other /tiːtʃ iːtʃ ˈʌðə(r)/ :: dạy lẫn nhau :: to help one another learn new things
+play games together /pleɪ ɡeɪmz təˈɡeðə(r)/ :: chơi cùng nhau :: to take part in fun activities with other people
+learn new words /lɜːn njuː wɜːdz/ :: học từ mới :: to find out the meaning of words you did not know
+become friends /bɪˈkʌm frendz/ :: trở thành bạn :: to start a friendship with someone
 ```
 
 ## 5. Our Free-time Activities
 ```
-read comics /riːd ˈkɒmɪks/ :: đọc truyện tranh
-watch TV (television) /wɒtʃ ˌtiːˈviː/ :: xem ti vi (truyền hình)
-play board games /pleɪ bɔːd ɡeɪmz/ :: chơi trò chơi bàn cờ
-play video games /pleɪ ˈvɪdiəʊ ɡeɪmz/ :: chơi trò chơi điện tử
-listen to music /ˈlɪsn tə ˈmjuːzɪk/ :: nghe nhạc
-draw pictures /drɔː ˈpɪktʃəz/ :: vẽ tranh
-cook /kʊk/ :: nấu ăn
-bake cakes /beɪk keɪks/ :: nướng bánh
-do puzzles /duː ˈpʌzlz/ :: chơi xếp hình, giải đố
-play the piano /pleɪ ðə piˈænəʊ/ :: chơi đàn piano
-chat with friends /tʃæt wɪð frendz/ :: trò chuyện với bạn
-build models /bɪld ˈmɒdlz/ :: lắp ráp mô hình
-ride a bike /raɪd ə baɪk/ :: đi xe đạp
-go fishing /ɡəʊ ˈfɪʃɪŋ/ :: đi câu cá
-fly a kite /flaɪ ə kaɪt/ :: thả diều
-go camping /ɡəʊ ˈkæmpɪŋ/ :: đi cắm trại
-go hiking /ɡəʊ ˈhaɪkɪŋ/ :: đi leo núi, đi bộ đường dài
-go for a walk /ɡəʊ fər ə wɔːk/ :: đi dạo
-go jogging /ɡəʊ ˈdʒɒɡɪŋ/ :: đi chạy bộ
-skate /skeɪt/ :: trượt patin
-have a picnic /hæv ə ˈpɪknɪk/ :: đi dã ngoại
-plant flowers /plɑːnt ˈflaʊəz/ :: trồng hoa
-play in the park /pleɪ ɪn ðə pɑːk/ :: chơi ở công viên
-go swimming /ɡəʊ ˈswɪmɪŋ/ :: đi bơi
-football /ˈfʊtbɔːl/ :: bóng đá
-badminton /ˈbædmɪntən/ :: cầu lông
-table tennis /ˈteɪbl ˈtenɪs/ :: bóng bàn
-basketball /ˈbɑːskɪtbɔːl/ :: bóng rổ
-volleyball /ˈvɒlibɔːl/ :: bóng chuyền
-chess /tʃes/ :: cờ vua
-hide-and-seek /ˌhaɪd ən ˈsiːk/ :: trốn tìm
-skipping rope /ˈskɪpɪŋ rəʊp/ :: nhảy dây
-tug of war /ˌtʌɡ əv ˈwɔː(r)/ :: kéo co
-martial arts /ˌmɑːʃl ˈɑːts/ :: võ thuật
-hobby /ˈhɒbi/ :: sở thích
-collect stamps /kəˈlekt stæmps/ :: sưu tập tem
-take photos /teɪk ˈfəʊtəʊz/ :: chụp ảnh
-sing karaoke /sɪŋ ˌkæriˈəʊki/ :: hát karaoke
-dance /dɑːns/ :: nhảy múa
-paint /peɪnt/ :: tô màu, vẽ màu
-write stories /raɪt ˈstɔːriz/ :: viết truyện
-learn a language /lɜːn ə ˈlæŋɡwɪdʒ/ :: học một ngôn ngữ
-make crafts /meɪk krɑːfts/ :: làm đồ thủ công
-gardening /ˈɡɑːdnɪŋ/ :: làm vườn
-free time /friː taɪm/ :: thời gian rảnh
-weekend /ˌwiːkˈend/ :: cuối tuần
-holiday /ˈhɒlədeɪ/ :: kỳ nghỉ, ngày lễ
-often /ˈɒfn/ :: thường xuyên
-sometimes /ˈsʌmtaɪmz/ :: thỉnh thoảng
-usually /ˈjuːʒuəli/ :: thường thường
-never /ˈnevə(r)/ :: không bao giờ
-once a week /wʌns ə wiːk/ :: một lần một tuần
-twice a month /twaɪs ə mʌnθ/ :: hai lần một tháng
-every day /ˈevri deɪ/ :: mỗi ngày
-fun /fʌn/ :: vui, thú vị
-boring /ˈbɔːrɪŋ/ :: chán
-exciting /ɪkˈsaɪtɪŋ/ :: hào hứng, thú vị
-relaxing /rɪˈlæksɪŋ/ :: thư giãn
-healthy /ˈhelθi/ :: tốt cho sức khỏe
-enjoy /ɪnˈdʒɔɪ/ :: thích, tận hưởng
-be interested in /bi ˈɪntrəstɪd ɪn/ :: quan tâm đến
-be good at /bi ɡʊd æt/ :: giỏi về
-prefer /prɪˈfɜː(r)/ :: thích hơn
-favorite /ˈfeɪvərɪt/ :: yêu thích nhất
+read comics /riːd ˈkɒmɪks/ :: đọc truyện tranh :: to enjoy funny picture stories in a magazine
+watch TV (television) /wɒtʃ ˌtiːˈviː/ :: xem ti vi (truyền hình) :: to look at programmes on a screen at home
+play board games /pleɪ bɔːd ɡeɪmz/ :: chơi trò chơi bàn cờ :: to play games like chess on a flat card with pieces
+play video games /pleɪ ˈvɪdiəʊ ɡeɪmz/ :: chơi trò chơi điện tử :: to play games on a computer or console
+listen to music /ˈlɪsn tə ˈmjuːzɪk/ :: nghe nhạc :: to hear songs and tunes
+draw pictures /drɔː ˈpɪktʃəz/ :: vẽ tranh :: to make images with a pencil or pen
+cook /kʊk/ :: nấu ăn :: to prepare food by heating it
+bake cakes /beɪk keɪks/ :: nướng bánh :: to make sweet food in an oven
+do puzzles /duː ˈpʌzlz/ :: chơi xếp hình, giải đố :: to solve problems with pieces or clues
+play the piano /pleɪ ðə piˈænəʊ/ :: chơi đàn piano :: to make music on an instrument with black and white keys
+chat with friends /tʃæt wɪð frendz/ :: trò chuyện với bạn :: to talk in a friendly, relaxed way with people you like
+build models /bɪld ˈmɒdlz/ :: lắp ráp mô hình :: to make small copies of cars or planes from pieces
+ride a bike /raɪd ə baɪk/ :: đi xe đạp :: to sit on a bicycle and move it with the pedals
+go fishing /ɡəʊ ˈfɪʃɪŋ/ :: đi câu cá :: to try to catch fish from a river or lake
+fly a kite /flaɪ ə kaɪt/ :: thả diều :: to make a paper toy rise in the wind on a string
+go camping /ɡəʊ ˈkæmpɪŋ/ :: đi cắm trại :: to sleep outdoors in a tent
+go hiking /ɡəʊ ˈhaɪkɪŋ/ :: đi leo núi, đi bộ đường dài :: to take a long walk in the mountains or countryside
+go for a walk /ɡəʊ fər ə wɔːk/ :: đi dạo :: to walk outside for fun or exercise
+go jogging /ɡəʊ ˈdʒɒɡɪŋ/ :: đi chạy bộ :: to run slowly for exercise
+skate /skeɪt/ :: trượt patin :: to move on shoes with wheels or blades
+have a picnic /hæv ə ˈpɪknɪk/ :: đi dã ngoại :: to eat a meal outside on the grass
+plant flowers /plɑːnt ˈflaʊəz/ :: trồng hoa :: to put seeds or small flowers in the soil
+play in the park /pleɪ ɪn ðə pɑːk/ :: chơi ở công viên :: to have fun on swings and grass in a public garden
+go swimming /ɡəʊ ˈswɪmɪŋ/ :: đi bơi :: to move in water using your arms and legs
+football /ˈfʊtbɔːl/ :: bóng đá :: a game in which two teams kick a ball to score goals
+badminton /ˈbædmɪntən/ :: cầu lông :: a game played with rackets and a light shuttlecock over a net
+table tennis /ˈteɪbl ˈtenɪs/ :: bóng bàn :: a game played with small bats and a tiny ball on a table
+basketball /ˈbɑːskɪtbɔːl/ :: bóng rổ :: a game in which players throw a ball through a high ring
+volleyball /ˈvɒlibɔːl/ :: bóng chuyền :: a game in which two teams hit a ball over a high net
+chess /tʃes/ :: cờ vua :: a board game with kings, queens and pawns
+hide-and-seek /ˌhaɪd ən ˈsiːk/ :: trốn tìm :: a children's game in which one person looks for others who are hiding
+skipping rope /ˈskɪpɪŋ rəʊp/ :: nhảy dây :: a toy you swing over your head and jump over
+tug of war /ˌtʌɡ əv ˈwɔː(r)/ :: kéo co :: a game in which two teams pull opposite ends of a rope
+martial arts /ˌmɑːʃl ˈɑːts/ :: võ thuật :: fighting sports such as karate and judo
+hobby /ˈhɒbi/ :: sở thích :: an activity that you enjoy doing in your free time
+collect stamps /kəˈlekt stæmps/ :: sưu tập tem :: to keep small pieces of paper from letters as a hobby
+take photos /teɪk ˈfəʊtəʊz/ :: chụp ảnh :: to use a camera to make pictures
+sing karaoke /sɪŋ ˌkæriˈəʊki/ :: hát karaoke :: to sing songs with the words shown on a screen
+dance /dɑːns/ :: nhảy múa :: to move your body to music
+paint /peɪnt/ :: tô màu, vẽ màu :: to make a picture with colours and a brush
+write stories /raɪt ˈstɔːriz/ :: viết truyện :: to put imaginary events into words on paper
+learn a language /lɜːn ə ˈlæŋɡwɪdʒ/ :: học một ngôn ngữ :: to study the words and grammar of another country's speech
+make crafts /meɪk krɑːfts/ :: làm đồ thủ công :: to create things by hand from paper or other materials
+gardening /ˈɡɑːdnɪŋ/ :: làm vườn :: the activity of growing flowers and vegetables
+free time /friː taɪm/ :: thời gian rảnh :: the hours when you do not have to work or study
+weekend /ˌwiːkˈend/ :: cuối tuần :: Saturday and Sunday
+holiday /ˈhɒlədeɪ/ :: kỳ nghỉ, ngày lễ :: a time when you do not go to school or work
+often /ˈɒfn/ :: thường xuyên :: many times
+sometimes /ˈsʌmtaɪmz/ :: thỉnh thoảng :: not often, only on some days
+usually /ˈjuːʒuəli/ :: thường thường :: most of the time
+never /ˈnevə(r)/ :: không bao giờ :: not at any time
+once a week /wʌns ə wiːk/ :: một lần một tuần :: one time in seven days
+twice a month /twaɪs ə mʌnθ/ :: hai lần một tháng :: two times in about thirty days
+every day /ˈevri deɪ/ :: mỗi ngày :: on each day of the week
+fun /fʌn/ :: vui, thú vị :: enjoyable and making you happy
+boring /ˈbɔːrɪŋ/ :: chán :: not interesting at all
+exciting /ɪkˈsaɪtɪŋ/ :: hào hứng, thú vị :: making you feel very happy and full of energy
+relaxing /rɪˈlæksɪŋ/ :: thư giãn :: making you feel calm and rested
+healthy /ˈhelθi/ :: tốt cho sức khỏe :: good for your body
+enjoy /ɪnˈdʒɔɪ/ :: thích, tận hưởng :: to like doing something very much
+be interested in /bi ˈɪntrəstɪd ɪn/ :: quan tâm đến :: to want to know more about something
+be good at /bi ɡʊd æt/ :: giỏi về :: to do something well
+prefer /prɪˈfɜː(r)/ :: thích hơn :: to like one thing more than another
+favorite /ˈfeɪvərɪt/ :: yêu thích nhất :: liked more than all the others
 ```
 
 ## 6. Unit 5: My Future Job
 ```
-teacher /ˈtiːtʃə(r)/ :: giáo viên
-doctor /ˈdɒktə(r)/ :: bác sĩ
-baker /ˈbeɪkə(r)/ :: thợ làm bánh
-architect /ˈɑːkɪtekt/ :: kiến trúc sư
-farmer /ˈfɑːmə(r)/ :: nông dân
-pilot /ˈpaɪlət/ :: phi công
-astronaut /ˈæstrənɔːt/ :: phi hành gia
-police officer /pəˈliːs ˈɒfɪsə(r)/ :: cảnh sát
-firefighter /ˈfaɪəfaɪtə(r)/ :: lính cứu hỏa
-chef /ʃef/ :: đầu bếp
-singer /ˈsɪŋə(r)/ :: ca sĩ
-artist /ˈɑːtɪst/ :: họa sĩ, nghệ sĩ
-driver /ˈdraɪvə(r)/ :: tài xế
-vet /vet/ :: bác sĩ thú y
-scientist /ˈsaɪəntɪst/ :: nhà khoa học
-dentist /ˈdentɪst/ :: nha sĩ
-journalist /ˈdʒɜːnəlɪst/ :: nhà báo
-mechanic /məˈkænɪk/ :: thợ máy
-dancer /ˈdɑːnsə(r)/ :: vũ công
-builder /ˈbɪldə(r)/ :: thợ xây
-electrician /ɪˌlekˈtrɪʃn/ :: thợ điện
-tailor /ˈteɪlə(r)/ :: thợ may
-fisherman /ˈfɪʃəmən/ :: ngư dân
-actor /ˈæktə(r)/ :: diễn viên
-hospital /ˈhɒspɪtl/ :: bệnh viện
-school /skuːl/ :: trường học
-farm /fɑːm/ :: nông trại
-factory /ˈfæktri/ :: nhà máy
-restaurant /ˈrestrɒnt/ :: nhà hàng
-airport /ˈeəpɔːt/ :: sân bay
-fire station /ˈfaɪə ˌsteɪʃn/ :: trạm cứu hỏa
-police station /pəˈliːs ˌsteɪʃn/ :: đồn cảnh sát
-studio /ˈstjuːdiəʊ/ :: phòng thu, xưởng vẽ
-laboratory /ləˈbɒrətri/ :: phòng thí nghiệm
-bakery /ˈbeɪkəri/ :: tiệm bánh
-theatre /ˈθɪətə(r)/ :: nhà hát
-teach students /tiːtʃ ˈstjuːdnts/ :: dạy học sinh
-treat patients /triːt ˈpeɪʃnts/ :: chữa bệnh cho bệnh nhân
-look after /lʊk ˈɑːftə(r)/ :: chăm sóc, trông nom
-build houses /bɪld ˈhaʊzɪz/ :: xây nhà
-grow vegetables /ɡrəʊ ˈvedʒtəblz/ :: trồng rau
-fly planes /flaɪ pleɪnz/ :: lái máy bay
-protect people /prəˈtekt ˈpiːpl/ :: bảo vệ mọi người
-put out fires /pʊt aʊt ˈfaɪəz/ :: dập lửa
-serve customers /sɜːv ˈkʌstəməz/ :: phục vụ khách hàng
-write articles /raɪt ˈɑːtɪklz/ :: viết bài báo
-explore space /ɪkˈsplɔː speɪs/ :: khám phá vũ trụ
-help people /help ˈpiːpl/ :: giúp đỡ mọi người
-thoughtful /ˈθɔːtfl/ :: chu đáo, biết nghĩ cho người khác
-brave /breɪv/ :: dũng cảm
-responsible /rɪˈspɒnsəbl/ :: có trách nhiệm
-careful /ˈkeəfl/ :: cẩn thận
-creative /kriˈeɪtɪv/ :: sáng tạo
-clever /ˈklevə(r)/ :: thông minh, khéo léo
-patient /ˈpeɪʃnt/ :: kiên nhẫn
-modest /ˈmɒdɪst/ :: khiêm tốn
-strong /strɒŋ/ :: khỏe, mạnh mẽ
-confident /ˈkɒnfɪdənt/ :: tự tin
-skilful /ˈskɪlfl/ :: khéo tay, có kỹ năng
-reliable /rɪˈlaɪəbl/ :: đáng tin cậy
-future /ˈfjuːtʃə(r)/ :: tương lai
-dream job /driːm dʒɒb/ :: công việc mơ ước
-ambition /æmˈbɪʃn/ :: hoài bão, tham vọng
-want to be /wɒnt tə bi/ :: muốn trở thành
-would like to be /wʊd laɪk tə bi/ :: muốn trở thành (lịch sự hơn)
-achieve /əˈtʃiːv/ :: đạt được
-study hard /ˈstʌdi hɑːd/ :: học tập chăm chỉ
-practise /ˈpræktɪs/ :: luyện tập
-succeed /səkˈsiːd/ :: thành công
-come true /kʌm truː/ :: trở thành sự thật
-goal /ɡəʊl/ :: mục tiêu
-career /kəˈrɪə(r)/ :: sự nghiệp
-reason /ˈriːzn/ :: lý do
-earn money /ɜːn ˈmʌni/ :: kiếm tiền
-useful /ˈjuːsfl/ :: hữu ích
-necessary /ˈnesəsəri/ :: cần thiết
-dangerous /ˈdeɪndʒərəs/ :: nguy hiểm
-rewarding /rɪˈwɔːdɪŋ/ :: đáng làm, mang lại niềm vui
-challenging /ˈtʃælɪndʒɪŋ/ :: đầy thử thách
-valuable /ˈvæljuəbl/ :: quý giá, có giá trị
-tiring /ˈtaɪərɪŋ/ :: mệt mỏi
-salary /ˈsæləri/ :: tiền lương
-satisfying /ˈsætɪsfaɪɪŋ/ :: mang lại sự thỏa mãn
-inspire /ɪnˈspaɪə(r)/ :: truyền cảm hứng
+teacher /ˈtiːtʃə(r)/ :: giáo viên :: a person who helps students learn at school
+doctor /ˈdɒktə(r)/ :: bác sĩ :: a person who treats sick people
+baker /ˈbeɪkə(r)/ :: thợ làm bánh :: a person who makes bread and cakes
+architect /ˈɑːkɪtekt/ :: kiến trúc sư :: a person who designs buildings
+farmer /ˈfɑːmə(r)/ :: nông dân :: a person who grows crops or keeps animals
+pilot /ˈpaɪlət/ :: phi công :: a person who flies an aeroplane
+astronaut /ˈæstrənɔːt/ :: phi hành gia :: a person who travels into space
+police officer /pəˈliːs ˈɒfɪsə(r)/ :: cảnh sát :: a person who keeps order and catches criminals
+firefighter /ˈfaɪəfaɪtə(r)/ :: lính cứu hỏa :: a person who puts out fires
+chef /ʃef/ :: đầu bếp :: a person who cooks in a restaurant
+singer /ˈsɪŋə(r)/ :: ca sĩ :: a person who performs songs with their voice
+artist /ˈɑːtɪst/ :: họa sĩ, nghệ sĩ :: a person who paints or draws pictures
+driver /ˈdraɪvə(r)/ :: tài xế :: a person who controls a car, bus or lorry
+vet /vet/ :: bác sĩ thú y :: a doctor for animals
+scientist /ˈsaɪəntɪst/ :: nhà khoa học :: a person who does experiments to learn about the world
+dentist /ˈdentɪst/ :: nha sĩ :: a person who takes care of your teeth
+journalist /ˈdʒɜːnəlɪst/ :: nhà báo :: a person who writes news for papers or television
+mechanic /məˈkænɪk/ :: thợ máy :: a person who repairs cars and machines
+dancer /ˈdɑːnsə(r)/ :: vũ công :: a person who moves to music as a job
+builder /ˈbɪldə(r)/ :: thợ xây :: a person who constructs houses
+electrician /ɪˌlekˈtrɪʃn/ :: thợ điện :: a person who fixes wires and electric machines
+tailor /ˈteɪlə(r)/ :: thợ may :: a person who makes clothes that fit you
+fisherman /ˈfɪʃəmən/ :: ngư dân :: a man who catches fish for a living
+actor /ˈæktə(r)/ :: diễn viên :: a person who plays a role in films or plays
+hospital /ˈhɒspɪtl/ :: bệnh viện :: a place where sick or hurt people get treatment
+school /skuːl/ :: trường học :: a place where children go to learn
+farm /fɑːm/ :: nông trại :: land where crops and animals are raised
+factory /ˈfæktri/ :: nhà máy :: a building where goods are made by machines
+restaurant /ˈrestrɒnt/ :: nhà hàng :: a place where you pay to eat meals
+airport /ˈeəpɔːt/ :: sân bay :: a place where planes take off and land
+fire station /ˈfaɪə ˌsteɪʃn/ :: trạm cứu hỏa :: a place where firefighters and fire engines wait
+police station /pəˈliːs ˌsteɪʃn/ :: đồn cảnh sát :: a place where police officers work
+studio /ˈstjuːdiəʊ/ :: phòng thu, xưởng vẽ :: a room where films, music or paintings are made
+laboratory /ləˈbɒrətri/ :: phòng thí nghiệm :: a room where scientists do experiments
+bakery /ˈbeɪkəri/ :: tiệm bánh :: a shop where bread and cakes are made and sold
+theatre /ˈθɪətə(r)/ :: nhà hát :: a building where people watch plays
+teach students /tiːtʃ ˈstjuːdnts/ :: dạy học sinh :: to help pupils learn
+treat patients /triːt ˈpeɪʃnts/ :: chữa bệnh cho bệnh nhân :: to give care and medicine to sick people
+look after /lʊk ˈɑːftə(r)/ :: chăm sóc, trông nom :: to take care of someone or something
+build houses /bɪld ˈhaʊzɪz/ :: xây nhà :: to put bricks and wood together to make homes
+grow vegetables /ɡrəʊ ˈvedʒtəblz/ :: trồng rau :: to plant carrots and cabbages and help them get bigger
+fly planes /flaɪ pleɪnz/ :: lái máy bay :: to control an aeroplane in the sky
+protect people /prəˈtekt ˈpiːpl/ :: bảo vệ mọi người :: to keep people safe from danger
+put out fires /pʊt aʊt ˈfaɪəz/ :: dập lửa :: to stop flames from burning
+serve customers /sɜːv ˈkʌstəməz/ :: phục vụ khách hàng :: to bring food or goods to people who buy them
+write articles /raɪt ˈɑːtɪklz/ :: viết bài báo :: to write reports for newspapers or magazines
+explore space /ɪkˈsplɔː speɪs/ :: khám phá vũ trụ :: to travel and discover things among the stars and planets
+help people /help ˈpiːpl/ :: giúp đỡ mọi người :: to do something useful for others
+thoughtful /ˈθɔːtfl/ :: chu đáo, biết nghĩ cho người khác :: thinking about other people's feelings
+brave /breɪv/ :: dũng cảm :: not afraid of danger
+responsible /rɪˈspɒnsəbl/ :: có trách nhiệm :: able to be trusted to do the right thing
+careful /ˈkeəfl/ :: cẩn thận :: taking care to avoid mistakes or danger
+creative /kriˈeɪtɪv/ :: sáng tạo :: good at thinking of new ideas
+clever /ˈklevə(r)/ :: thông minh, khéo léo :: quick at learning and understanding
+patient /ˈpeɪʃnt/ :: kiên nhẫn :: able to wait calmly without getting angry
+modest /ˈmɒdɪst/ :: khiêm tốn :: not talking proudly about your own success
+strong /strɒŋ/ :: khỏe, mạnh mẽ :: having a lot of power in your body
+confident /ˈkɒnfɪdənt/ :: tự tin :: feeling sure about yourself
+skilful /ˈskɪlfl/ :: khéo tay, có kỹ năng :: very good at doing something because of practice
+reliable /rɪˈlaɪəbl/ :: đáng tin cậy :: someone you can always trust and depend on
+future /ˈfjuːtʃə(r)/ :: tương lai :: the time that has not come yet
+dream job /driːm dʒɒb/ :: công việc mơ ước :: the work that you would most like to do
+ambition /æmˈbɪʃn/ :: hoài bão, tham vọng :: a strong wish to achieve something great
+want to be /wɒnt tə bi/ :: muốn trở thành :: to wish to become a certain person in the future
+would like to be /wʊd laɪk tə bi/ :: muốn trở thành (lịch sự hơn) :: to wish politely to become something later
+achieve /əˈtʃiːv/ :: đạt được :: to succeed in doing something difficult
+study hard /ˈstʌdi hɑːd/ :: học tập chăm chỉ :: to work very seriously at learning
+practise /ˈpræktɪs/ :: luyện tập :: to do something again and again to get better
+succeed /səkˈsiːd/ :: thành công :: to get what you wanted to do
+come true /kʌm truː/ :: trở thành sự thật :: to really happen, like a dream
+goal /ɡəʊl/ :: mục tiêu :: something you want to do or reach
+career /kəˈrɪə(r)/ :: sự nghiệp :: the job or work you do for many years
+reason /ˈriːzn/ :: lý do :: why something happens or why you do something
+earn money /ɜːn ˈmʌni/ :: kiếm tiền :: to get pay for the work you do
+useful /ˈjuːsfl/ :: hữu ích :: helping you to do or get something
+necessary /ˈnesəsəri/ :: cần thiết :: something you must have
+dangerous /ˈdeɪndʒərəs/ :: nguy hiểm :: likely to cause harm
+rewarding /rɪˈwɔːdɪŋ/ :: đáng làm, mang lại niềm vui :: giving you a good feeling or prize for your effort
+challenging /ˈtʃælɪndʒɪŋ/ :: đầy thử thách :: difficult in a way that tests your skills
+valuable /ˈvæljuəbl/ :: quý giá, có giá trị :: worth a lot of money or very important
+tiring /ˈtaɪərɪŋ/ :: mệt mỏi :: making you feel you need to rest
+salary /ˈsæləri/ :: tiền lương :: the money you get each month for your job
+satisfying /ˈsætɪsfaɪɪŋ/ :: mang lại sự thỏa mãn :: giving a feeling of pleasure because you got what you wanted
+inspire /ɪnˈspaɪə(r)/ :: truyền cảm hứng :: to make someone feel they want to do something good
 ```

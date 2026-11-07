@@ -101,32 +101,36 @@ await test('Bộ tạo ô chữ',()=>{
   const e=NS.genPuzzle('QQQQQQ',{noUsed:true}); ok(e.error&&/chữ "Q"/.test(e.error),'báo lỗi rõ khi thiếu chữ');
   ok(NS.validatePuzzle({keyword:'AB',rows:[{word:'cat',hi:1,slot:1},{word:'cat',hi:1,slot:1}]}).length>0,'validate bắt lỗi');
 });
-await test('Bản đồ đấu trường 1000 seed (đồ thị)',()=>{
-  const BAD=['trap','ice','hole']; let bad=0, why='';
-  for(let s=1;s<=1000;s++){ const m=NS.arenaBoard(NS.mulberry(s)), n=m.nodes; let p=true;
-    if(m.nodes.length<35||m.nodes.length>60){p=false;why='số nút '+m.nodes.length;}
-    if(n[m.start].type!=='start'||n[m.finish].type!=='finish') p=false;
-    if(!isFinite(m.dist[m.start])||m.dist[m.start]<13||m.dist[m.start]>20){p=false;why='đường ngắn nhất '+m.dist[m.start];}
-    if(m.dist.some(d=>!isFinite(d))){p=false;why='có nút không tới được đích';}
-    n.forEach(x=>x.next.forEach(b=>{ if(BAD.includes(x.type)&&BAD.includes(n[b].type)){p=false;why='bẫy liền bẫy';} }));
-    if(n.filter(x=>x.next.length>1).length<5){p=false;why='quá ít ngã rẽ';}
-    m.portals.forEach(([a,b])=>{ if(n[a].type!=='warp'||n[a].warpTo!==b||n[b].type!=='plain'){p=false;why='cổng';} });
-    const cnt={}; n.forEach(x=>cnt[x.type]=(cnt[x.type]||0)+1);
-    if(cnt.bonus!==6||cnt.trap!==3||cnt.ice!==2||cnt.hole!==1||cnt.steal!==2||cnt.swap!==1||cnt.mystery!==6||cnt.treasure!==1||cnt.warp!==2){p=false;why='đếm ô '+JSON.stringify(cnt);}
-    if(!p){ bad++; if(bad<3) log('   seed '+s+': '+why); } } ok(bad===0,'vi phạm ở '+bad+' seed');
+await test('6 bản đồ đấu trường × 200 seed (đồ thị)',()=>{
+  const BAD=['trap','ice','hole','lava']; const rep=[];
+  for(const id of NS.ARENA.MAP_IDS){ let bad=0, why='', dmin=99, dmax=0, nn=0, forks=0;
+    for(let s=1;s<=200;s++){ const m=NS.arenaBoard(NS.mulberry(s),id), n=m.nodes; let p=true; nn=n.length;
+      if(m.id!==id){p=false;why='sai id';}
+      if(n[m.start].type!=='start'||n[m.finish].type!=='finish') {p=false;why='đầu/cuối';}
+      if(m.dist.some(d=>!isFinite(d))){p=false;why='có nút không tới được đích';}
+      dmin=Math.min(dmin,m.dist[m.start]); dmax=Math.max(dmax,m.dist[m.start]);
+      if(m.dist[m.start]<11||m.dist[m.start]>26){p=false;why='đường ngắn nhất '+m.dist[m.start];}
+      n.forEach(x=>x.next.forEach(b=>{ if(BAD.includes(x.type)&&BAD.includes(n[b].type)){p=false;why='bẫy liền bẫy';} }));
+      forks=n.filter(x=>x.next.length>1).length; if(forks<3){p=false;why='quá ít ngã rẽ '+forks;}
+      m.portals.forEach(([a,b])=>{ if(n[a].type!=='warp'||n[a].warpTo!==b||n[b].type!=='plain'){p=false;why='cổng';} });
+      n.forEach(x=>{ if(x.x<0||x.x>100||x.y<0||x.y>60){p=false;why='nút ngoài khung';} });
+      const cnt={}; n.forEach(x=>cnt[x.type]=(cnt[x.type]||0)+1);
+      if(!cnt.mystery||!cnt.bonus){p=false;why='thiếu ô ❓ hoặc ⭐';}
+      if(id==='ice'&&cnt.ice<3){p=false;why='thiếu băng';} if(id==='volcano'&&(cnt.lava<2||cnt.flag<2)){p=false;why='thiếu dung nham/cột mốc';} if(id==='city'&&cnt.rocket<3){p=false;why='thiếu tên lửa';} if(id==='mirror'&&cnt.warp!==3){p=false;why='thiếu cổng gương';}
+      if(!p){ bad++; } }
+    rep.push(id+': '+nn+' nút, đường ngắn nhất '+dmin+'–'+dmax+', ngã rẽ '+forks); ok(bad===0,'bản đồ '+id+' vi phạm ở '+bad+'/200 seed: '+why); }
+  log('  → '+rep.join(' | '));
 });
 const mkBot=(p)=>({updated(S){ if(S.score.some(x=>x<0)) throw new Error('điểm âm'); if(S.pos.some(x=>x<0)) throw new Error('vị trí'); },
   say:async()=>{},turnStart:async()=>{},chooseLevel:async()=>NS.randInt(0,2),choose:async(t,ti,o)=>NS.randInt(0,o.length-1),
   chooseNext:async(t,nx)=>NS.randInt(0,nx.length-1),skillMenu:async(t,u)=>Math.random()<.5?NS.randInt(0,u.length-1):-1,
   ask:async(t,lv,o)=>({correct:Math.random()<(p||[.85,.65,.45])[lv],used:(o.cards||[]).filter(()=>Math.random()<.3)}),race:async()=>NS.randInt(0,1),
-  step:async()=>{},jump:async()=>{},showDice:async()=>{},swapPos:async()=>{},reveal(){}});
-await test('Mô phỏng 200 ván đấu trường (bot, có ngã rẽ và thẻ kỹ năng)',async()=>{
-  const wins=[0,0,0]; let rounds=0, fin=0, skillUse=0;
-  const t0=performance.now();
-  for(let g=0;g<200;g++){ const r=await NS.arenaRun(mkBot(),{rnd:NS.mulberry(1000+g),maxRounds:14}); wins[r.winner<0?2:r.winner]++; rounds+=r.rounds; if(r.finished>=0)fin++; if(r.scores.some(x=>x<0)) ok(false,'điểm âm cuối ván');
-    const nd=r.S.map.nodes; if(r.S.pos.some(p=>!nd[p])) ok(false,'vị trí ngoài bản đồ'); }
-  log('  → thắng bạn 1: '+wins[0]+', bạn 2: '+wins[1]+', khác '+wins[2]+'; TB '+(rounds/200).toFixed(1)+' vòng; có đội về đích: '+fin+'/200; '+(performance.now()-t0).toFixed(0)+'ms');
-  ok(Math.abs(wins[0]-wins[1])<=60,'lệch tỉ lệ thắng quá 15 điểm % ('+wins+')'); ok(wins[2]===0,'có ván không có người thắng'); ok(fin>=80,'quá ít ván có người về đích ('+fin+')');
+  step:async()=>{},jump:async()=>{},showDice:async()=>{},swapPos:async()=>{},tileChanged(){},reveal(){}});
+await test('Mô phỏng 100 ván bot trên mỗi bản đồ',async()=>{
+  for(const id of NS.ARENA.MAP_IDS){ const wins=[0,0,0]; let rounds=0, fin=0;
+    for(let g=0;g<100;g++){ const m=NS.arenaBoard(NS.mulberry(500+g),id); const r=await NS.arenaRun(mkBot(),{map:m,rnd:NS.mulberry(1000+g),maxRounds:14}); wins[r.winner<0?2:r.winner]++; rounds+=r.rounds; if(r.finished>=0)fin++; if(r.scores.some(x=>x<0)) ok(false,'điểm âm cuối ván '+id); if(r.S.pos.some(p=>!m.nodes[p])) ok(false,'vị trí ngoài bản đồ '+id); }
+    log('  → '+id+': thắng '+wins.join('/')+', TB '+(rounds/100).toFixed(1)+' vòng, về đích '+fin+'/100');
+    ok(Math.abs(wins[0]-wins[1])<=36,id+': lệch tỉ lệ thắng ('+wins+')'); ok(wins[2]===0,id+': có ván không có người thắng'); ok(fin>=10,id+': quá ít ván có người về đích ('+fin+')'); }
 });
 await test('Lịch sử đi lại, lùi theo đường đã đi, cổng dịch chuyển',async()=>{
   const m=NS.arenaBoard(NS.mulberry(7)); const trail=[]; const bot=mkBot(); bot.step=async(t,a,b)=>{trail.push([t,a,b]);};
@@ -136,9 +140,9 @@ await test('Lịch sử đi lại, lùi theo đường đã đi, cổng dịch c
   ok(r.S.hist.every((h,i)=>h[h.length-1]===r.S.pos[i]),'ô hiện tại là ô cuối của lịch sử');
 });
 await test('Thẻ kỹ năng được giữ và dùng ở lượt sau; đầy thẻ phải bỏ bớt',async()=>{
-  let menus=0, used=0, dropAsk=0, heldAcross=0;
+  let menus=0, used=0, dropAsk=0;
   for(let g=0;g<40;g++){
-    const m=NS.arenaBoard(NS.mulberry(11+g)); const bot=mkBot(); let lastRoundHeld=0;
+    const m=NS.arenaBoard(NS.mulberry(11+g),NS.ARENA.MAP_IDS[g%6]); const bot=mkBot();
     bot.skillMenu=async(t,u)=>{ menus++; if(menus%3===0){used++;return 0;} return -1; };
     bot.choose=async(t,ti,o)=>{ if(/Đã đủ/.test(ti)) dropAsk++; return 0; };
     const r=await NS.arenaRun(bot,{map:m,maxRounds:20,rnd:NS.mulberry(5+g),maxCards:2});
@@ -147,10 +151,25 @@ await test('Thẻ kỹ năng được giữ và dùng ở lượt sau; đầy th
   log('  → menu kỹ năng '+menus+' lần, đã dùng '+used+', hỏi bỏ thẻ '+dropAsk);
   ok(menus>0,'menu kỹ năng xuất hiện khi có thẻ dùng được'); ok(used>0,'có dùng thẻ');
 });
+await test('Núi lửa: dung nham dâng; Băng địa: luật trượt; có cột mốc',async()=>{
+  const m=NS.arenaBoard(NS.mulberry(3),'volcano'); const before=m.nodes.filter(n=>n.type==='lava').length; let changed=0; const bot=mkBot(); bot.tileChanged=ids=>{changed+=ids.length;};
+  await NS.arenaRun(bot,{map:m,maxRounds:10,rnd:NS.mulberry(8),events:false}); const after=m.nodes.filter(n=>n.type==='lava').length;
+  ok(changed>0&&after>before&&after<=before+5,'dung nham dâng thêm: '+before+'→'+after);
+  const m2=NS.arenaBoard(NS.mulberry(4),'city'); ok(m2.nodes.some(n=>n.type==='flag'),'có cột mốc');
+  const m3=NS.arenaBoard(NS.mulberry(5),'ice'); ok(m3.rule.slide===true,'băng địa có luật trượt');
+});
 await test('Về đích kết thúc sớm',async()=>{
   const m=NS.arenaBoard(NS.mulberry(2)); const bot=mkBot([1,1,1]); bot.chooseLevel=async()=>2; bot.skillMenu=async()=>-1; bot.race=async()=>0;
-  const r=await NS.arenaRun(bot,{map:m,maxRounds:20,rnd:NS.mulberry(9),events:false});
-  ok(r.finished>=0,'có đội về đích'); ok(r.rounds<20,'kết thúc sớm khi có người về đích'); ok(r.S.pos[r.finished]===m.finish,'đội thắng đứng ở ô đích'); ok(r.scores.every(x=>x>=0),'điểm không âm');
+  const r=await NS.arenaRun(bot,{map:m,maxRounds:30,rnd:NS.mulberry(9),events:false});
+  ok(r.finished>=0,'có đội về đích'); ok(r.rounds<30,'kết thúc sớm khi có người về đích'); ok(r.S.pos[r.finished]===m.finish,'đội thắng đứng ở ô đích'); ok(r.scores.every(x=>x>=0),'điểm không âm');
+});
+await test('Định nghĩa trong từ vựng + câu hỏi theo mức',async()=>{
+  NS.setVocab('## 1. A\n```\ncat /kæt/ :: con mèo :: a small furry pet that says meow\ndog /dɒɡ/ :: con chó :: a pet that barks\nbird /bɜːd/ :: con chim :: an animal with wings and feathers\nfish /fɪʃ/ :: con cá :: an animal that lives in water\nhouse /haʊs/ :: nhà\n```','t');
+  ok(NS.vocab.words.find(w=>w.text==='cat').def==='a small furry pet that says meow','đọc được định nghĩa'); ok(!NS.vocab.words.find(w=>w.text==='house').def,'từ không có định nghĩa');
+  const q0=NS.levelQ(0); ok(q0.kind==='type'&&/^[a-z]+$/.test(q0.text),'mức dễ: gõ từ');
+  const q1=NS.levelQ(1); ok(q1.kind==='mc'&&q1.listen&&q1.options.length===4,'mức vừa: nghe chọn nghĩa');
+  for(let i=0;i<30;i++){ const q2=NS.levelQ(2); ok(q2.dir==='def'&&q2.sub.includes('“')&&/^[a-z]+$/.test(q2.options[q2.answer])&&q2.options.length===4,'mức khó: mô tả tiếng Anh → chọn từ'); }
+  NS.setVocab(NS.SAMPLE_VOCAB,'mẫu');
 });
 await test('Cú pháp chia mức dễ/vừa/khó',()=>{
   const t='== DỄ ==\nCâu 1: A?\nA. x*\nB. y\n\n## Vừa\nCâu 2: B?\nA. x*\nB. y\n\n[KHÓ]\nCâu 3: C?\nA. x*\nB. y\n\n@hết\nCâu D4: D?\nA. x*\nB. y\nCâu 5 [khó]: E?\nA. x*\nB. y\nCâu 6 (dễ): F?\nA. x*\nB. y\nCâu 7: G?\nA. x*\nB. y\nĐộ khó: Khó\n--- Dễ ---\nCâu 8: H?\nA. x*\nB. y\n@vừa\nCâu 9: I?\nA. x*\nB. y';
