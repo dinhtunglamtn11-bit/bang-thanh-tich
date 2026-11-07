@@ -104,15 +104,15 @@ await test('Bộ tạo ô chữ',()=>{
 await test('Bản đồ đấu trường 1000 seed (đồ thị)',()=>{
   const BAD=['trap','ice','hole']; let bad=0, why='';
   for(let s=1;s<=1000;s++){ const m=NS.arenaBoard(NS.mulberry(s)), n=m.nodes; let p=true;
-    if(m.nodes.length<45||m.nodes.length>80){p=false;why='số nút '+m.nodes.length;}
+    if(m.nodes.length<35||m.nodes.length>60){p=false;why='số nút '+m.nodes.length;}
     if(n[m.start].type!=='start'||n[m.finish].type!=='finish') p=false;
-    if(!isFinite(m.dist[m.start])||m.dist[m.start]<17||m.dist[m.start]>30){p=false;why='đường ngắn nhất '+m.dist[m.start];}
+    if(!isFinite(m.dist[m.start])||m.dist[m.start]<13||m.dist[m.start]>20){p=false;why='đường ngắn nhất '+m.dist[m.start];}
     if(m.dist.some(d=>!isFinite(d))){p=false;why='có nút không tới được đích';}
     n.forEach(x=>x.next.forEach(b=>{ if(BAD.includes(x.type)&&BAD.includes(n[b].type)){p=false;why='bẫy liền bẫy';} }));
     if(n.filter(x=>x.next.length>1).length<5){p=false;why='quá ít ngã rẽ';}
     m.portals.forEach(([a,b])=>{ if(n[a].type!=='warp'||n[a].warpTo!==b||n[b].type!=='plain'){p=false;why='cổng';} });
     const cnt={}; n.forEach(x=>cnt[x.type]=(cnt[x.type]||0)+1);
-    if(cnt.bonus!==8||cnt.trap!==4||cnt.ice!==3||cnt.hole!==1||cnt.steal!==2||cnt.swap!==2||cnt.mystery!==7||cnt.treasure!==1||cnt.warp!==2){p=false;why='đếm ô '+JSON.stringify(cnt);}
+    if(cnt.bonus!==6||cnt.trap!==3||cnt.ice!==2||cnt.hole!==1||cnt.steal!==2||cnt.swap!==1||cnt.mystery!==6||cnt.treasure!==1||cnt.warp!==2){p=false;why='đếm ô '+JSON.stringify(cnt);}
     if(!p){ bad++; if(bad<3) log('   seed '+s+': '+why); } } ok(bad===0,'vi phạm ở '+bad+' seed');
 });
 const mkBot=(p)=>({updated(S){ if(S.score.some(x=>x<0)) throw new Error('điểm âm'); if(S.pos.some(x=>x<0)) throw new Error('vị trí'); },
@@ -123,10 +123,10 @@ const mkBot=(p)=>({updated(S){ if(S.score.some(x=>x<0)) throw new Error('điểm
 await test('Mô phỏng 200 ván đấu trường (bot, có ngã rẽ và thẻ kỹ năng)',async()=>{
   const wins=[0,0,0]; let rounds=0, fin=0, skillUse=0;
   const t0=performance.now();
-  for(let g=0;g<200;g++){ const r=await NS.arenaRun(mkBot(),{rnd:NS.mulberry(1000+g)}); wins[r.winner<0?2:r.winner]++; rounds+=r.rounds; if(r.finished>=0)fin++; if(r.scores.some(x=>x<0)) ok(false,'điểm âm cuối ván');
+  for(let g=0;g<200;g++){ const r=await NS.arenaRun(mkBot(),{rnd:NS.mulberry(1000+g),maxRounds:14}); wins[r.winner<0?2:r.winner]++; rounds+=r.rounds; if(r.finished>=0)fin++; if(r.scores.some(x=>x<0)) ok(false,'điểm âm cuối ván');
     const nd=r.S.map.nodes; if(r.S.pos.some(p=>!nd[p])) ok(false,'vị trí ngoài bản đồ'); }
   log('  → thắng bạn 1: '+wins[0]+', bạn 2: '+wins[1]+', khác '+wins[2]+'; TB '+(rounds/200).toFixed(1)+' vòng; có đội về đích: '+fin+'/200; '+(performance.now()-t0).toFixed(0)+'ms');
-  ok(Math.abs(wins[0]-wins[1])<=60,'lệch tỉ lệ thắng quá 15 điểm % ('+wins+')'); ok(wins[2]===0,'có ván không có người thắng'); ok(fin>=150,'quá ít ván có người về đích ('+fin+')');
+  ok(Math.abs(wins[0]-wins[1])<=60,'lệch tỉ lệ thắng quá 15 điểm % ('+wins+')'); ok(wins[2]===0,'có ván không có người thắng'); ok(fin>=80,'quá ít ván có người về đích ('+fin+')');
 });
 await test('Lịch sử đi lại, lùi theo đường đã đi, cổng dịch chuyển',async()=>{
   const m=NS.arenaBoard(NS.mulberry(7)); const trail=[]; const bot=mkBot(); bot.step=async(t,a,b)=>{trail.push([t,a,b]);};
@@ -141,7 +141,7 @@ await test('Thẻ kỹ năng được giữ và dùng ở lượt sau; đầy th
     const m=NS.arenaBoard(NS.mulberry(11+g)); const bot=mkBot(); let lastRoundHeld=0;
     bot.skillMenu=async(t,u)=>{ menus++; if(menus%3===0){used++;return 0;} return -1; };
     bot.choose=async(t,ti,o)=>{ if(/Đã đủ/.test(ti)) dropAsk++; return 0; };
-    const r=await NS.arenaRun(bot,{map:m,maxRounds:14,rnd:NS.mulberry(5+g),maxCards:2});
+    const r=await NS.arenaRun(bot,{map:m,maxRounds:20,rnd:NS.mulberry(5+g),maxCards:2});
     ok(r.S.cards.every(c=>c.length<=2),'không giữ quá số thẻ tối đa'); ok(r.S.cards.flat().every(c=>NS.ARENA.CARD[c]),'thẻ hợp lệ');
   }
   log('  → menu kỹ năng '+menus+' lần, đã dùng '+used+', hỏi bỏ thẻ '+dropAsk);

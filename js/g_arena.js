@@ -16,8 +16,8 @@ const CARD = {
   swapq: { icon: '🔁', name: 'Đổi câu', desc: 'Đổi sang một câu hỏi khác khi đang trả lời', when: 'q' },
   shield: { icon: '🛡️', name: 'Khiên', desc: 'Chặn một hiệu ứng xấu (sẽ được hỏi khi bị tấn công)', when: 'react' },
   freeze: { icon: '🥶', name: 'Đóng băng', desc: 'Đối thủ mất lượt kế tiếp', when: 'turn' },
-  dice2: { icon: '🎲', name: 'Xúc xắc đôi', desc: 'Thêm 1 xúc xắc ở lượt này', when: 'turn' },
-  boots: { icon: '👟', name: 'Giày bay', desc: 'Nếu trả lời đúng, đi thêm 3 ô', when: 'turn' },
+  dice2: { icon: '🎲', name: 'Xúc xắc đôi', desc: 'Tung 2 lần, lấy kết quả cao hơn (vẫn tối đa 2 ô)', when: 'turn' },
+  boots: { icon: '👟', name: 'Giày bay', desc: 'Nếu trả lời đúng, đi thêm 1 ô', when: 'turn' },
   magnet: { icon: '🧲', name: 'Nam châm', desc: 'Hút 2 điểm của đối thủ', when: 'turn' }
 };
 const CARD_KEYS = Object.keys(CARD);
@@ -42,12 +42,12 @@ function layout() {
   const F1 = add(82, 20, 'top'), F2 = add(90, 20, 'top'), G1 = add(82, 40, 'bot'), G2 = add(90, 40, 'bot'), FIN = add(96, 30, 'end');
   link(M, F1); link(F1, F2); link(F2, FIN); link(M, G1); link(G1, G2); link(G2, FIN);
   const stem = chain(S, J1, [[5, 30], [22, 30]], 5.5, 'stem');
-  const up = chain(J1, M, [[22, 30], [27, 19], [37, 9], [50, 7], [63, 10], [71, 19], [75, 30]], 4.6, 'up');
-  const mid = chain(J1, M, [[22, 30], [75, 30]], 4.6, 'mid');
-  const low = chain(J1, M, [[22, 30], [27, 41], [37, 51], [50, 53], [63, 50], [71, 41], [75, 30]], 4.6, 'low');
+  const up = chain(J1, M, [[22, 30], [27, 19], [37, 9], [50, 7], [63, 10], [71, 19], [75, 30]], 7, 'up');
+  const mid = chain(J1, M, [[22, 30], [75, 30]], 7, 'mid');
+  const low = chain(J1, M, [[22, 30], [27, 41], [37, 51], [50, 53], [63, 50], [71, 41], [75, 30]], 7, 'low');
   /* cầu nối giữa các đường: rẽ sang đường khác khi đi ngang */
-  link(up[5], mid[4]); link(low[5], mid[4]); link(mid[7], up[11]); link(mid[7], low[11]);
-  return { nodes, start: S, finish: FIN, J1, M, F1, F2, G1, G2, stem, up, mid, low, portals: [[low[3], up[13]], [up[3], mid[9]]] };
+  link(up[3], mid[2]); link(low[3], mid[2]); link(mid[4], up[7]); link(mid[4], low[7]);
+  return { nodes, start: S, finish: FIN, J1, M, F1, F2, G1, G2, stem, up, mid, low, portals: [[low[2], up[8]], [up[1], mid[5]]] };
 }
 
 /* Bảng chơi: cùng hình dạng, ô chức năng được xếp ngẫu nhiên theo từng con đường */
@@ -59,9 +59,9 @@ NS.arenaBoard = function (rnd) {
     [[L.F1, 'bonus'], [L.F2, 'mystery'], [L.G1, 'ice'], [L.G2, 'bonus']].forEach(([i, t]) => { nodes[i].type = t; reserved.add(i); });
     nodes[L.start].type = 'start'; nodes[L.finish].type = 'finish';
     const fill = (ids, types) => { const free = NS.shuffle(ids.filter(i => !reserved.has(i)), rnd); types.forEach((t, k) => { nodes[free[k]].type = t; }); };
-    fill(L.up, ['bonus', 'bonus', 'bonus', 'mystery', 'mystery', 'treasure', 'trap', 'swap']);
-    fill(L.mid, ['trap', 'trap', 'steal', 'ice', 'hole', 'bonus', 'mystery']);
-    fill(L.low, ['mystery', 'mystery', 'mystery', 'bonus', 'bonus', 'swap', 'steal', 'trap', 'ice']);
+    fill(L.up, ['bonus', 'bonus', 'mystery', 'mystery', 'treasure', 'trap']);
+    fill(L.mid, ['trap', 'steal', 'ice', 'hole', 'bonus']);
+    fill(L.low, ['mystery', 'mystery', 'mystery', 'bonus', 'swap', 'steal', 'trap']);
     let ok = true;
     [L.up, L.mid, L.low].forEach(r => { if (BAD.has(nodes[r[0]].type)) ok = false; });
     nodes.forEach(n => n.next.forEach(b => { if (BAD.has(n.type) && BAD.has(nodes[b].type)) ok = false; }));
@@ -81,7 +81,7 @@ const EVENT_TXT = { storm: '🌪️ BÃO! Hiệu ứng xấu x2 trong 1 vòng', 
 
 /* ui: giao diện (hoặc bot). Mọi phương thức có thể async. */
 NS.arenaRun = async function (ui, o) {
-  o = o || {}; const rnd = o.rnd || NS.rand, maxRounds = o.maxRounds || 10, maxCards = o.maxCards || 3, events = o.events !== false;
+  o = o || {}; const rnd = o.rnd || NS.rand, maxRounds = o.maxRounds || 14, maxCards = o.maxCards || 3, events = o.events !== false;
   const map = o.map || NS.arenaBoard(rnd), nodes = map.nodes, FIN = map.finish;
   const S = { pos: [map.start, map.start], hist: [[map.start], [map.start]], score: [0, 0], skip: [0, 0], cards: [[], []], streak: [0, 0], round: 0, mods: { storm: 0, festival: 0, golden: 0 }, lastUnder: [-9, -9], finished: -1, map, bonus: [{ dice: 0, steps: 0 }, { dice: 0, steps: 0 }], log: [] };
   const other = t => 1 - t, clamp0 = x => Math.max(0, x);
@@ -178,8 +178,8 @@ NS.arenaRun = async function (ui, o) {
       const c = usable[i], o2 = other(t); useCard(t, c);
       switch (c) {
         case 'freeze': if (!(await tryBlock(o2))) { S.skip[o2]++; await say('🥶 Đối thủ sẽ mất lượt kế tiếp!', 'good'); } break;
-        case 'dice2': S.bonus[t].dice++; await say('🎲 Lượt này bạn có thêm 1 xúc xắc!', 'good'); break;
-        case 'boots': S.bonus[t].steps += 3; await say('👟 Nếu trả lời đúng, bạn đi thêm 3 ô!', 'good'); break;
+        case 'dice2': S.bonus[t].dice++; await say('🎲 Lượt này bạn tung 2 lần, lấy kết quả cao hơn!', 'good'); break;
+        case 'boots': S.bonus[t].steps += 1; await say('👟 Nếu trả lời đúng, bạn đi thêm 1 ô!', 'good'); break;
         case 'magnet': if (!(await tryBlock(o2))) { const x = Math.min(2, S.score[o2]); S.score[o2] -= x; S.score[t] += x; await say('🧲 Hút ' + x + ' điểm!', 'good'); } break;
       }
       sync();
@@ -203,8 +203,8 @@ NS.arenaRun = async function (ui, o) {
     if (correct) {
       S.streak[t]++; const pts = [1, 2, 3][lv] * f; addScore(t, pts);
       if (S.streak[t] % 3 === 0) { await say('🔥 3 câu đúng liên tiếp!', 'good'); await giveCard(t); }
-      const dice = []; const n = [1, 2, 3][lv] + S.bonus[t].dice; for (let i = 0; i < n; i++) dice.push(1 + Math.floor(rnd() * 6));
-      const extraSteps = bonusSteps + S.bonus[t].steps, total = dice.reduce((a, b) => a + b, 0) + extraSteps;
+      const dice = [1 + Math.floor(rnd() * 2)]; if (S.bonus[t].dice > 0) dice.push(1 + Math.floor(rnd() * 2));
+      const extraSteps = bonusSteps + S.bonus[t].steps, total = Math.max(...dice) + extraSteps;
       if (ui.showDice) await ui.showDice(t, dice, extraSteps);
       await walk(t, total);
       if (S.pos[t] !== FIN) await applyTile(t);
@@ -246,9 +246,9 @@ NS.arenaRun = async function (ui, o) {
 
 /* ---------- Giao diện ---------- */
 NS.games.push({
-  id: 'arena', name: 'Đấu trường từ vựng', icon: '🎲', desc: 'Trả lời đúng để đổ xúc xắc, đi trên bản đồ có ngã rẽ, cầu nối, cổng dịch chuyển. Thu thập thẻ kỹ năng và dùng khi cần!',
+  id: 'arena', name: 'Đấu trường từ vựng', icon: '🎲', desc: 'Trả lời đúng để tung xúc xắc 1–2 ô, đi trên bản đồ có ngã rẽ, cầu nối, cổng dịch chuyển. Thu thập thẻ kỹ năng và dùng khi cần!',
   options: [
-    { key: 'rounds', label: 'Số vòng tối đa', type: 'select', choices: [[6, '6'], [8, '8'], [10, '10'], [14, '14']], def: 10 },
+    { key: 'rounds', label: 'Số vòng tối đa', type: 'select', choices: [[8, '8'], [10, '10'], [14, '14'], [20, '20'], [30, '30']], def: 14 },
     { key: 'qtime', label: 'Thời gian trả lời mỗi câu', type: 'select', choices: [[8, '8 giây'], [12, '12 giây'], [20, '20 giây'], [30, '30 giây'], [0, 'Không giới hạn']], def: 12 },
     { key: 'maxCards', label: 'Số thẻ kỹ năng được giữ tối đa', type: 'select', choices: [[2, '2'], [3, '3'], [4, '4'], [5, '5']], def: 3 },
     { key: 'events', label: 'Sự kiện bất ngờ mỗi 3 vòng (bão, lễ hội, giờ vàng...)', type: 'toggle', def: true },
@@ -314,7 +314,7 @@ NS.games.push({
       say: async m => { showMsg(m); NS.sfx(/Sai|bad|Mất|Trả/.test(m) ? 'bad' : 'pow'); await wait(m.length > 50 ? 2100 : 1400); },
       turnStart: async (t, S, r) => { active = t; sh.setActive(t); sh.setInfo('Vòng ' + r + '/' + o.rounds); showMsg('Đến lượt ' + ic(t) + ' ' + names[t]); await wait(800); },
       roundStart: async () => {},
-      chooseLevel: t => btnRow(t, ic(t) + ' ' + names[t] + ' chọn mức câu hỏi', ['Dễ · 🎲×1 · +1đ', 'Vừa · 🎲×2 · +2đ (sai: lùi 1)', 'Khó · 🎲×3 · +3đ (sai: lùi 2, −1đ)'], ['green', '', 'red']),
+      chooseLevel: t => btnRow(t, ic(t) + ' ' + names[t] + ' chọn mức câu hỏi', ['Dễ · +1đ', 'Vừa · +2đ (sai: lùi 1 ô)', 'Khó · +3đ (sai: lùi 2 ô, −1đ)'], ['green', '', 'red']),
       choose: (t, title, opts) => btnRow(t, title, opts),
       skillMenu: (t, usable) => btnRow(t, '🎴 Thẻ kỹ năng của ' + ic(t) + ' ' + names[t], usable.map(c => CARD[c].icon + ' ' + CARD[c].name + ' — ' + CARD[c].desc).concat(['▶ Không dùng (giữ lại), bắt đầu trả lời']), usable.map(() => 'gold').concat(['green']), 'Dùng ngay hoặc giữ lại cho lượt sau — tùy bạn!').then(i => (i >= usable.length ? -1 : i)),
       chooseNext: (t, nexts, left) => new Promise(res => {
@@ -329,7 +329,7 @@ NS.games.push({
       showDice: async (t, dice, bonus) => {
         const faces = '⚀⚁⚂⚃⚄⚅'; const d = h('div', { class: 'adice' }, '🎲'); setPanel(t, d);
         for (let i = 0; i < 8; i++) { d.textContent = dice.map(() => faces[NS.randInt(0, 5)]).join(' '); NS.sfx('dice'); await wait(90); }
-        d.textContent = dice.map(x => faces[x - 1]).join(' ') + '  = ' + (dice.reduce((a, b) => a + b, 0) + bonus) + (bonus ? ' (+' + bonus + ' thêm)' : ''); await wait(900);
+        d.textContent = dice.map(x => faces[x - 1]).join(' ') + '  = ' + (Math.max(...dice) + bonus) + (dice.length > 1 ? ' (lấy số cao hơn)' : '') + (bonus ? ' (+' + bonus + ' thêm)' : ''); await wait(900);
       },
       step: async (t, from, to) => { place(t, to); NS.sfx('tick'); await wait(230); },
       jump: async (t, path, kind) => {
