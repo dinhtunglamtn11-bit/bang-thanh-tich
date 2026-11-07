@@ -123,14 +123,14 @@ await test('6 bản đồ đấu trường × 200 seed (đồ thị)',()=>{
 });
 const mkBot=(p)=>({updated(S){ if(S.score.some(x=>x<0)) throw new Error('điểm âm'); if(S.pos.some(x=>x<0)) throw new Error('vị trí'); },
   say:async()=>{},turnStart:async()=>{},chooseLevel:async()=>NS.randInt(0,2),choose:async(t,ti,o)=>NS.randInt(0,o.length-1),
-  chooseNext:async(t,nx)=>NS.randInt(0,nx.length-1),skillMenu:async(t,u)=>Math.random()<.5?NS.randInt(0,u.length-1):-1,
+  chooseNext:async(t,nx,l,S)=>Math.random()<.7?nx.reduce((b,x,i)=>S.map.dist[x]<S.map.dist[nx[b]]?i:b,0):NS.randInt(0,nx.length-1),skillMenu:async(t,u)=>Math.random()<.5?NS.randInt(0,u.length-1):-1,
   ask:async(t,lv,o)=>({correct:Math.random()<(p||[.85,.65,.45])[lv],used:(o.cards||[]).filter(()=>Math.random()<.3)}),race:async()=>NS.randInt(0,1),
   step:async()=>{},jump:async()=>{},showDice:async()=>{},swapPos:async()=>{},tileChanged(){},reveal(){}});
 await test('Mô phỏng 100 ván bot trên mỗi bản đồ',async()=>{
   for(const id of NS.ARENA.MAP_IDS){ const wins=[0,0,0]; let rounds=0, fin=0;
     for(let g=0;g<100;g++){ const m=NS.arenaBoard(NS.mulberry(500+g),id); const r=await NS.arenaRun(mkBot(),{map:m,rnd:NS.mulberry(1000+g),maxRounds:14}); wins[r.winner<0?2:r.winner]++; rounds+=r.rounds; if(r.finished>=0)fin++; if(r.scores.some(x=>x<0)) ok(false,'điểm âm cuối ván '+id); if(r.S.pos.some(p=>!m.nodes[p])) ok(false,'vị trí ngoài bản đồ '+id); }
     log('  → '+id+': thắng '+wins.join('/')+', TB '+(rounds/100).toFixed(1)+' vòng, về đích '+fin+'/100');
-    ok(Math.abs(wins[0]-wins[1])<=36,id+': lệch tỉ lệ thắng ('+wins+')'); ok(wins[2]===0,id+': có ván không có người thắng'); ok(fin>=10,id+': quá ít ván có người về đích ('+fin+')'); }
+    ok(Math.abs(wins[0]-wins[1])<=36,id+': lệch tỉ lệ thắng ('+wins+')'); ok(wins[2]===0,id+': có ván không có người thắng'); ok(fin>=20,id+': quá ít ván có người về đích ('+fin+')'); }
 });
 await test('Lịch sử đi lại, lùi theo đường đã đi, cổng dịch chuyển',async()=>{
   const m=NS.arenaBoard(NS.mulberry(7)); const trail=[]; const bot=mkBot(); bot.step=async(t,a,b)=>{trail.push([t,a,b]);};
