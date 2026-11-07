@@ -52,3 +52,9 @@ if (Test-Path $lnk) {
   "Shortcut icon: " + $ws.CreateShortcut($lnk).IconLocation
 }
 "Created $out ($((Get-Item $out).Length) bytes)"
+
+# Icon PNG cho tablet/điện thoại (Android cần 192/512, iPad/iPhone cần apple-touch-icon 180)
+foreach ($pair in @(@(192, 'icon-192.png'), @(512, 'icon-512.png'), @(180, 'apple-touch-icon.png'))) {
+  [IO.File]::WriteAllBytes((Join-Path $root $pair[1]), (Get-Png $pair[0]))
+}
+"Created PNG icons"
