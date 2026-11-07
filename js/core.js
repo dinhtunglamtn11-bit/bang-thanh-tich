@@ -39,11 +39,16 @@ const defTeams = () => {
   try { if (typeof S !== 'undefined' && S.students && S.students.length >= 2) return [S.students[0].name || 'Cam', S.students[1].name || 'Xanh']; } catch (e) {}
   return ['Cam', 'Xanh'];
 };
-NS.cfg = Object.assign({ topics: [], phrases: false, level: 2, dir: 'mix', source: 'auto', sound: true, vibrate: true, teams: null }, LS.get('pg-cfg', {}));
+NS.cfg = Object.assign({ topics: [], phrases: false, level: 2, dir: 'mix', source: 'auto', sound: true, vibrate: true, teams: null, split: true, quickBonus: true, wrongPenalty: true }, LS.get('pg-cfg', {}));
 if (!NS.cfg.teams) NS.cfg.teams = defTeams();
 NS.saveCfg = () => LS.set('pg-cfg', NS.cfg);
 NS.TEAM_ICON = ['🟠', '🔵'];
 NS.TEAM_TAG = ['CAM', 'XANH'];
+/* Hình đại diện của mỗi đội = con vật của học sinh trong bảng thành tích (sửa tại chỗ để mọi chỗ dùng đều thấy) */
+NS.refreshTeams = function () {
+  try { if (typeof S !== 'undefined' && S.students) [0, 1].forEach(i => { if (S.students[i] && S.students[i].avatar) NS.TEAM_ICON[i] = S.students[i].avatar; }); } catch (e) {}
+};
+NS.refreshTeams();
 
 /* ---------- Từ vựng ---------- */
 const PLURAL_OK = new Set(['bus', 'gas', 'lens', 'always', 'sometimes', 'news', 'this', 'his', 'yes', 'physics', 'is', 'has', 'chess', 'canvas', 'christmas', 'perhaps', 'across', 'thus', 'plus', 'us', 'as', 'does', 'was']);
@@ -297,6 +302,7 @@ NS.kbd = function (onChar, onBack, onEnter, opt) {
 /* ---------- Khung chơi chung ---------- */
 NS.curShell = null;
 NS.timer = function (ms, onTick, onEnd) {
+  if (!(ms > 0)) return { stop() {}, left: Infinity, add() {} }; /* 0 = không giới hạn thời gian */
   let left = ms, stopped = false;
   const sh = NS.curShell;
   const iv = setInterval(() => {
@@ -312,8 +318,9 @@ NS.timer = function (ms, onTick, onEnd) {
 NS.shell = function (root, o) {
   if (NS.curShell) NS.curShell.destroy();
   root.innerHTML = '';
+  NS.refreshTeams();
   const names = NS.cfg.teams;
-  const sh = { paused: false, dead: false, timers: new Set(), scores: [0, 0] };
+  const sh = { paused: false, dead: false, timers: new Set(), scores: [0, 0], tags: [[], []], split: !!NS.cfg.split };
   const tbox = i => {
     const pts = h('span', { class: 'tpts' }, '0');
     const el = h('div', { class: 'tbox t' + i },
@@ -328,13 +335,22 @@ NS.shell = function (root, o) {
   const el = h('div', { class: 'gshell' }, h('div', { class: 'gbar' }, t0.el, h('div', { class: 'gmid' }, title, info, pauseBtn), t1.el), area, ov);
   root.append(el);
   sh.el = el; sh.area = area;
-  sh.setScore = (i, v) => { sh.scores[i] = v; tb[i].pts.textContent = v; tb[i].pts.classList.remove('bump'); void tb[i].pts.offsetWidth; tb[i].pts.classList.add('bump'); };
+  sh.setScore = (i, v) => { sh.scores[i] = v; tb[i].pts.textContent = v; sh.tags[i].forEach(e => { e.textContent = v; }); tb[i].pts.classList.remove('bump'); void tb[i].pts.offsetWidth; tb[i].pts.classList.add('bump'); };
+  /* ô điểm nhỏ hiện trong nửa màn hình của từng đội (tự cập nhật) */
+  sh.tag = i => { const e = h('b', { class: 'stag' }, String(sh.scores[i])); sh.tags[i].push(e); return e; };
+  /* Chia đôi màn hình: nửa trên xoay 180° cho bạn ngồi đối diện. Trả về {halves:[dưới(đội 0), trên(đội 1)], mid} */
+  sh.splitView = () => {
+    area.innerHTML = ''; area.classList.add('split');
+    const hv = [h('div', { class: 'half h0' }), h('div', { class: 'half h1' })], mid = h('div', { class: 'splitmid' });
+    area.append(h('div', { class: 'splitwrap' }, hv[1], mid, hv[0])); return { halves: hv, mid };
+  };
+  sh.plainView = () => { area.innerHTML = ''; area.classList.remove('split'); return area; };
   sh.addScore = (i, d, floor) => { sh.setScore(i, Math.max(floor === undefined ? 0 : floor, sh.scores[i] + d)); };
   sh.setInfo = t => { info.textContent = t; };
   sh.setActive = i => { tb[0].el.classList.toggle('active', i === 0); tb[1].el.classList.toggle('active', i === 1); };
-  sh.overlay = node => { ov.innerHTML = ''; ov.append(node); ov.classList.add('show'); };
+  sh.overlay = (node, team) => { ov.innerHTML = ''; node.classList.toggle('flip', !!(sh.split && team === 1)); ov.append(node); ov.classList.add('show'); };
   sh.closeOverlay = () => { ov.classList.remove('show'); ov.innerHTML = ''; };
-  sh.sleep = ms => new Promise(res => { if (sh.dead) return res(false); NS.timer(ms, null, () => res(!sh.dead)); sh.sleepers = (sh.sleepers || []).concat(res); });
+  sh.sleep = ms => new Promise(res => { if (sh.dead) return res(false); NS.timer(Math.max(1, ms), null, () => res(!sh.dead)); sh.sleepers = (sh.sleepers || []).concat(res); });
   sh.destroy = () => { sh.dead = true; sh.timers.forEach(s => s()); sh.timers.clear(); try { speechSynthesis.cancel(); } catch (e) {} (sh.sleepers || []).forEach(r => r(false)); document.body.classList.remove('playing'); if (NS.curShell === sh) NS.curShell = null; };
   sh.toast = (msg, ms) => { const t = h('div', { class: 'gtoast' }, msg); el.append(t); setTimeout(() => t.remove(), ms || 1500); };
   pauseBtn.addEventListener('click', () => {
@@ -370,11 +386,11 @@ NS.shell = function (root, o) {
 };
 
 /* Hộp chọn nhanh: trả về Promise<index> */
-NS.choose = function (sh, title, options, sub) {
+NS.choose = function (sh, title, options, sub, team) {
   return new Promise(res => {
     const box = h('div', { class: 'gdlg' }, h('h2', {}, title), sub ? h('p', {}, sub) : null,
       h('div', { class: 'chbtns' }, options.map((t, i) => NS.tap(h('button', { type: 'button', class: i === 0 ? 'green' : '' }, t), () => { sh.closeOverlay(); res(i); }))));
-    sh.overlay(box);
+    sh.overlay(box, team);
   });
 };
 })();

@@ -26,12 +26,16 @@ const LABELS = {
 const TYPES = ['trac-nghiem', 'dien-tu', 'dung-sai', 'sap-xep-chu', 'sap-xep-cau', 'nghe', 'ghep-cap', 'o-chu'];
 const TYPE_ALIAS = { 'trac nghiem': 'trac-nghiem', 'dien tu': 'dien-tu', 'dung sai': 'dung-sai', 'sap xep chu': 'sap-xep-chu', 'dao chu': 'sap-xep-chu', 'sap xep cau': 'sap-xep-cau', 'nghe': 'nghe', 'ghep cap': 'ghep-cap', 'o chu': 'o-chu' };
 const DIRS = { 'chu de': 'topic', 'do kho': 'difficulty', 'dang': 'type', 'bai': 'lesson', 'tag': 'tags', 'diem': 'points' };
-const OPEN_Q = /^\s*(Câu|Cau|Q)\s*(\d+)\s*[:.)]\s*(.*)$/i;
+/* Câu 3: | Câu D3: (D/V/K = dễ/vừa/khó) | Câu 3 [khó]: | Câu 3 (dễ): */
+const LEVEL_WORD = '(dễ|de|easy|vừa|vua|trung bình|trung binh|medium|khó|kho|hard)';
+const OPEN_Q = new RegExp('^\\s*(Câu|Cau|Q)\\s*([DVKdvk])?\\s*(\\d+)\\s*(?:[\\[(]\\s*' + LEVEL_WORD + '\\s*[\\])])?\\s*[:.)]\\s*(.*)$', 'i');
+/* Dòng chia mức: "== DỄ ==", "## Vừa", "[KHÓ]", "--- Khó ---", "@dễ" */
+const SECT = new RegExp('^\\s*(?:={2,}|#{1,3}|-{3,}|@|\\[)\\s*(?:mức|muc|độ khó|do kho)?\\s*:?\\s*' + LEVEL_WORD + '\\s*(?:={2,}|-{3,}|\\])?\\s*$', 'i');
 const OPEN_C = /^\s*(Bộ thẻ|Bo the|Cards)\s*:\s*(.*)$/i;
 const OPEN_P = /^\s*(Ô chữ|O chu|Puzzle)\s*:\s*(.*)$/i;
 const OPT = /^\s*([A-F])\s*[.)]\s+(.+)$/;
 const LBL = /^\s*([A-Za-zÀ-ỹĐđ ]{1,24}?)\s*:\s*(.*)$/;
-const diffOf = v => { const f = fold(v); return ['de', '1'].includes(f) ? 1 : ['kho', '3'].includes(f) ? 3 : 2; };
+const diffOf = v => { const f = fold(v); return ['de', '1', 'easy', 'd'].includes(f) ? 1 : ['kho', '3', 'hard', 'k'].includes(f) ? 3 : 2; };
 const hash = s => { let h = 5381; for (let i = 0; i < s.length; i++) h = ((h << 5) + h + s.charCodeAt(i)) | 0; return 'q' + (h >>> 0).toString(36); };
 
 NS.parseQuestions = function (text, opts) {
@@ -53,13 +57,18 @@ NS.parseQuestions = function (text, opts) {
     const n = i + 1;
     if (/^\s*\/\//.test(raw)) return;
     if (/^\s*-{3,}\s*$/.test(raw)) { close(); return; }
-    let m = raw.match(/^\s*@(hết|het)\s*$/i);
+    let m = raw.match(SECT);
+    if (m) { close(); defaults = Object.assign({}, defaults, { difficulty: m[1] }); return; }
+    m = raw.match(/^\s*@(hết|het)\s*$/i);
     if (m) { close(); defaults = {}; return; }
     m = raw.match(/^\s*@([^:]+?)\s*:\s*(.*)$/);
     if (m) { close(); const k = DIRS[fold(m[1])]; if (k) defaults[k] = m[2].trim(); else warn('W003', n, 'Chỉ thị lạ: @' + m[1], raw); return; }
     if ((m = raw.match(OPEN_C))) { open('cards', n, m[2], defaults); return; }
     if ((m = raw.match(OPEN_P))) { open('puzzle', n, m[2], defaults); return; }
-    if ((m = raw.match(OPEN_Q))) { open('q', n, m[3], defaults); return; }
+    if ((m = raw.match(OPEN_Q))) {
+      const lvTag = m[2] || m[4];
+      open('q', n, m[5], defaults); if (lvTag) cur.defaults.difficulty = lvTag; return;
+    }
     if (hasOpeners) { if (cur) cur.lines.push({ n, s: raw }); return; }
     if (!raw.trim()) { close(); return; }
     if (!cur) open('q', n, raw, defaults); else cur.lines.push({ n, s: raw });

@@ -6,7 +6,7 @@
 - **Đua nghe (game 5):** mỗi đội chỉ được trả lời **một lần mỗi vòng**. Sai thì bị khóa nút đến hết vòng và bị −1 điểm. Hai đội cùng sai thì kết thúc vòng.
 - **Lật thẻ (game 4):** có thẻ bom thì bảng chỉ có 15, 19 hoặc 29 thẻ (đủ chỗ cho 1 thẻ bom). Hòa điểm thì xét số cặp ghép.
 - **Ô chữ (game 2):** "cột ô cam" là vị trí chữ cam trong từ (từ căn lề trái). Chưa làm "Khóa hàng" (tùy chọn). Sai khi đoán từ khóa bị −5 điểm.
-- **Đấu trường (game 3):** hai đội luân phiên ai đi trước mỗi vòng để không bên nào được lợi khi về đích. Nếu đội đi sau về đích trước thì kết thúc luôn (đội kia đã đi trong vòng đó). Mô phỏng 200 ván bằng bot cho tỉ lệ thắng hai bên cân bằng.
+- **Đấu trường (game 3):** bản đồ đồ thị cố định về hình dạng (ô chức năng xếp ngẫu nhiên theo từng đường), không còn ô ẩn. Lùi đi theo đúng đường đã đi. Hai đội luân phiên ai đi trước mỗi vòng. Thẻ kỹ năng giữ được tối đa 3 (chỉnh trong tùy chọn). Mô phỏng 200 ván bằng bot cho tỉ lệ thắng cân bằng.
 - **Cú pháp 3A:** dạng `sap-xep-cau` được đọc, kiểm tra, xuất lại nhưng chưa có game dùng riêng (Đảo chữ chỉ dùng `sap-xep-chu`). Câu `dien-tu` được lưu và dùng trong Đấu trường chỉ khi có `Từ:` để tự dựng lựa chọn.
 - **PWA:** có `manifest.webmanifest` và `sw.js` (ưu tiên mạng, rơi về bộ nhớ đệm khi offline). Font VT323 tải từ Google Fonts nên lần đầu cần mạng.
 - **Chưa có âm thanh thu sẵn:** để trống `audio/`; bật "Ưu tiên file âm thanh thu sẵn" trong Cài đặt để dùng `audio/<id-từ>.mp3`.

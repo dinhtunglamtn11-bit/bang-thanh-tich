@@ -22,14 +22,16 @@ NS.games.push({
   id: 'anagram', name: 'Đảo chữ cái', icon: '🔤', desc: 'Sắp xếp các chữ cái bị xáo thành từ tiếng Anh đúng. Ai xếp đúng trước thì ghi điểm!',
   options: [
     { key: 'rounds', label: 'Số vòng', type: 'select', choices: [[5, '5'], [8, '8'], [10, '10'], [12, '12']], def: 8 },
-    { key: 'time', label: 'Thời gian mỗi vòng', type: 'select', choices: [[25, '25 giây'], [40, '40 giây'], [60, '60 giây']], def: 40 },
+    { key: 'time', label: 'Thời gian mỗi vòng', type: 'select', choices: [[15, '15 giây'], [25, '25 giây'], [40, '40 giây'], [60, '60 giây'], [90, '90 giây'], [0, 'Không giới hạn']], def: 40 },
+    { key: 'hints', label: 'Số lần gợi ý chữ đầu mỗi đội', type: 'select', choices: [[0, 'Không có gợi ý'], [1, '1 lần'], [2, '2 lần'], [3, '3 lần']], def: 2 },
+    { key: 'showMeaning', label: 'Hiện nghĩa tiếng Việt làm đề bài (tắt = chỉ đoán theo chữ)', type: 'toggle', def: true },
     { key: 'ipa', label: 'Hiện phiên âm làm gợi ý', type: 'toggle', def: false }
   ],
   start(ctx) {
     const o = ctx.opt, sh = NS.shell(ctx.root, { title: '🔤 Đảo chữ', onRestart: ctx.restart, onExit: ctx.exit });
     const names = NS.cfg.teams, total = +o.rounds, secs = +o.time;
     const pool = NS.pool(), bag = NS.makeBag(pool);
-    const stats = [{ right: 0, wrong: 0, t: 0 }, { right: 0, wrong: 0, t: 0 }], wrongWords = new Map(), hints = [2, 2];
+    const stats = [{ right: 0, wrong: 0, t: 0 }, { right: 0, wrong: 0, t: 0 }], wrongWords = new Map(), hints = [+o.hints, +o.hints];
     const handQs = () => NS.hand.questions.filter(q => q.type === 'sap-xep-chu' && !NS.handUsed.has(q.id));
 
     function pickWord(lv) {
@@ -47,12 +49,12 @@ NS.games.push({
         if (!w) { sh.area.innerHTML = ''; sh.area.append(h('div', { class: 'gdlg' }, h('h2', {}, 'Chưa có từ vựng'))); return resolve(); }
         const answer = [...w.text.toUpperCase()].filter(c => /[A-Z]/.test(c)).join('');
         const scr = w.scr || NS.scrambleLetters(w.text);
-        sh.area.innerHTML = '';
-        const head = h('div', { class: 'ahead' }, h('div', { class: 'ameaning' }, w.meaning), w.ipa && o.ipa ? h('div', { class: 'aipa' }, '/' + w.ipa + '/') : null,
+        const split = sh.split, V = split ? sh.splitView() : null, plain = split ? null : sh.plainView();
+        const mkHead = () => h('div', { class: 'ahead' }, h('div', { class: 'ameaning' }, o.showMeaning ? w.meaning : '❓'), w.ipa && o.ipa ? h('div', { class: 'aipa' }, '/' + w.ipa + '/') : null,
           h('div', { class: 'ameta' }, LEVELS[lv].name + ' · ' + w.length + ' chữ' + (w.text.includes(' ') ? ' · ' + w.text.split(/\s+/).length + ' từ' : '')));
-        const bar = h('div', { class: 'tbar' }, h('i', {})); head.append(bar);
-        const panels = h('div', { class: 'apanels' });
-        sh.area.append(head, panels);
+        const bar = h('div', { class: 'tbar' }, h('i', {}));
+        const panels = split ? null : h('div', { class: 'apanels' });
+        if (split) V.mid.append(bar); else { const hd = mkHead(); hd.append(bar); plain.append(hd, panels); }
         sh.setInfo('Vòng ' + Math.min(num, total) + '/' + total + (num > total ? ' (phân định)' : ''));
         let done = false, locked = [false, false], elapsed = 0, hintUsed = [0, 0];
         const T = [0, 1].map(team => {
@@ -76,8 +78,8 @@ NS.games.push({
               hints[team]--; hintUsed[team]++; hintBtn.textContent = '💡 Chữ đầu (' + hints[team] + ')';
               st.tiles[ti].used = true; st.slots[0] = ti; st.fixed[0] = true; paint(); check();
             }));
-          const panel = h('div', { class: 'apanel t' + team }, h('div', { class: 'aname' }, NS.TEAM_ICON[team] + ' ' + names[team]), slotRow, tray, btns);
-          panels.append(panel);
+          const panel = h('div', { class: 'apanel t' + team }, h('div', { class: 'aname' }, NS.TEAM_ICON[team] + ' ' + names[team] + '  ', sh.tag(team)), slotRow, tray, btns);
+          if (split) V.halves[team].append(mkHead(), panel); else panels.append(panel);
           function paint() {
             st.slots.forEach((ti, k) => { slotEls[k].textContent = ti === null ? '' : st.tiles[ti].c; slotEls[k].classList.toggle('filled', ti !== null); slotEls[k].classList.toggle('fixed', st.fixed[k]); });
             st.tiles.forEach((t, i) => tileEls[i].classList.toggle('used', t.used));
@@ -123,7 +125,8 @@ NS.games.push({
           if (team < 0) { NS.markWrong(w.id ? w : null); NS.sfx('bad'); }
           if (!(w.id && NS.vocab.words.some(x => x.id === w.id)) || team < 0) { /* chỉ đưa vào danh sách ôn khi không ai làm được */ }
           if (team < 0 && w.id) wrongWords.set(w.id, w);
-          sh.area.append(h('div', { class: 'aans' }, '✅ ' + w.text.toUpperCase() + (w.ipa ? '  /' + w.ipa + '/' : '') + ' — ' + w.meaning));
+          const ans = () => h('div', { class: 'aans' }, '✅ ' + w.text.toUpperCase() + (w.ipa ? '  /' + w.ipa + '/' : '') + ' — ' + w.meaning);
+          if (split) V.halves.forEach(hv => hv.append(ans())); else plain.append(ans());
           await sh.sleep(2200); resolve();
         }
       });
@@ -132,7 +135,7 @@ NS.games.push({
     (async () => {
       for (let r = 1; r <= total && !sh.dead; r++) {
         const chooser = (r - 1) % 2; sh.setActive(chooser);
-        const lv = await NS.choose(sh, NS.TEAM_ICON[chooser] + ' ' + names[chooser] + ' chọn mức độ', LEVELS.map(l => l.label), 'Vòng ' + r + '/' + total + ' — cả hai đội cùng đua!');
+        const lv = await NS.choose(sh, NS.TEAM_ICON[chooser] + ' ' + names[chooser] + ' chọn mức độ', LEVELS.map(l => l.label), 'Vòng ' + r + '/' + total + ' — cả hai đội cùng đua!', chooser);
         sh.setActive(-1); await round(r, lv);
       }
       if (sh.dead) return;

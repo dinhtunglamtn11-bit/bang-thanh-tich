@@ -29,7 +29,9 @@ NS.games.push({
   options: [
     { key: 'size', label: 'Kích thước bảng', type: 'select', choices: [['4x4', '4x4 (8 cặp)'], ['4x5', '4x5 (10 cặp)'], ['5x6', '5x6 (15 cặp)']], def: '4x4' },
     { key: 'special', label: 'Thẻ đặc biệt (⭐ sao, 💣 bom)', type: 'toggle', def: false },
-    { key: 'speed', label: 'Chế độ tốc độ (10 giây mỗi lượt)', type: 'toggle', def: false },
+    { key: 'speed', label: 'Chế độ tốc độ (giới hạn thời gian mỗi lượt)', type: 'toggle', def: false },
+    { key: 'sec', label: 'Số giây mỗi lượt (khi bật chế độ tốc độ)', type: 'select', choices: [[5, '5 giây'], [8, '8 giây'], [10, '10 giây'], [15, '15 giây'], [20, '20 giây']], def: 10 },
+    { key: 'peek', label: 'Cho xem trước toàn bộ thẻ 3 giây lúc bắt đầu', type: 'toggle', def: false },
     { key: 'ipa', label: 'Hiện phiên âm trên thẻ', type: 'toggle', def: true }
   ],
   start(ctx) {
@@ -59,7 +61,7 @@ NS.games.push({
     const setTurn = () => { sh.setActive(turn); sh.setInfo('Lượt: ' + NS.TEAM_ICON[turn] + ' ' + names[turn]); grid.dataset.turn = turn; startTimer(); };
     function startTimer() {
       if (tm) tm.stop(); if (!o.speed) return;
-      tm = NS.timer(10000, l => sh.setInfo('Lượt: ' + NS.TEAM_ICON[turn] + ' ' + names[turn] + '  ⏱ ' + Math.ceil(l / 1000)), () => {
+      tm = NS.timer((+o.sec || 10) * 1000, l => sh.setInfo('Lượt: ' + NS.TEAM_ICON[turn] + ' ' + names[turn] + '  ⏱ ' + Math.ceil(l / 1000)), () => {
         if (lock) { return; }
         flipped.forEach(c => c.el.classList.remove('up')); flipped = []; chain[turn] = 0; stats[turn].wrong++; turn = 1 - turn; setTurn();
       });
@@ -93,7 +95,10 @@ NS.games.push({
         setTimeout(() => { x.el.classList.remove('up'); y.el.classList.remove('up'); flipped = []; chain[turn] = 0; turn = 1 - turn; lock = false; setTurn(); }, 1300);
       }
     }
-    setTurn();
+    if (o.peek) {
+      lock = true; cards.forEach(c => c.el.classList.add('up')); sh.setInfo('👀 Ghi nhớ nhanh!');
+      sh.sleep(3000).then(() => { if (sh.dead) return; cards.forEach(c => c.el.classList.remove('up')); lock = false; setTurn(); });
+    } else setTurn();
   }
 });
 })();

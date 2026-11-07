@@ -21,6 +21,7 @@ const select = (choices, val, on) => { const s = h('select', {}, choices.map(([v
 function renderMenu() {
   if (NS.curShell) NS.curShell.destroy();
   root.innerHTML = '';
+  NS.refreshTeams();
   const v = NS.vocab;
   const cards = h('div', { class: 'gcards' }, NS.games.map(g => {
     const c = h('button', { class: 'gcard', type: 'button' }, h('span', { class: 'gic' }, g.icon), h('b', {}, g.name), h('small', {}, g.desc));
@@ -32,7 +33,7 @@ function renderMenu() {
     h('button', { type: 'button', onclick: vocabDialog }, '📚 Từ vựng'),
     h('button', { type: 'button', onclick: questionDialog }, '📝 Soạn câu hỏi'),
     h('button', { type: 'button', onclick: voiceTest }, '🔊 Thử giọng đọc'));
-  const how = h('div', { class: 'ghow' }, '👫 Hai bạn ngồi hai bên: ', h('b', {}, NS.TEAM_ICON[0] + ' ' + NS.cfg.teams[0]), ' (CAM) và ', h('b', {}, NS.TEAM_ICON[1] + ' ' + NS.cfg.teams[1]), ' (XANH). Chọn một trò chơi để bắt đầu!');
+  const how = h('div', { class: 'ghow' }, '👫 Hai bạn ngồi hai bên: ', h('b', {}, NS.TEAM_ICON[0] + ' ' + NS.cfg.teams[0]), ' và ', h('b', {}, NS.TEAM_ICON[1] + ' ' + NS.cfg.teams[1]), (NS.cfg.split ? ' (màn hình chia đôi: bạn thứ nhất ngồi phía dưới, bạn thứ hai ngồi phía đối diện). ' : '. '), 'Chọn một trò chơi để bắt đầu!');
   root.append(h('h2', { class: 'gh2' }, '🎮 CHỌN TRÒ CHƠI'), how, cards, status, tools);
 }
 NS.renderMenu = renderMenu;
@@ -77,6 +78,8 @@ function settingsDialog() {
     h('label', {}, 'Độ khó đáp án nhiễu'), select([[1, 'Dễ (ngẫu nhiên)'], [2, 'Vừa (cùng chủ đề)'], [3, 'Khó (gần giống)']], c.level, v => { c.level = +v; save(); }),
     h('label', {}, 'Chiều hỏi'), select([['mix', 'Xen kẽ'], ['vi2en', 'Việt → Anh'], ['en2vi', 'Anh → Việt']], c.dir, v => { c.dir = v; save(); }),
     h('label', {}, 'Nguồn câu hỏi'), select([['auto', 'Tự sinh từ kho từ vựng'], ['hand', 'Chỉ dùng câu soạn tay'], ['mix', 'Trộn cả hai']], c.source, v => { c.source = v; save(); }),
+    toggle('📱 Chia đôi màn hình: hai bạn ngồi hai đầu tablet, mỗi bạn một nửa (nửa trên xoay ngược)', c.split, v => { c.split = v; save(); }),
+    h('p', { class: 'note' }, 'Hình con vật đại diện lấy từ mục "Hình đại diện" của từng học sinh trong tab Quá trình học (nút ⚙ Cài đặt).'),
     toggle('Âm thanh hiệu ứng', c.sound, v => { c.sound = v; save(); }), toggle('Rung khi chạm', c.vibrate, v => { c.vibrate = v; save(); }),
     toggle('Ưu tiên file âm thanh thu sẵn audio/<từ>.mp3', c.audioFiles, v => { c.audioFiles = v; save(); }),
     h('div', { class: 'rbtns' }, h('button', { class: 'small red', type: 'button', onclick: () => { NS.clearWrong(); NS.clearPuzzleUsed && NS.clearPuzzleUsed(); alert('Đã xóa thống kê từ hay sai và lịch sử ô chữ.'); } }, 'Xóa thống kê từ sai / lịch sử ô chữ')));

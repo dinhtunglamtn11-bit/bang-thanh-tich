@@ -32,3 +32,17 @@ Game Nghe dùng giọng máy (`speechSynthesis`). Dùng nút **Thử giọng đ�
 Mở `tests/run.html` qua http (ví dụ chạy `serve.ps1`) — trang sẽ in kết quả và đặt tiêu đề `PASS n` hoặc `FAIL n`.
 
 Xem thêm `DECISIONS.md` cho các quyết định thiết kế.
+
+## Chia đôi màn hình (2 bạn ngồi hai đầu tablet)
+
+Bật trong **Game → Cài đặt chung** (mặc định bật). Với các game đua (Đảo chữ, Nghe, đua nhanh trong Đấu trường) mỗi bạn có một nửa màn hình, nửa trên xoay ngược 180°. Game theo lượt (Ô chữ, Đấu trường) xoay hộp nhập/câu hỏi về phía đội đang chơi.
+
+## Chia mức dễ / vừa / khó khi nhập câu hỏi
+
+- Dòng chia mức, áp dụng cho các câu bên dưới đến khi gặp dòng chia mức khác hoặc `@hết`: `== DỄ ==`, `## Vừa`, `[KHÓ]`, `--- Khó ---`, `@dễ`.
+- Ghi mức ngay ở câu: `Câu D3:` (D/V/K), `Câu 3 [khó]:`, `Câu 3 (dễ):`.
+- Hoặc dòng `Độ khó: Dễ/Vừa/Khó` trong từng câu (ưu tiên cao nhất).
+
+## Đấu trường
+
+Bản đồ có ngã rẽ (đường trên an toàn, đường giữa ngắn nhiều bẫy, đường dưới nhiều hộp kỹ năng), cầu nối giữa các đường và cổng dịch chuyển 🌀. Ô ❓ cho thẻ kỹ năng; thẻ được **giữ lại**, dùng ngay đầu lượt (Đóng băng, Xúc xắc đôi, Giày bay, Nam châm) hoặc lúc trả lời (50/50, Đổi câu) hoặc khi bị tấn công (Khiên).
