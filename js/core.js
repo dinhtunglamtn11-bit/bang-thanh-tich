@@ -431,7 +431,13 @@ NS.shell = function (root, o) {
     const addBtn = i => {
       if (typeof S === 'undefined' || !S.students || !S.students[i] || !st[i].right) return null;
       const b = h('button', { class: 'green small', type: 'button' }, '➕ ' + st[i].right + ' câu vào thành tích của ' + S.students[i].name);
-      b.addEventListener('click', () => { const s = S.students[i]; s.game = Math.min(+S.game || 0, (+s.game || 0) + st[i].right); save(); render(); b.disabled = true; b.textContent = '✔ Đã ghi (tối đa ' + S.game + ' câu trò chơi)'; });
+      b.addEventListener('click', () => {
+        const s = S.students[i], today = new Date(), ds = today.getFullYear() + '-' + String(today.getMonth() + 1).padStart(2, '0') + '-' + String(today.getDate()).padStart(2, '0');
+        let ses = s.sessions.find(x => x.date === ds); if (!ses) { ses = { date: ds, score: 0, game: 0 }; s.sessions.push(ses); }
+        const used = s.sessions.reduce((a, x) => a + (+x.game || 0), 0) + (+s.game || 0), room = Math.max(0, (+S.game || 0) - used), add = Math.min(room, st[i].right);
+        ses.game = (+ses.game || 0) + add; save(); render(); b.disabled = true;
+        b.textContent = '✔ Đã ghi +' + add + ' câu game vào buổi ' + ds.slice(8) + '/' + ds.slice(5, 7) + (add < st[i].right ? ' (đã đạt tối đa ' + S.game + ' câu game)' : '');
+      });
       return b;
     };
     sh.overlay(h('div', { class: 'gdlg wide ' + cls }, h('h2', {}, head), h('div', { class: 'rrow' }, col(0), col(1)),

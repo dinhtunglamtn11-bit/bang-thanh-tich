@@ -82,7 +82,7 @@ input[type=color]{padding:0;height:40px;width:70px}
 .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px}
 .row{display:grid;gap:8px;align-items:end;margin-bottom:8px}
 .row.ms{grid-template-columns:70px 110px 1fr auto}
-.row.ss{grid-template-columns:1fr 110px auto}
+.row.ss{grid-template-columns:1fr 100px 100px auto}.ss-h{display:grid;grid-template-columns:1fr 100px 100px 52px;gap:8px;font-size:15px;color:var(--cyan);margin-top:6px}
 .note{font-size:15px;color:var(--grey);margin:8px 0}
 .sum{background:var(--ink);padding:6px 10px;border:3px solid var(--gold);color:var(--gold);display:inline-block;margin:8px 0}
 .foot{display:flex;gap:10px;flex-wrap:wrap;justify-content:space-between;margin-top:16px}
@@ -140,7 +140,7 @@ function applyRemote(d){S=d;try{localStorage.setItem(KEY,JSON.stringify(S))}catc
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const num=v=>Math.max(0,Number(v)||0);
 const maxScore=()=>num(S.plannedSessions)*num(S.qps)+num(S.game);
-const total=st=>st.sessions.reduce((a,x)=>a+num(x.score),0)+num(st.game);
+const sGame=x=>num(x.game), total=st=>st.sessions.reduce((a,x)=>a+num(x.score)+sGame(x),0)+num(st.game);
 const fmtDate=d=>{if(!d)return'';const p=d.split('-');return p.length===3?`${p[2]}/${p[1]}`:d};
 
 function render(replay){
@@ -179,7 +179,7 @@ let tlMonth=null;
 const pad2=n=>String(n).padStart(2,'0');
 function renderTimeline(){
   const el=document.getElementById('timeline'); if(!el)return;
-  const all=[]; S.students.forEach((st,i)=>(st.sessions||[]).forEach(x=>{ if(/^\d{4}-\d{2}-\d{2}$/.test(x.date||'')) all.push({i,date:x.date,score:num(x.score)}); }));
+  const all=[]; S.students.forEach((st,i)=>(st.sessions||[]).forEach(x=>{ if(/^\d{4}-\d{2}-\d{2}$/.test(x.date||'')) all.push({i,date:x.date,score:num(x.score),game:num(x.game)}); }));
   const now=new Date(), todayStr=`${now.getFullYear()}-${pad2(now.getMonth()+1)}-${pad2(now.getDate())}`;
   if(!tlMonth){ const last=all.map(x=>x.date).sort().pop(); tlMonth=(last||todayStr).slice(0,7); }
   const [Y,M]=tlMonth.split('-').map(Number), dim=new Date(Y,M,0).getDate();
@@ -187,22 +187,22 @@ function renderTimeline(){
   let h=`<h2 class="tlh">📅 TIẾN ĐỘ THEO THÁNG &amp; NGÀY</h2><div class="tl-year"><button class="small" data-ty="-1">◀</button><b>Năm ${Y}</b><button class="small" data-ty="1">▶</button></div><div class="tl-months">`;
   for(let m=1;m<=12;m++){
     const key=`${Y}-${pad2(m)}`;
-    h+=`<button class="tl-m${key===tlMonth?' sel':''}${key===todayStr.slice(0,7)?' now':''}" data-tm="${key}"><span>T${m}</span>`+stu.map((st,i)=>{ const xs=all.filter(x=>x.i===i&&x.date.startsWith(key)), t=xs.reduce((a,x)=>a+x.score,0); return `<i class="${xs.length?'':'zero'}" style="background:${esc(st.color)}" title="${esc(st.name)}: ${xs.length} buổi">${xs.length?esc(st.avatar)+t:'·'}</i>`; }).join('')+`</button>`;
+    h+=`<button class="tl-m${key===tlMonth?' sel':''}${key===todayStr.slice(0,7)?' now':''}" data-tm="${key}"><span>T${m}</span>`+stu.map((st,i)=>{ const xs=all.filter(x=>x.i===i&&x.date.startsWith(key)), t=xs.reduce((a,x)=>a+x.score+x.game,0); return `<i class="${xs.length?'':'zero'}" style="background:${esc(st.color)}" title="${esc(st.name)}: ${xs.length} buổi">${xs.length?esc(st.avatar)+t:'·'}</i>`; }).join('')+`</button>`;
   }
   h+=`</div><div class="tl-days">`;
   const wd=['CN','T2','T3','T4','T5','T6','T7'];
   for(let d=1;d<=dim;d++){
     const ds=`${Y}-${pad2(M)}-${pad2(d)}`, dow=new Date(Y,M-1,d).getDay(), xs=all.filter(x=>x.date===ds);
-    h+=`<div class="tl-d${dow===0||dow===6?' we':''}${xs.length?' has':''}${ds===todayStr?' today':''}"><b>${d}<small>${wd[dow]}</small></b>`+xs.map(x=>`<span style="color:${esc(stu[x.i].color)}">${esc(stu[x.i].avatar)} ${x.score}</span>`).join('')+`</div>`;
+    h+=`<div class="tl-d${dow===0||dow===6?' we':''}${xs.length?' has':''}${ds===todayStr?' today':''}"><b>${d}<small>${wd[dow]}</small></b>`+xs.map(x=>`<span style="color:${esc(stu[x.i].color)}">${esc(stu[x.i].avatar)} ${x.score}+${x.game}</span>`).join('')+`</div>`;
   }
   h+=`</div><div class="tl-prog">`;
-  const target=Math.max(1,num(S.qps)*num(S.plannedSessions)), isNow=tlMonth===todayStr.slice(0,7);
+  const target=Math.max(1,maxScore()), isNow=tlMonth===todayStr.slice(0,7);
   const timePct=isNow?now.getDate()/dim*100:(tlMonth<todayStr.slice(0,7)?100:0);
   stu.forEach((st,i)=>{
-    const xs=all.filter(x=>x.i===i&&x.date.startsWith(tlMonth)), t=xs.reduce((a,x)=>a+x.score,0), p=Math.min(100,t/target*100);
+    const xs=all.filter(x=>x.i===i&&x.date.startsWith(tlMonth)), t=xs.reduce((a,x)=>a+x.score+x.game,0), p=Math.min(100,t/target*100);
     h+=`<div class="tl-row" style="--c:${esc(st.color)}"><div>${esc(st.avatar)} ${esc(st.name)}</div><div class="tl-bar"><i style="width:${p}%"></i><u style="left:${timePct}%" title="Hôm nay"></u></div><div>${t}/${target} câu · ${xs.length} buổi</div></div>`;
   });
-  h+=`</div><div class="tl-legend">Vạch vàng = ngày hôm nay trong tháng (${isNow?`ngày ${now.getDate()}/${dim}`:'tháng này không phải tháng hiện tại'}). Thanh = điểm các buổi học trong tháng trên mục tiêu ${S.plannedSessions} buổi × ${S.qps} câu. Bấm một tháng để xem chi tiết từng ngày.</div>`;
+  h+=`</div><div class="tl-legend">Vạch vàng = ngày hôm nay trong tháng (${isNow?`ngày ${now.getDate()}/${dim}`:'tháng này không phải tháng hiện tại'}). Thanh = điểm các buổi học trong tháng (kiểm tra + game) trên mức tối đa ${maxScore()}. Bấm một tháng để xem chi tiết từng ngày.</div>`;
   el.innerHTML=h;
 }
 document.addEventListener('click',e=>{
@@ -243,10 +243,11 @@ function drawModal(){
       <div><label>Tên học sinh</label><input data-s="${i}" data-f="name" value="${esc(st.name)}"></div>
       <div><label>Hình đại diện</label><select data-s="${i}" data-f="avatar">${AVATARS.map(a=>`<option ${a===st.avatar?'selected':''}>${a}</option>`).join('')}</select></div>
       <div><label>Màu thanh</label><input type="color" data-s="${i}" data-f="color" value="${esc(st.color)}"></div>
-      <div><label>Câu từ trò chơi (tối đa ${S.game})</label><input type="number" min="0" data-s="${i}" data-f="game" value="${num(st.game)}"></div>
-    </div><label style="margin-top:16px">Kết quả từng buổi (tối đa ${S.qps} câu/buổi)</label>`;
+      <div><label>Game cộng thêm ngoài các buổi (tối đa ${S.game} cho cả kỳ)</label><input type="number" min="0" data-s="${i}" data-f="game" value="${num(st.game)}"></div>
+    </div><label style="margin-top:16px">Kết quả từng buổi: kiểm tra (tối đa ${S.qps} câu) và game (tổng game cả kỳ tối đa ${S.game} câu)</label><div class="ss-h"><span>Ngày</span><span>📝 Kiểm tra</span><span>🎮 Game</span><span></span></div>`;
     st.sessions.forEach((x,j)=>{h+=`<div class="row ss"><div><input type="date" data-s="${i}" data-j="${j}" data-f="date" value="${esc(x.date)}"></div>
-      <div><input type="number" min="0" data-s="${i}" data-j="${j}" data-f="score" value="${num(x.score)}"></div>
+      <div><input type="number" min="0" title="Điểm kiểm tra" data-s="${i}" data-j="${j}" data-f="score" value="${num(x.score)}"></div>
+      <div><input type="number" min="0" title="Điểm game" data-s="${i}" data-j="${j}" data-f="game" value="${sGame(x)}"></div>
       <button class="red small" data-dels="${i}.${j}">✕</button></div>`});
     h+=`<button class="green" data-adds="${i}">+ Thêm buổi học</button>
       <div class="sum" id="stsum">Tổng: ${total(st)} / ${max} câu</div>`;
@@ -266,7 +267,7 @@ modal.addEventListener('click',e=>{
   else if(t.id==='addM'){S.milestones.push({v:max2(),name:'Phần thưởng',icon:'🎁'});save();drawModal();}
   else if(t.dataset.delm){S.milestones.splice(+t.dataset.delm,1);save();drawModal();}
   else if(t.dataset.adds){const st=S.students[+t.dataset.adds];const last=st.sessions.at(-1);
-    st.sessions.push({date:new Date().toISOString().slice(0,10),score:0});save();drawModal();}
+    st.sessions.push({date:new Date().toISOString().slice(0,10),score:0,game:0});save();drawModal();}
   else if(t.dataset.dels){const [i,j]=t.dataset.dels.split('.').map(Number);S.students[i].sessions.splice(j,1);save();drawModal();}
   else if(t.id==='reset'){if(confirm('Đặt lại toàn bộ dữ liệu về mẫu?')){S=defaults();tab='general';save();drawModal();}}
   else if(t.id==='exp'){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(S,null,2)],{type:'application/json'}));a.download='thanh-tich.json';a.click();}
@@ -279,7 +280,7 @@ modal.addEventListener('input',e=>{
     const m=document.getElementById('maxsum'); if(m)m.textContent=`Điểm tối đa = ${S.plannedSessions} × ${S.qps} + ${S.game} = ${maxScore()}`;}
   else if(el.dataset.m!==undefined){const m=S.milestones[+el.dataset.m];m[el.dataset.f]=el.dataset.f==='v'?num(el.value):el.value;}
   else if(el.dataset.s!==undefined){const st=S.students[+el.dataset.s];
-    if(el.dataset.j!==undefined){const x=st.sessions[+el.dataset.j];x[el.dataset.f]=el.dataset.f==='score'?num(el.value):el.value;}
+    if(el.dataset.j!==undefined){const x=st.sessions[+el.dataset.j];x[el.dataset.f]=(el.dataset.f==='score'||el.dataset.f==='game')?num(el.value):el.value;}
     else st[el.dataset.f]=el.dataset.f==='game'?num(el.value):el.value;
     const s=document.getElementById('stsum'); if(s)s.textContent=`Tổng: ${total(st)} / ${maxScore()} câu`;}
   save();
