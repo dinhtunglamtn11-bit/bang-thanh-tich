@@ -80,5 +80,5 @@ Tùy chọn "Hiện TOÀN BỘ các câu trên một màn hình" (mặc định 
 
 1. **Chuẩn bị:** nhập tên hai bạn, chọn ai **đi trước** (chọn chữ cái ĐẦU) và ai **đi sau** (chọn chữ cái CUỐI). Số câu chọn trước khi vào (5 đến 20).
 2. **Chọn kín (chia đôi màn hình):** mỗi bạn chọn chữ cái của mình cho từng câu, bấm Chốt; cả hai chốt xong thì tự chuyển sang câu kế tiếp, cứ thế đến hết số câu. Chữ vừa chọn chỉ hiện một chấm rất nhỏ (không đổi màu) để bạn kia không nhìn được.
-3. **Bảng chung (không chia đôi nữa):** hiện các cặp chữ của tất cả câu kèm hình người đã chọn. Rồi làm từng câu: ví dụ N … N thì gõ NOON. Ô của câu ghi tên người ghi điểm.
+3. **Bảng chung (không chia đôi nữa):** hiện các cặp chữ của tất cả câu kèm hình người đã chọn. Bấm vào BẤT KỲ ô nào để giải câu đó (không cần theo thứ tự), giải xong quay lại bảng; ví dụ N … N thì gõ NOON. Ô của câu ghi tên người ghi điểm. Bảng hiện to, chỉnh cỡ bằng tùy chọn trước khi chơi hoặc nút 🔍− / 🔍+ trên bảng; nút "Kết thúc game" để dừng sớm.
 4. Mặc định **giáo viên quyết định từ hợp lệ** (hộp ✔ / ✘, từ không cần có trong kho từ vựng); có thể chuyển sang tự động chỉ nhận từ trong kho. Từ đã dùng không được lặp lại ở các câu sau. Tùy chọn khác: thời gian chọn chữ cái, thời gian nhập từ, cách tính điểm, đổi vai sau mỗi câu, cụm từ, trừ điểm khi sai.

@@ -24,6 +24,7 @@ NS.games.push({
     { key: 'mode', label: 'Cách tính điểm', type: 'select', choices: [['race', 'Ai nhập đúng trước thì ghi điểm, hết câu'], ['both', 'Cả hai cùng ghi điểm nếu nhập từ khác nhau (đúng trước +1)']], def: 'race' },
     { key: 'phrases', label: 'Cho phép cụm từ có dấu cách (ví dụ "living room")', type: 'toggle', def: false },
     { key: 'penalty', label: 'Nhập sai bị −1 điểm', type: 'toggle', def: false },
+    { key: 'boardSize', label: 'Cỡ chữ của bảng chung (có thể chỉnh thêm khi chơi bằng nút 🔍)', type: 'select', choices: [[1, 'Nhỏ'], [2, 'Vừa'], [3, 'To'], [4, 'Rất to']], def: 3 },
     { key: 'showMeaning', label: 'Hiện gợi ý từ kho từ vựng (kèm nghĩa) sau mỗi câu', type: 'toggle', def: true }
   ],
   start(ctx) {
@@ -99,21 +100,29 @@ NS.games.push({
 
     /* ---- Bảng chung: ai chọn chữ gì cho từng câu ---- */
     const boardEl = h('div', { class: 'wlboard' }), cellEls = [];
+    let boardSize = +o.boardSize || 3, onPickCell = null;
     function buildBoard() {
       boardEl.innerHTML = ''; cellEls.length = 0;
       pairs.forEach((p, i) => {
-        const c = h('div', { class: 'wlcell' }, h('small', {}, 'Câu ' + (i + 1)), h('b', {}, p.first.toUpperCase() + ' … ' + p.last.toUpperCase()), h('span', { class: 'wlwho' }, ic(p.firstTeam) + ' ' + p.first.toUpperCase() + '  ·  ' + p.last.toUpperCase() + ' ' + ic(1 - p.firstTeam)), h('em', {}, ''));
+        const c = h('div', { class: 'wlcell' + (p.res ? ' closed done t' + p.res.team : '') + (p.none ? ' closed none' : '') }, h('small', {}, 'Câu ' + (i + 1)), h('b', {}, p.first.toUpperCase() + ' … ' + p.last.toUpperCase()), h('span', { class: 'wlwho' }, ic(p.firstTeam) + ' ' + p.first.toUpperCase() + '  ·  ' + p.last.toUpperCase() + ' ' + ic(1 - p.firstTeam)),
+          h('em', {}, p.res ? ic(p.res.team) + ' ' + names[p.res.team] + ': ' + p.res.text : p.none ? '— không ai tìm ra' : ''));
+        NS.tap(c, () => { if (onPickCell && !p.res && !p.none) onPickCell(i); });
         cellEls.push(c); boardEl.append(c);
       });
     }
     const markCell = (i, on) => cellEls.forEach((c, k) => { c.classList.toggle('now', on && k === i); });
-    const resultCell = (i, team, text) => { const c = cellEls[i]; c.classList.add('done', 't' + team); c.querySelector('em').textContent = ic(team) + ' ' + names[team] + ': ' + text; };
+    const resultCell = (i, team, text) => { pairs[i].res = { team, text }; const c = cellEls[i]; c.classList.add('done', 'closed', 't' + team); c.querySelector('em').textContent = ic(team) + ' ' + names[team] + ': ' + text; };
+    const setSize = n => { boardSize = Math.max(1, Math.min(4, n)); boardEl.className = 'wlboard s' + boardSize; };
 
+    /* chọn câu bất kỳ để giải (không cần theo thứ tự). Trả về chỉ số câu, hoặc -1 nếu kết thúc game */
     function showBoard() {
       return new Promise(resolve => {
-        const area = sh.plainView(); buildBoard(); boardEl.classList.remove('compact'); sh.setInfo('Bảng chung');
-        area.append(h('div', { class: 'wlsetwrap' }, h('h2', {}, '📋 Bảng chung các cặp chữ cái'), h('p', {}, 'Mỗi ô: chữ ĐẦU … chữ CUỐI (kèm hình người đã chọn). Cả hai cùng xem rồi bắt đầu từng câu!'), boardEl,
-          NS.tap(h('button', { class: 'green big', type: 'button' }, '▶ Bắt đầu câu 1'), () => resolve())));
+        const area = sh.plainView(); buildBoard(); setSize(boardSize); sh.setInfo('Bảng chung · chọn câu');
+        const left = pairs.filter(p => !p.res && !p.none).length;
+        const sizeBar = h('div', { class: 'wlsizebar' }, h('span', {}, 'Cỡ bảng: '), NS.tap(h('button', { class: 'small', type: 'button' }, '🔍−'), () => setSize(boardSize - 1)), NS.tap(h('button', { class: 'small', type: 'button' }, '🔍+'), () => setSize(boardSize + 1)));
+        onPickCell = i => { onPickCell = null; resolve(i); };
+        area.append(h('div', { class: 'wlsetwrap wide' }, h('h2', {}, '📋 Bảng chung — chọn một câu để giải'), h('p', {}, 'Bấm vào ô bất kỳ để làm câu đó (không cần theo thứ tự). Còn ' + left + '/' + pairs.length + ' câu.'), sizeBar, boardEl,
+          NS.tap(h('button', { class: 'red', type: 'button' }, '🏁 Kết thúc game'), () => { onPickCell = null; resolve(-1); })));
       });
     }
 
@@ -121,7 +130,7 @@ NS.games.push({
     function playWord(q) {
       return new Promise(resolve => {
         const p = pairs[q], first = p.first, last = p.last, F = first.toUpperCase(), L = last.toUpperCase();
-        const area = sh.plainView(); markCell(q, true); boardEl.classList.add('compact');
+        const area = sh.plainView(); buildBoard(); markCell(q, true); boardEl.className = 'wlboard compact';
         const found = [false, false]; let done = false, judging = false, winner = -1;
         const bar = h('div', { class: 'tbar' }, h('i', {}));
         const head = h('div', { class: 'wlhead' }, h('div', { class: 'wlsub' }, 'Câu ' + (q + 1) + '/' + total + '  ·  Chữ ĐẦU: ' + F + ' (' + ic(p.firstTeam) + ' ' + names[p.firstTeam] + ')  ·  Chữ CUỐI: ' + L + ' (' + ic(1 - p.firstTeam) + ' ' + names[1 - p.firstTeam] + ')'),
@@ -169,7 +178,7 @@ NS.games.push({
         let ended = false;
         async function end() {
           if (ended) return; ended = true; done = true; tm.stop();
-          if (!found[0] && !found[1]) { NS.sfx('bad'); const c = cellEls[q]; c.classList.add('none'); c.querySelector('em').textContent = '— không ai tìm ra'; }
+          if (!found[0] && !found[1]) { NS.sfx('bad'); pairs[q].none = true; const c = cellEls[q]; c.classList.add('none', 'closed'); c.querySelector('em').textContent = '— không ai tìm ra'; }
           const rest = cands(first, last).filter(w => !used.has(keyOf(w.text))).slice(0, 8);
           if (o.judge === 'vocab' && !found[0] && !found[1] && rest[0]) review.set(rest[0].id, rest[0]);
           if (o.showMeaning && rest.length) area.append(h('div', { class: 'aans' }, '💡 Gợi ý từ kho từ vựng: ' + rest.map(w => w.text + ' (' + w.meaning + ')').join(' · ')));
@@ -183,7 +192,7 @@ NS.games.push({
       await setup(); if (sh.dead) return;
       await pickPhase(); if (sh.dead) return;
       await showBoard(); if (sh.dead) return;
-      for (let q = 0; q < pairs.length && !sh.dead; q++) await playWord(q);
+      while (!sh.dead && pairs.some(p => !p.res && !p.none)) { const q = await showBoard(); if (sh.dead || q < 0) break; await playWord(q); }
       if (!sh.dead) sh.result({ scores: sh.scores, stats, wrong: [...review.values()], tie: [stats[0].right, stats[1].right] });
     })();
   }
