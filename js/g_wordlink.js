@@ -14,6 +14,7 @@ NS.games.push({
   id: 'wordlink', name: 'Ghép chữ hai đầu', icon: '🔗',
   desc: 'Một bạn chọn chữ cái ĐẦU, một bạn chọn chữ cái CUỐI (mỗi bạn một nửa màn hình). Sau đó cả hai cùng đua gõ một từ bắt đầu và kết thúc bằng hai chữ đó. Từ đã dùng không được lặp lại!',
   options: [
+    { key: 'judge', label: 'Ai quyết định từ hợp lệ', type: 'select', choices: [['manual', '👩‍🏫 Giáo viên quyết định (bấm ✔ / ✘, không cần có trong kho từ)'], ['vocab', '🤖 Tự động: chỉ nhận từ có trong kho từ vựng']], def: 'manual' },
     { key: 'words', label: 'Số từ (số vòng)', type: 'select', choices: [[5, '5'], [8, '8'], [10, '10'], [15, '15'], [20, '20']], def: 8 },
     { key: 'roles', label: 'Ai chọn chữ cái đầu / chữ cái cuối', type: 'select', choices: [['a', 'Bạn 1 chọn chữ ĐẦU · bạn 2 chọn chữ CUỐI'], ['b', 'Bạn 2 chọn chữ ĐẦU · bạn 1 chọn chữ CUỐI'], ['swap', 'Đổi vai mỗi vòng']], def: 'a' },
     { key: 'pickTime', label: 'Thời gian chọn chữ cái', type: 'select', choices: [[5, '5 giây'], [8, '8 giây'], [10, '10 giây'], [15, '15 giây'], [20, '20 giây'], [0, 'Không giới hạn']], def: 10 },
@@ -35,7 +36,7 @@ NS.games.push({
     /* Giai đoạn 1: chia đôi màn hình, mỗi bạn chọn một chữ cái */
     function chooseLetters(num, firstTeam) {
       return new Promise(resolve => {
-        const A = avail(), firsts = new Set(A.map(firstCh)), lasts = new Set(A.map(lastCh)), V = sh.splitView();
+        const A = avail(), all = new Set([...ALPHA].map(c => c.toLowerCase())), firsts = o.judge === 'vocab' ? new Set(A.map(firstCh)) : all, lasts = o.judge === 'vocab' ? new Set(A.map(lastCh)) : all, V = sh.splitView();
         const pick = [null, null], locked = [false, false], role = t => (t === firstTeam ? 'first' : 'last'), btns = [[], []];
         const bar = h('div', { class: 'tbar' }, h('i', {})), st = h('div', { class: 'wlstat' }, '⏳ Đang chọn…');
         V.mid.append(h('b', { class: 'wlround' }, 'Vòng ' + num + '/' + total), bar, st);
@@ -91,27 +92,36 @@ NS.games.push({
         sh.setInfo('Vòng ' + num + '/' + total);
         const ps = +o.playTime * 1000;
         const tm = NS.timer(ps, l => { bar.firstChild.style.width = (l / ps * 100) + '%'; bar.classList.toggle('low', l < 6000); }, () => end());
+        let judging = false;
         function submit(t, buf, msg, paint, panel) {
-          if (done || sh.paused || (found[t] && o.mode === 'both')) return;
+          if (done || sh.paused || judging || (found[t] && o.mode === 'both')) return;
           if (buf.length < 1) { msg.textContent = 'Từ phải có ít nhất 3 chữ cái'; return; }
           const typed = F + buf.join('').toUpperCase() + L, k = keyOf(typed);
-          const w = poolAll().find(x => keyOf(x.text) === k);
           const fail = txt => { stats[t].wrong++; NS.sfx('bad'); NS.vibe(80); msg.textContent = txt; msg.className = 'wlmsg bad'; panel.classList.add('shake'); setTimeout(() => panel.classList.remove('shake'), 450); if (o.penalty) sh.addScore(t, -1, 0); buf.length = 0; paint(); };
-          if (!w) { fail(used.has(k) ? '⛔ Từ "' + typed.toLowerCase() + '" đã được dùng rồi!' : '❌ "' + typed.toLowerCase() + '" không có trong kho từ'); return; }
-          if (used.has(k)) { fail('⛔ Từ "' + w.text + '" đã được dùng rồi!'); return; }
-          used.add(k); found[t] = true; times[t] = (performance.now() - t0) / 1000; foundList.push({ word: w, team: t }); paintUsed();
-          const first1 = !found[1 - t]; const pts = o.mode === 'race' ? 3 : 2 + (first1 ? 1 : 0);
-          stats[t].right++; sh.addScore(t, pts); NS.sfx('ok'); NS.vibe(40); msg.textContent = '✅ ' + w.text + ' — ' + w.meaning + '  +' + pts; msg.className = 'wlmsg good'; panel.classList.add('won');
-          sh.toast(ic(t) + ' ' + names[t] + ' +' + pts + ' · ' + w.text, 1700);
-          if (o.mode === 'race' || (found[0] && found[1])) end();
+          const accept = w => {
+            used.add(k); found[t] = true; times[t] = (performance.now() - t0) / 1000; foundList.push({ word: w, team: t }); paintUsed();
+            const first1 = !found[1 - t]; const pts = o.mode === 'race' ? 3 : 2 + (first1 ? 1 : 0);
+            stats[t].right++; sh.addScore(t, pts); NS.sfx('ok'); NS.vibe(40); msg.textContent = '✅ ' + w.text + (w.meaning ? ' — ' + w.meaning : '') + '  +' + pts; msg.className = 'wlmsg good'; panel.classList.add('won');
+            sh.toast(ic(t) + ' ' + names[t] + ' +' + pts + ' · ' + w.text, 1700);
+            if (o.mode === 'race' || (found[0] && found[1])) end();
+          };
+          if (used.has(k)) { fail('⛔ Từ "' + typed.toLowerCase() + '" đã được dùng rồi!'); return; }
+          const hit = poolAll().find(x => keyOf(x.text) === k);
+          if (o.judge === 'vocab') { if (!hit) fail('❌ "' + typed.toLowerCase() + '" không có trong kho từ'); else accept({ text: hit.text, meaning: hit.meaning }); return; }
+          /* giáo viên quyết định từ có hợp lệ hay không (thời gian tạm dừng trong lúc chờ) */
+          judging = true; sh.paused = true; NS.sfx('pow');
+          const close = ok => { sh.closeOverlay(); sh.paused = false; judging = false; if (ok) accept({ text: typed.toLowerCase(), meaning: hit ? hit.meaning : '' }); else fail('❌ "' + typed.toLowerCase() + '" không được chấp nhận'); };
+          sh.overlay(h('div', { class: 'gdlg t' + t }, h('h3', {}, '👩‍🏫 Giáo viên xác nhận'), h('p', {}, ic(t) + ' ' + names[t] + ' đã gõ:'), h('div', { class: 'wlbig' }, typed),
+            hit ? h('p', { class: 'note' }, '📚 Có trong kho từ vựng: ' + hit.meaning) : h('p', { class: 'note' }, 'Không có trong kho từ vựng — bạn quyết định.'),
+            h('div', { class: 'rbtns' }, NS.tap(h('button', { class: 'green', type: 'button' }, '✔ Hợp lệ'), () => close(true)), NS.tap(h('button', { class: 'red', type: 'button' }, '✘ Không hợp lệ'), () => close(false)))));
         }
         let ended = false;
         async function end() {
           if (ended) return; ended = true; done = true; tm.stop();
           if (!found[0] && !found[1]) NS.sfx('bad');
-          const rest = cands(first, last).slice(0, 8);
-          if (!found[0] && !found[1] && rest[0]) review.set(rest[0].id, rest[0]);
-          area.append(h('div', { class: 'aans' }, (rest.length ? '💡 Còn có thể là: ' : '💡 Không còn từ nào khác nữa. ') + rest.map(w => w.text + (o.showMeaning ? ' (' + w.meaning + ')' : '')).join(' · ')));
+          const rest = cands(first, last).filter(w => !used.has(keyOf(w.text))).slice(0, 8);
+          if (o.judge === 'vocab' && !found[0] && !found[1] && rest[0]) review.set(rest[0].id, rest[0]);
+          area.append(h('div', { class: 'aans' }, (rest.length ? (o.judge === 'vocab' ? '💡 Còn có thể là: ' : '💡 Gợi ý từ kho từ vựng: ') : (o.judge === 'vocab' ? '💡 Không còn từ nào khác nữa. ' : '')) + rest.map(w => w.text + (o.showMeaning ? ' (' + w.meaning + ')' : '')).join(' · ')));
           await sh.sleep(found[0] || found[1] ? 2200 : 3200); resolve();
         }
       });
@@ -119,12 +129,12 @@ NS.games.push({
 
     (async () => {
       for (let r = 1; r <= total && !sh.dead; r++) {
-        if (!avail().length) { sh.toast('Đã dùng hết từ trong kho!', 2000); await sh.sleep(2000); break; }
+        if (o.judge === 'vocab' && !avail().length) { sh.toast('Đã dùng hết từ trong kho!', 2000); await sh.sleep(2000); break; }
         const firstTeam = o.roles === 'a' ? 0 : o.roles === 'b' ? 1 : (r - 1) % 2;
         let pair = null;
         for (let tries = 0; tries < 4 && !sh.dead; tries++) {
           pair = await chooseLetters(r, firstTeam); if (sh.dead) return;
-          if (cands(pair.first, pair.last).length) break;
+          if (o.judge !== 'vocab' || cands(pair.first, pair.last).length) break;
           if (tries === 3) { const w = NS.pick(avail()); pair = { first: firstCh(w), last: lastCh(w) }; sh.toast('Máy chọn giúp một cặp chữ cái có đáp án', 2200); break; }
           sh.toast('😅 Không có từ nào bắt đầu bằng "' + pair.first.toUpperCase() + '" và kết thúc bằng "' + pair.last.toUpperCase() + '". Chọn lại!', 2600); await sh.sleep(2600);
         }

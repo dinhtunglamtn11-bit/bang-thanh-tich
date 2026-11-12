@@ -73,7 +73,7 @@ Tab Quá trình học có thêm thanh 12 tháng của năm, dải từng ngày t
 
 ## Game "Ghép chữ hai đầu" 🔗
 
-Hai bạn ngồi hai đầu tablet (màn hình chia đôi): một bạn chọn chữ cái ĐẦU, một bạn chọn chữ cái CUỐI (chỉ hiện các chữ có từ phù hợp, có thể đặt ai chọn gì hoặc đổi vai mỗi vòng). Khi cả hai chốt, màn hình chuyển sang dùng chung: cả hai cùng gõ phần giữa của từ (hai chữ đầu và cuối đã cố định, ví dụ B _ _ L → Ball). Từ phải có trong kho từ vựng và chưa ai dùng; từ đã dùng được lưu lại cho cả ván, hiện ở dưới màn hình. Tùy chỉnh trước khi chơi: số từ, ai chọn đầu/cuối, thời gian chọn chữ cái, thời gian nhập từ, cách tính điểm (ai đúng trước hoặc cả hai cùng ghi điểm), cho phép cụm từ, trừ điểm khi sai.
+Hai bạn ngồi hai đầu tablet (màn hình chia đôi): một bạn chọn chữ cái ĐẦU, một bạn chọn chữ cái CUỐI (chỉ hiện các chữ có từ phù hợp, có thể đặt ai chọn gì hoặc đổi vai mỗi vòng). Khi cả hai chốt, màn hình chuyển sang dùng chung: cả hai cùng gõ phần giữa của từ (hai chữ đầu và cuối đã cố định, ví dụ B _ _ L → Ball). Mặc định GIÁO VIÊN quyết định từ có hợp lệ hay không: sau khi bạn gửi từ, hiện hộp "✔ Hợp lệ / ✘ Không hợp lệ" (thời gian tạm dừng trong lúc chờ), từ không cần có trong kho từ vựng; có thể chuyển sang chế độ tự động chỉ nhận từ trong kho. Từ phải chưa ai dùng; từ đã dùng được lưu lại cho cả ván, hiện ở dưới màn hình. Tùy chỉnh trước khi chơi: số từ, ai chọn đầu/cuối, thời gian chọn chữ cái, thời gian nhập từ, cách tính điểm (ai đúng trước hoặc cả hai cùng ghi điểm), cho phép cụm từ, trừ điểm khi sai.
 
 ## Ô chữ bí mật: hiện toàn bộ câu
 

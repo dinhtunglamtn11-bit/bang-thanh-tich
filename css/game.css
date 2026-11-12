@@ -271,3 +271,4 @@ textarea{font-family:inherit}
 .wlused{margin-top:8px;font-size:18px;display:flex;flex-wrap:wrap;gap:4px 6px;align-items:center}
 .wlchip{background:var(--ink);padding:0 8px;border:2px solid var(--grey)}.wlchip.t0{border-color:var(--c0)}.wlchip.t1{border-color:var(--c1)}
 @media (max-aspect-ratio:1/1),(max-width:760px){.wlpanels{grid-template-columns:1fr}}
+.wlbig{font-size:clamp(40px,7vw,80px);color:var(--gold);text-shadow:4px 4px 0 var(--ink);letter-spacing:4px;margin:6px 0}
