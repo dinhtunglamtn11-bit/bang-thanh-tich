@@ -401,6 +401,7 @@ NS.shell = function (root, o) {
   sh.plainView = () => { area.innerHTML = ''; area.classList.remove('split'); return area; };
   sh.addScore = (i, d, floor) => { sh.setScore(i, Math.max(floor === undefined ? 0 : floor, sh.scores[i] + d)); };
   sh.setInfo = t => { info.textContent = t; };
+  sh.setName = (i, n) => { names[i] = n; const tn = tb[i].el.querySelector('.tname'); if (tn && tn.firstChild) tn.firstChild.nodeValue = n; };
   sh.setActive = i => { tb[0].el.classList.toggle('active', i === 0); tb[1].el.classList.toggle('active', i === 1); };
   sh.overlay = (node, team) => { ov.innerHTML = ''; node.classList.toggle('flip', !!(sh.split && team === 1)); ov.append(node); ov.classList.add('show'); };
   sh.closeOverlay = () => { ov.classList.remove('show'); ov.innerHTML = ''; };

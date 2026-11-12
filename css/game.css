@@ -272,3 +272,24 @@ textarea{font-family:inherit}
 .wlchip{background:var(--ink);padding:0 8px;border:2px solid var(--grey)}.wlchip.t0{border-color:var(--c0)}.wlchip.t1{border-color:var(--c1)}
 @media (max-aspect-ratio:1/1),(max-width:760px){.wlpanels{grid-template-columns:1fr}}
 .wlbig{font-size:clamp(40px,7vw,80px);color:var(--gold);text-shadow:4px 4px 0 var(--ink);letter-spacing:4px;margin:6px 0}
+
+/* ===== ghép chữ hai đầu: chuẩn bị, chọn kín, bảng chung ===== */
+.wlk{position:relative}
+.wlk.dot::after{content:'';position:absolute;right:4px;bottom:4px;width:5px;height:5px;border-radius:50%;background:#8a8a8a}
+.wlk.sel,.wlk.sel.locked{background:var(--white);outline:none}
+.wlsetwrap{max-width:900px;margin:0 auto;text-align:center}.wlsetwrap h2{color:var(--gold);font-size:36px;margin:6px 0}.wlsetwrap p{font-size:22px}
+.wlsetgrid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:10px 0 16px}
+.wlsetup{border:4px solid var(--ink);background:#0003;padding:10px 14px;text-align:left}.wlsetup.t0{border-color:var(--c0)}.wlsetup.t1{border-color:var(--c1)}
+.wlsetup input{font-size:28px}.wlava{font-size:48px;text-align:center}
+.wlturn{display:flex;flex-direction:column;gap:8px;margin-top:10px}.wlturn button{font-size:20px;min-height:52px}
+button.big{font-size:30px;padding:10px 28px;min-height:64px}
+.wlboard{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:6px;margin:6px 0;text-align:left}
+.wlcell{border:3px solid var(--ink);background:#0003;padding:2px 6px;line-height:1.05;min-height:62px}
+.wlcell small{display:block;color:var(--grey);font-size:15px}.wlcell b{font-size:24px;color:var(--gold);letter-spacing:2px}.wlcell .wlwho{display:block;font-size:14px;color:var(--grey)}
+.wlcell em{display:block;font-style:normal;font-size:15px;color:var(--lime)}
+.wlcell.now{outline:4px solid var(--gold);background:#ffcd7533}.wlcell.done.t0{border-color:var(--c0)}.wlcell.done.t1{border-color:var(--c1)}.wlcell.none{opacity:.6}
+.garea:not(.split) .wlboard{grid-template-columns:repeat(auto-fill,minmax(118px,1fr))}
+@media (max-aspect-ratio:1/1),(max-width:760px){.wlsetgrid{grid-template-columns:1fr}}
+.wlboard.compact{grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:4px}
+.wlboard.compact .wlcell{min-height:0;padding:1px 5px;display:flex;flex-wrap:wrap;align-items:baseline;gap:0 6px}
+.wlboard.compact .wlcell small{display:inline;font-size:13px}.wlboard.compact .wlcell b{font-size:18px;letter-spacing:1px}.wlboard.compact .wlwho{display:none}.wlboard.compact .wlcell em{flex-basis:100%;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}

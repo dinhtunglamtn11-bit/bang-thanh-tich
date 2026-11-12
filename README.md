@@ -71,10 +71,14 @@ Tùy chọn "Thẻ đặc biệt": *Cổ điển* (⭐ cặp sao +3, 💣 bom) h
 
 Tab Quá trình học có thêm thanh 12 tháng của năm, dải từng ngày trong tháng đang chọn (ngày có buổi học được tô và ghi điểm từng bạn, ngày hôm nay có viền vàng) và thanh điểm của tháng với vạch "hôm nay".
 
-## Game "Ghép chữ hai đầu" 🔗
-
-Hai bạn ngồi hai đầu tablet (màn hình chia đôi): một bạn chọn chữ cái ĐẦU, một bạn chọn chữ cái CUỐI (chỉ hiện các chữ có từ phù hợp, có thể đặt ai chọn gì hoặc đổi vai mỗi vòng). Khi cả hai chốt, màn hình chuyển sang dùng chung: cả hai cùng gõ phần giữa của từ (hai chữ đầu và cuối đã cố định, ví dụ B _ _ L → Ball). Mặc định GIÁO VIÊN quyết định từ có hợp lệ hay không: sau khi bạn gửi từ, hiện hộp "✔ Hợp lệ / ✘ Không hợp lệ" (thời gian tạm dừng trong lúc chờ), từ không cần có trong kho từ vựng; có thể chuyển sang chế độ tự động chỉ nhận từ trong kho. Từ phải chưa ai dùng; từ đã dùng được lưu lại cho cả ván, hiện ở dưới màn hình. Tùy chỉnh trước khi chơi: số từ, ai chọn đầu/cuối, thời gian chọn chữ cái, thời gian nhập từ, cách tính điểm (ai đúng trước hoặc cả hai cùng ghi điểm), cho phép cụm từ, trừ điểm khi sai.
 
 ## Ô chữ bí mật: hiện toàn bộ câu
 
 Tùy chọn "Hiện TOÀN BỘ các câu trên một màn hình" (mặc định bật): ô chữ, chữ và khoảng cách tự thu nhỏ cho vừa chiều cao màn hình, học sinh không phải cuộn lên xuống.
+
+## Game "Ghép chữ hai đầu" 🔗
+
+1. **Chuẩn bị:** nhập tên hai bạn, chọn ai **đi trước** (chọn chữ cái ĐẦU) và ai **đi sau** (chọn chữ cái CUỐI). Số câu chọn trước khi vào (5 đến 20).
+2. **Chọn kín (chia đôi màn hình):** mỗi bạn chọn chữ cái của mình cho từng câu, bấm Chốt; cả hai chốt xong thì tự chuyển sang câu kế tiếp, cứ thế đến hết số câu. Chữ vừa chọn chỉ hiện một chấm rất nhỏ (không đổi màu) để bạn kia không nhìn được.
+3. **Bảng chung (không chia đôi nữa):** hiện các cặp chữ của tất cả câu kèm hình người đã chọn. Rồi làm từng câu: ví dụ N … N thì gõ NOON. Ô của câu ghi tên người ghi điểm.
+4. Mặc định **giáo viên quyết định từ hợp lệ** (hộp ✔ / ✘, từ không cần có trong kho từ vựng); có thể chuyển sang tự động chỉ nhận từ trong kho. Từ đã dùng không được lặp lại ở các câu sau. Tùy chọn khác: thời gian chọn chữ cái, thời gian nhập từ, cách tính điểm, đổi vai sau mỗi câu, cụm từ, trừ điểm khi sai.
