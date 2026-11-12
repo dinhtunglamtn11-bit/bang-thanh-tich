@@ -70,3 +70,11 @@ Tùy chọn "Thẻ đặc biệt": *Cổ điển* (⭐ cặp sao +3, 💣 bom) h
 ## Thanh tiến độ theo tháng và ngày
 
 Tab Quá trình học có thêm thanh 12 tháng của năm, dải từng ngày trong tháng đang chọn (ngày có buổi học được tô và ghi điểm từng bạn, ngày hôm nay có viền vàng) và thanh điểm của tháng với vạch "hôm nay".
+
+## Game "Ghép chữ hai đầu" 🔗
+
+Hai bạn ngồi hai đầu tablet (màn hình chia đôi): một bạn chọn chữ cái ĐẦU, một bạn chọn chữ cái CUỐI (chỉ hiện các chữ có từ phù hợp, có thể đặt ai chọn gì hoặc đổi vai mỗi vòng). Khi cả hai chốt, màn hình chuyển sang dùng chung: cả hai cùng gõ phần giữa của từ (hai chữ đầu và cuối đã cố định, ví dụ B _ _ L → Ball). Từ phải có trong kho từ vựng và chưa ai dùng; từ đã dùng được lưu lại cho cả ván, hiện ở dưới màn hình. Tùy chỉnh trước khi chơi: số từ, ai chọn đầu/cuối, thời gian chọn chữ cái, thời gian nhập từ, cách tính điểm (ai đúng trước hoặc cả hai cùng ghi điểm), cho phép cụm từ, trừ điểm khi sai.
+
+## Ô chữ bí mật: hiện toàn bộ câu
+
+Tùy chọn "Hiện TOÀN BỘ các câu trên một màn hình" (mặc định bật): ô chữ, chữ và khoảng cách tự thu nhỏ cho vừa chiều cao màn hình, học sinh không phải cuộn lên xuống.

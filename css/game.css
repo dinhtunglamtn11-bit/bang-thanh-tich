@@ -144,8 +144,8 @@ textarea{font-family:inherit}
 .ctable{display:flex;flex-direction:column;gap:6px}
 .crow{display:grid;grid-template-columns:44px auto 1fr 44px;gap:10px;align-items:center;text-align:left;background:#0003;border:3px solid var(--panel2);color:var(--white);padding:3px 8px;min-height:56px;box-shadow:none;width:100%}
 .crow.solved{border-color:var(--lime)}.crow.solved.t0{border-color:var(--c0)}.crow.solved.t1{border-color:var(--c1)}.crow.gold{border-color:var(--gold)}
-.cnum{font-size:22px;color:var(--grey)}.ccells{display:flex;gap:3px;width:calc(var(--n)*(clamp(22px,3.2vw,36px) + 6px))}
-.cc{width:clamp(22px,3.2vw,36px);height:clamp(26px,3.8vw,40px);background:var(--cell);border:3px solid var(--ink);font-size:clamp(18px,2.6vw,28px);color:var(--ink);display:grid;place-items:center}
+.cnum{font-size:22px;color:var(--grey)}.ccells{display:flex;gap:3px;width:calc(var(--n)*(var(--cs,clamp(22px,3.2vw,36px)) + 6px))}
+.cc{width:var(--cs,clamp(22px,3.2vw,36px));height:calc(var(--cs,clamp(22px,3.2vw,36px))*1.1);background:var(--cell);border:3px solid var(--ink);font-size:calc(var(--cs,clamp(22px,3.2vw,36px))*.72);color:var(--ink);display:grid;place-items:center}
 .cc.hi{background:var(--c0)}.cc.fly{animation:pop 1s steps(2) infinite}
 .cclue{font-size:clamp(18px,2.2vw,24px);color:var(--white);line-height:1}
 .cslot{width:36px;height:36px;border-radius:50%;background:var(--gold);color:var(--ink);display:grid;place-items:center;font-size:22px;border:3px solid var(--ink)}
@@ -245,3 +245,29 @@ textarea{font-family:inherit}
 .gmaps{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:8px}.gmap{border:3px solid var(--ink);background:#0003;padding:6px 10px}.gmap.focus{border-color:var(--gold)}.gmap ul{font-size:17px}
 .anode.pout{width:clamp(22px,2.6vw,32px);height:clamp(22px,2.6vw,32px);opacity:.85;background:#73eff7}
 .mcard.spc{opacity:.6;pointer-events:none;background:#c2c3c7}.mcard.spc.up .mback b{font-size:clamp(26px,4vw,46px)}
+
+/* ===== ô chữ: hiện toàn bộ câu trên một màn hình, không cuộn ===== */
+.garea.cfit{overflow:hidden;padding:6px}
+.cwrap.fit{max-width:none;height:100%;display:flex;flex-direction:column}
+.cwrap.fit .ctop{margin-bottom:4px;flex:0 0 auto}
+.ctable.fit{flex:1;min-height:0;display:grid;grid-auto-rows:1fr;gap:4px}
+.ctable.fit .crow{min-height:0;height:100%;padding:0 8px;grid-template-columns:40px auto 1fr 38px;gap:8px}
+.ctable.fit .cclue{font-size:var(--ft,20px)}.ctable.fit .cnum{font-size:var(--ft,20px)}
+.ctable.fit .cslot{width:min(34px,calc(var(--rh,40px) - 6px));height:min(34px,calc(var(--rh,40px) - 6px));font-size:var(--ft,20px)}
+
+/* ===== game ghép chữ hai đầu ===== */
+.wlkeys{display:grid;grid-template-columns:repeat(9,1fr);gap:5px;margin:4px 0}
+.wlk{height:clamp(34px,5vw,48px);font-size:clamp(20px,2.6vw,28px);padding:0;background:var(--white)}
+.wlk.sel{background:var(--gold);outline:4px solid var(--white)}.wlk.off{opacity:.18;pointer-events:none}.wlk.locked{opacity:.55;pointer-events:none}.wlk.sel.locked{opacity:1;background:var(--lime)}
+.wlpick{font-size:52px;color:var(--gold);text-shadow:3px 3px 0 var(--ink);min-height:56px;line-height:1.1}.wlpick.done{color:var(--lime)}
+.wlrole{font-size:22px}.wlrole.t0{color:var(--c0)}.wlrole.t1{color:var(--c1)}
+.wlround,.wlstat{font-size:20px;color:var(--cyan)}
+.wlhead{text-align:center}.wlpat{font-size:clamp(36px,6vw,72px);color:var(--gold);letter-spacing:6px;text-shadow:4px 4px 0 var(--ink);line-height:1}.wlsub{font-size:19px;color:var(--cyan)}
+.wlpanels{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.wlpanel{border:4px solid var(--ink);background:#0003;padding:6px 8px;text-align:center}.wlpanel.t0{border-color:var(--c0)}.wlpanel.t1{border-color:var(--c1)}.wlpanel.won{background:#38b76444}
+.wlcells{display:flex;flex-wrap:wrap;justify-content:center;gap:4px;min-height:52px;margin:4px 0}
+.wlc{min-width:34px;height:44px;padding:0 4px;background:var(--cell);border:4px solid var(--ink);color:var(--ink);font-size:28px;display:grid;place-items:center}.wlc.fix{background:var(--gold)}
+.wlmsg{font-size:19px;color:var(--grey);min-height:26px}.wlmsg.bad{color:var(--orange)}.wlmsg.good{color:var(--lime)}
+.wlused{margin-top:8px;font-size:18px;display:flex;flex-wrap:wrap;gap:4px 6px;align-items:center}
+.wlchip{background:var(--ink);padding:0 8px;border:2px solid var(--grey)}.wlchip.t0{border-color:var(--c0)}.wlchip.t1{border-color:var(--c1)}
+@media (max-aspect-ratio:1/1),(max-width:760px){.wlpanels{grid-template-columns:1fr}}

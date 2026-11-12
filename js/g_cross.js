@@ -103,6 +103,7 @@ NS.games.push({
   id: 'cross', name: 'Ô chữ bí mật', icon: '🧩', desc: 'Đoán từng hàng, ghép các chữ ở ô cam thành từ khóa bí mật!',
   options: [
     { key: 'kw', label: 'Từ khóa (để trống nếu dùng ô chữ soạn tay)', type: 'text', def: 'SKIPPING ROPE', suggest: ['ANNIVERSARY', 'LIVINGROOM', 'SKIPPING ROPE', 'HIDE AND SEEK', 'SING KARAOKE'] },
+    { key: 'fitAll', label: 'Hiện TOÀN BỘ các câu trên một màn hình (tự thu nhỏ, không phải cuộn)', type: 'toggle', def: true },
     { key: 'showKey', label: 'Hiện thanh từ khóa (tắt = ẩn các ô từ khóa cho đến khi kết thúc)', type: 'toggle', def: true },
     { key: 'qtime', label: 'Thời gian trả lời mỗi lượt', type: 'select', choices: [[0, 'Không giới hạn'], [20, '20 giây'], [30, '30 giây'], [60, '60 giây']], def: 0 },
     { key: 'keyPenalty', label: 'Điểm trừ khi đoán sai từ khóa', type: 'select', choices: [[0, 'Không trừ'], [3, '−3'], [5, '−5'], [10, '−10']], def: 5 },
@@ -147,7 +148,20 @@ NS.games.push({
       NS.tap(el, () => openRow(k)); r.el = el; r.cells = cells; rowEls.push(el); table.append(el);
     });
     if (!o.showKey) keyStrip.style.display = 'none';
-    sh.area.append(h('div', { class: 'cwrap' }, h('div', { class: 'ctop' }, keyStrip, tools), table));
+    const cwrap = h('div', { class: 'cwrap' }, h('div', { class: 'ctop' }, keyStrip, tools), table);
+    sh.area.append(cwrap);
+    if (o.fitAll) {
+      /* thu nhỏ ô chữ, chữ và khoảng cách để vừa khít chiều cao màn hình */
+      sh.area.classList.add('cfit'); cwrap.classList.add('fit'); table.classList.add('fit');
+      const fit = () => {
+        const N = rows.length, th = table.clientHeight, tw = table.clientWidth; if (!th || !tw) return;
+        const rh = Math.floor((th - (N - 1) * 4) / N);
+        const cs = Math.max(12, Math.min(38, rh - 10, Math.floor(tw * 0.5 / (maxLen + 0.5)) - 4));
+        table.style.setProperty('--cs', cs + 'px'); table.style.setProperty('--rh', rh + 'px'); table.style.setProperty('--ft', Math.max(11, Math.min(26, Math.floor(rh * 0.5))) + 'px');
+      };
+      if (typeof ResizeObserver !== 'undefined') new ResizeObserver(fit).observe(table); else window.addEventListener('resize', fit);
+      setTimeout(fit, 0); setTimeout(fit, 300);
+    }
     const setTurn = () => { sh.setActive(turn); sh.setInfo('Lượt: ' + NS.TEAM_ICON[turn] + ' ' + names[turn]); };
     setTurn();
 
