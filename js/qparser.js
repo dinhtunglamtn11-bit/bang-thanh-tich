@@ -93,6 +93,7 @@ NS.parseQuestions = function (text, opts) {
       const s = l.s.trim(); if (!s) return;
       const lm = s.match(LBL);
       if (lm && LABELS[fold(lm[1])] === 'topic') { set.topic = topicOf(lm[2]); return; }
+      if (lm && LABELS[fold(lm[1])] === 'lesson') { set.lesson = lm[2].trim(); return; }
       const i = s.indexOf('::');
       if (i < 0) { warn('W011', l.n, 'Dòng thẻ thiếu "::" nên bị bỏ qua.', s, 'Viết: từ :: nghĩa'); return; }
       let left = s.slice(0, i).trim(), right = s.slice(i + 2).trim(), ipa;
@@ -103,14 +104,16 @@ NS.parseQuestions = function (text, opts) {
     });
     if (set.pairs.length < 4) { err('E040', b.n, 'Bộ thẻ "' + set.name + '" cần ít nhất 4 cặp (hiện ' + set.pairs.length + ').', 'Bộ thẻ: ' + set.name); ok = false; }
     if (set.topic === undefined && b.defaults.topic) set.topic = topicOf(b.defaults.topic);
+    if (!set.lesson && b.defaults.lesson) set.lesson = String(b.defaults.lesson).trim();
     if (ok) res.cardSets.push(set);
   }
 
   function parsePuzzle(b) {
-    const kw = b.head.trim(); const letters = kw.replace(/[^A-Za-z]/g, '').toUpperCase(); const N = letters.length;
+    const kw = b.head.trim(); const letters = kw.replace(/[^A-Za-z]/g, '').toUpperCase(); const N = letters.length; let pLesson = b.defaults.lesson ? String(b.defaults.lesson).trim() : '';
     const rows = []; let bad = false;
     b.lines.forEach(l => {
-      const m = l.s.match(LBL); if (!m || fold(m[1]) !== 'hang') { if (l.s.trim()) warn('W012', l.n, 'Dòng không phải "Hàng:" nên bị bỏ qua.', l.s); return; }
+      const m = l.s.match(LBL); if (m && LABELS[fold(m[1])] === 'lesson') { pLesson = m[2].trim(); return; }
+      if (!m || fold(m[1]) !== 'hang') { if (l.s.trim()) warn('W012', l.n, 'Dòng không phải "Hàng:" nên bị bỏ qua.', l.s); return; }
       const parts = m[2].split('|').map(x => x.trim());
       if (parts.length < 4) { err('E053', l.n, 'Hàng cần dạng: từ | vị trí ô cam | Ô số | gợi ý.', l.s); bad = true; return; }
       rows.push({ word: parts[0], hi: parseInt(parts[1], 10), slot: parseInt(parts[2], 10), clue: parts.slice(3).join(' | '), line: l.n });
@@ -125,7 +128,7 @@ NS.parseQuestions = function (text, opts) {
       if (r.clue && r.clue.toLowerCase().includes(r.word.toLowerCase())) warn('W021', r.line, 'Gợi ý chứa chính đáp án.', r.clue);
     });
     for (let i = 1; i < rows.length; i++) if (rows[i].hi === rows[i - 1].hi) warn('W022', rows[i].line, 'Hai hàng liền kề có ô cam cùng cột.', rows[i].word);
-    if (!bad) res.puzzles.push({ keyword: kw, rows: rows.map(r => ({ word: r.word, hi: r.hi, slot: r.slot, clue: r.clue })), line: b.n });
+    if (!bad) res.puzzles.push({ keyword: kw, rows: rows.map(r => ({ word: r.word, hi: r.hi, slot: r.slot, clue: r.clue })), line: b.n, lesson: pLesson || undefined });
   }
 
   function parseQ(b) {
@@ -171,7 +174,7 @@ NS.parseQuestions = function (text, opts) {
     if (f.scramble) q.scramble = f.scramble.split(/\s+/).filter(Boolean);
     if (f.split) q.chunks = f.split.split('|').map(x => x.trim()).filter(Boolean);
     let word = null;
-    if (f.word) { word = wordFind(String(f.word).trim()); if (!word) { const sug = words.map(w => ({ w, d: NS.lev(String(f.word).toLowerCase(), w.id) })).sort((a, c) => a.d - c.d).slice(0, 3).map(x => x.w.id).join(', '); err('E030', b.n, 'Từ "' + f.word + '" không có trong kho từ vựng.', 'Từ: ' + f.word, 'Có thể bạn muốn: ' + sug); return; } q.wordId = word.id; }
+    if (f.word) { word = wordFind(String(f.word).trim()); if (!word) { warn('W030', b.n, 'Từ "' + f.word + '" chưa có trong kho từ vựng — vẫn nhận câu hỏi (bạn tự duyệt).', 'Từ: ' + f.word); if (!q.say) q.say = String(f.word).trim(); } else q.wordId = word.id; }
     /* dạng */
     let type = f.type ? (TYPES.includes(fold(f.type).replace(/ /g, '-')) ? fold(f.type).replace(/ /g, '-') : TYPE_ALIAS[fold(f.type)]) : '';
     if (f.type && !type) { err('E011', b.n, 'Dạng "' + f.type + '" không hợp lệ.', 'Dạng: ' + f.type, 'Dùng: ' + TYPES.join(', ')); return; }
@@ -220,6 +223,7 @@ NS.parseQuestions = function (text, opts) {
     res.questions.push(q);
   }
 
+  res.lessons = [...new Set([].concat(res.questions.map(q => q.lesson), res.cardSets.map(c => c.lesson), res.puzzles.map(p => p.lesson)).filter(Boolean))];
   res.questions.forEach(q => { const s = res.stats; s.type[q.type] = (s.type[q.type] || 0) + 1; s.diff[q.difficulty] = (s.diff[q.difficulty] || 0) + 1; if (q.topic) s.topic[q.topic] = (s.topic[q.topic] || 0) + 1; });
   return res;
 };
@@ -256,10 +260,10 @@ NS.serializeQuestions = function (data) {
     out.push(L.join('\n'));
   });
   (data.cardSets || []).forEach(c => {
-    const L = ['Bộ thẻ: ' + c.name]; if (c.topic) L.push('Chủ đề: ' + c.topic);
+    const L = ['Bộ thẻ: ' + c.name]; if (c.topic) L.push('Chủ đề: ' + c.topic); if (c.lesson) L.push('Bài: ' + c.lesson);
     c.pairs.forEach(p => L.push(p.left + (p.ipa ? ' /' + p.ipa + '/' : '') + ' :: ' + p.right)); out.push(L.join('\n'));
   });
-  (data.puzzles || []).forEach(p => { out.push(['Ô chữ: ' + p.keyword].concat(p.rows.map(r => 'Hàng: ' + r.word + ' | ' + r.hi + ' | ' + r.slot + ' | ' + r.clue)).join('\n')); });
+  (data.puzzles || []).forEach(p => { out.push(['Ô chữ: ' + p.keyword].concat(p.lesson ? ['Bài: ' + p.lesson] : [], p.rows.map(r => 'Hàng: ' + r.word + ' | ' + r.hi + ' | ' + r.slot + ' | ' + r.clue)).join('\n')); });
   return out.join('\n\n') + '\n';
 };
 })();

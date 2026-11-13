@@ -6,7 +6,8 @@ let root = null;
 
 function loadHand() {
   const t = NS.LS.get('pg-questions-text', '');
-  NS.hand = t ? NS.parseQuestions(t) : { questions: [], cardSets: [], puzzles: [] };
+  NS.handAll = t ? NS.parseQuestions(t) : { questions: [], cardSets: [], puzzles: [], lessons: [] };
+  NS.applyLesson();
   NS.handText = t;
 }
 NS.loadHand = loadHand;
@@ -44,7 +45,9 @@ function renderMenu() {
     h('button', { type: 'button', onclick: musicDialog }, '🎵 Nhạc nền'),
     h('button', { type: 'button', onclick: voiceTest }, '🔊 Thử giọng đọc'));
   const how = h('div', { class: 'ghow' }, '👫 Hai bạn ngồi hai bên: ', h('b', {}, NS.TEAM_ICON[0] + ' ' + NS.cfg.teams[0]), ' và ', h('b', {}, NS.TEAM_ICON[1] + ' ' + NS.cfg.teams[1]), (NS.cfg.split ? ' (màn hình chia đôi: bạn thứ nhất ngồi phía dưới, bạn thứ hai ngồi phía đối diện). ' : '. '), 'Chọn một trò chơi để bắt đầu!');
-  root.append(h('div', { class: 'gmenuhead' }, h('button', { class: 'small', type: 'button', onclick: () => window.showTab && window.showTab('learn') }, '◀ Quay lại bảng thành tích'), h('h2', { class: 'gh2' }, '🎮 CHỌN TRÒ CHƠI')), how, cards, status, tools);
+  const lessons = (NS.handAll && NS.handAll.lessons) || [];
+  const lessonPick = lessons.length ? h('div', { class: 'glesson' }, h('b', {}, '📖 Dùng bài soạn tay: '), select([['', 'Tất cả các bài']].concat(lessons.map(l => [l, l])), NS.cfg.lesson || '', v => { NS.cfg.lesson = v; NS.saveCfg(); NS.applyLesson(); renderMenu(); }), h('small', {}, ' (đổi "Nguồn câu hỏi" sang Trộn/Chỉ soạn tay trong Cài đặt chung để dùng)')) : null;
+  root.append(h('div', { class: 'gmenuhead' }, h('button', { class: 'small', type: 'button', onclick: () => window.showTab && window.showTab('learn') }, '◀ Quay lại bảng thành tích'), h('h2', { class: 'gh2' }, '🎮 CHỌN TRÒ CHƠI')), how, lessonPick, cards, status, tools);
 }
 NS.renderMenu = renderMenu;
 
@@ -113,26 +116,42 @@ function vocabDialog() {
 }
 
 function questionDialog() {
+  let mode = 'replace';
   const ta = h('textarea', { class: 'bigta', spellcheck: 'false' }); ta.value = NS.handText || '';
-  const rep = h('div', { class: 'report' });
+  const rep = h('div', { class: 'report' }), saved = h('div', { class: 'gmsg' });
+  const showSaved = () => { const a = NS.handAll || { questions: [], cardSets: [], puzzles: [], lessons: [] }; saved.textContent = '💾 Đang lưu: ' + a.questions.length + ' câu · ' + a.cardSets.length + ' bộ thẻ · ' + a.puzzles.length + ' ô chữ' + (a.lessons && a.lessons.length ? ' · bài: ' + a.lessons.join(', ') : ''); };
+  showSaved();
+  const countBy = (r) => { const m = {}; r.questions.forEach(q => { const k = q.lesson || '(chưa gán bài)'; m[k] = m[k] || { q: 0, c: 0, p: 0 }; m[k].q++; }); r.cardSets.forEach(c => { const k = c.lesson || '(chưa gán bài)'; m[k] = m[k] || { q: 0, c: 0, p: 0 }; m[k].c++; }); r.puzzles.forEach(p => { const k = p.lesson || '(chưa gán bài)'; m[k] = m[k] || { q: 0, c: 0, p: 0 }; m[k].p++; }); return m; };
   const check = () => {
     const r = NS.parseQuestions(ta.value), st = r.stats;
     rep.innerHTML = '';
     rep.append(h('div', { class: 'rsum' }, '📊 ' + r.total + ' khối · ✔ ' + (r.questions.length + r.cardSets.length + r.puzzles.length) + ' hợp lệ (' + r.questions.length + ' câu, ' + r.cardSets.length + ' bộ thẻ, ' + r.puzzles.length + ' ô chữ) · ❌ ' + r.errors.length + ' lỗi · ⚠ ' + r.warnings.length + ' cảnh báo'),
-      Object.keys(st.type).length ? h('div', { class: 'rsub' }, 'Theo dạng: ' + Object.keys(st.type).map(k => k + '=' + st.type[k]).join(', ') + ' · Độ khó: ' + Object.keys(st.diff).map(k => ['', 'Dễ', 'Vừa', 'Khó'][k] + '=' + st.diff[k]).join(', ')) : null);
+      Object.keys(st.type).length ? h('div', { class: 'rsub' }, 'Theo dạng: ' + Object.keys(st.type).map(k => k + '=' + st.type[k]).join(', ') + ' · Độ khó: ' + Object.keys(st.diff).map(k => ['', 'Dễ', 'Vừa', 'Khó'][k] + '=' + st.diff[k]).join(', ')) : null,
+      h('div', { class: 'rsub' }, '📖 Theo bài: ' + (Object.entries(countBy(r)).map(([k, v]) => k + ' (' + v.q + ' câu, ' + v.c + ' thẻ, ' + v.p + ' ô chữ)').join(' · ') || 'chưa có')));
     const item = (e, cls) => h('button', { class: 'ritem ' + cls, type: 'button', onclick: () => { const ls = ta.value.split(/\r\n|\r|\n/); let pos = 0; for (let i = 0; i < e.line - 1; i++) pos += ls[i].length + 1; ta.focus(); ta.setSelectionRange(pos, pos + (ls[e.line - 1] || '').length); } },
       h('b', {}, e.code + ' · dòng ' + e.line), ' ' + e.msg, e.excerpt ? h('code', {}, e.excerpt) : null, e.hint ? h('i', {}, '💡 ' + e.hint) : null);
-    r.errors.slice(0, 60).forEach(e => rep.append(item(e, 'err'))); r.warnings.slice(0, 40).forEach(e => rep.append(item(e, 'wrn')));
+    r.errors.slice(0, 60).forEach(e => rep.append(item(e, 'err'))); r.warnings.slice(0, 60).forEach(e => rep.append(item(e, 'wrn')));
     return r;
   };
+  const sel = select([['replace', 'Thay toàn bộ nội dung đang lưu bằng ô bên dưới'], ['append', 'NỐI THÊM vào cuối nội dung đang lưu (dán nhiều lần, nhiều bài)']], 'replace', v => {
+    mode = v; if (v === 'append') { ta.value = ''; ta.placeholder = 'Dán nội dung MỚI ở đây (nhiều bài, nhiều dạng, nhiều game cùng lúc đều được). Nội dung cũ vẫn được giữ.'; } else { ta.value = NS.handText || ''; ta.placeholder = ''; }
+    rep.innerHTML = '';
+  });
+  const importIt = () => {
+    const r = check(); const base = NS.handText || '';
+    const text = mode === 'append' && base.trim() ? base.replace(/\s+$/, '') + '\n\n' + ta.value : ta.value;
+    NS.LS.set('pg-questions-text', text); loadHand(); showSaved();
+    rep.prepend(h('div', { class: 'rsum ok' }, '✔ Đã ' + (mode === 'append' ? 'nối thêm ' : 'nhập ') + (r.questions.length + r.cardSets.length + r.puzzles.length) + ' mục hợp lệ. Khối lỗi bị bỏ qua. Chọn "Nguồn câu hỏi" trong Cài đặt để dùng.'));
+    if (mode === 'append') ta.value = '';
+  };
   const body = h('div', { class: 'gform' },
-    h('p', { class: 'note' }, 'Dán câu hỏi theo cú pháp: ', h('code', {}, 'Câu 1: ...  A. ...  B. ...*  Giải thích: ...'), '; thẻ ', h('code', {}, 'Bộ thẻ: tên'), ' + dòng ', h('code', {}, 'từ :: nghĩa'), '; ô chữ ', h('code', {}, 'Ô chữ: TỪ KHÓA'), ' + dòng ', h('code', {}, 'Hàng: từ | ô cam | ô số | gợi ý'), '.'),
-    ta, rep,
+    h('p', { class: 'note' }, 'Nhập NHIỀU bài, NHIỀU dạng game, NHIỀU câu trong cùng một lần dán. Chia bài bằng dòng ', h('code', {}, '@bài: Tên bài'), ' (áp dụng cho mọi khối bên dưới đến khi gặp dòng ', h('code', {}, '@bài:'), ' khác hoặc ', h('code', {}, '@hết'), '); chia mức bằng ', h('code', {}, '== DỄ =='), ' / ', h('code', {}, '== VỪA =='), ' / ', h('code', {}, '== KHÓ =='), '. Câu hỏi: ', h('code', {}, 'Câu 1: ...'), '; thẻ: ', h('code', {}, 'Bộ thẻ: tên'), '; ô chữ: ', h('code', {}, 'Ô chữ: TỪ KHÓA'), '. Từ chưa có trong kho từ vựng vẫn được nhận (chỉ cảnh báo, bạn tự duyệt).'),
+    h('label', {}, 'Chế độ nhập'), sel, saved, ta, rep,
     h('div', { class: 'rbtns' },
       h('button', { type: 'button', onclick: check }, '🔍 Kiểm tra'),
-      h('button', { class: 'green', type: 'button', onclick: () => { const r = check(); NS.LS.set('pg-questions-text', ta.value); loadHand(); rep.prepend(h('div', { class: 'rsum ok' }, '✔ Đã nhập ' + (r.questions.length + r.cardSets.length + r.puzzles.length) + ' mục hợp lệ. Khối lỗi bị bỏ qua. Chọn "Nguồn câu hỏi" trong Cài đặt để dùng.')); } }, '✔ Nhập các khối hợp lệ'),
-      h('button', { class: 'small', type: 'button', onclick: () => { const r = NS.parseQuestions(ta.value), t = NS.serializeQuestions(r); const a = h('a', { href: URL.createObjectURL(new Blob([t], { type: 'text/plain;charset=utf-8' })), download: 'cau-hoi-da-sua.txt' }); document.body.append(a); a.click(); a.remove(); } }, '⬇ Tải bản đã sửa'),
-      h('button', { class: 'small red', type: 'button', onclick: () => { if (confirm('Xóa toàn bộ câu hỏi soạn tay?')) { ta.value = ''; try { localStorage.removeItem('pg-questions-text'); } catch (e) {} loadHand(); rep.innerHTML = ''; } } }, 'Xóa hết')));
+      h('button', { class: 'green', type: 'button', onclick: importIt }, '✔ Nhập các khối hợp lệ'),
+      h('button', { class: 'small', type: 'button', onclick: () => { const r = NS.parseQuestions(NS.handText || ''), t = NS.serializeQuestions(r); const a = h('a', { href: URL.createObjectURL(new Blob([t], { type: 'text/plain;charset=utf-8' })), download: 'cau-hoi-da-luu.txt' }); document.body.append(a); a.click(); a.remove(); } }, '⬇ Tải toàn bộ đã lưu'),
+      h('button', { class: 'small red', type: 'button', onclick: () => { if (confirm('Xóa toàn bộ câu hỏi soạn tay đã lưu?')) { ta.value = ''; try { localStorage.removeItem('pg-questions-text'); } catch (e) {} loadHand(); showSaved(); rep.innerHTML = ''; } } }, 'Xóa hết')));
   modal('📝 Soạn câu hỏi', body, renderMenu);
 }
 

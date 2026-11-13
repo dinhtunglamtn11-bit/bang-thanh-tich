@@ -90,3 +90,7 @@ Bấm một hàng → tick tên người trả lời → nhập đáp án. Đún
 ## Nút Quay lại xuyên suốt app
 
 Nút Back của tablet / điện thoại / trình duyệt và nút "◀ Quay lại" trên màn hình đều lùi một bước: đóng hộp thoại đang mở, từ Game về bảng thành tích, và trong lúc chơi game thì mở menu tạm dừng (Back lần nữa thì chơi tiếp, chọn "Về menu" để thoát). Màn hình kết quả: Back về menu. Mã nằm ở `js/nav.js`.
+
+## Nhập nhiều bài, nhiều dạng, nhiều game trong một lần dán
+
+Trong **Game → 📝 Soạn câu hỏi** có thể dán một văn bản dài chứa nhiều bài; mỗi bài gồm nhiều câu và nhiều dạng game (câu hỏi, bộ thẻ, ô chữ). Chia bài bằng dòng `@bài: Tên bài`, chia mức bằng `== DỄ ==` / `== VỪA ==` / `== KHÓ ==`. Chế độ **NỐI THÊM** cho dán nhiều lần mà giữ nội dung cũ. Ở menu Game, chọn "📖 Dùng bài soạn tay" để chỉ dùng một bài (nội dung chưa gán bài luôn được dùng). Từ chưa có trong kho từ vựng chỉ bị cảnh báo (W030), câu hỏi vẫn được nhận, giáo viên tự duyệt.

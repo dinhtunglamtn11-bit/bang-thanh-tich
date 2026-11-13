@@ -39,7 +39,7 @@ const defTeams = () => {
   try { if (typeof S !== 'undefined' && S.students && S.students.length >= 2) return [S.students[0].name || 'Cam', S.students[1].name || 'Xanh']; } catch (e) {}
   return ['Cam', 'Xanh'];
 };
-NS.cfg = Object.assign({ topics: [], phrases: false, level: 2, dir: 'mix', source: 'auto', sound: true, vibrate: true, teams: null, split: true, quickBonus: true, wrongPenalty: true }, LS.get('pg-cfg', {}));
+NS.cfg = Object.assign({ topics: [], phrases: false, level: 2, dir: 'mix', source: 'auto', sound: true, vibrate: true, teams: null, lesson: '', split: true, quickBonus: true, wrongPenalty: true }, LS.get('pg-cfg', {}));
 if (!NS.cfg.teams) NS.cfg.teams = defTeams();
 NS.saveCfg = () => LS.set('pg-cfg', NS.cfg);
 NS.TEAM_ICON = ['🟠', '🔵'];
@@ -159,7 +159,15 @@ NS.makeMC = function (word, dir, level, pool) {
 };
 
 NS.handUsed = new Set();
-NS.hand = { questions: [], cardSets: [], puzzles: [] };
+NS.hand = { questions: [], cardSets: [], puzzles: [], lessons: [] };
+NS.handAll = NS.hand;
+/* Chỉ dùng nội dung soạn tay của MỘT bài (NS.cfg.lesson); nội dung chưa gán bài luôn được dùng */
+NS.applyLesson = function () {
+  const a = NS.handAll || { questions: [], cardSets: [], puzzles: [], lessons: [] }, L = NS.cfg.lesson;
+  if (!L || !(a.lessons || []).includes(L)) { NS.hand = a; return; }
+  const keep = x => !x.lesson || x.lesson === L;
+  NS.hand = { questions: a.questions.filter(keep), cardSets: a.cardSets.filter(keep), puzzles: a.puzzles.filter(keep), lessons: a.lessons };
+};
 let genBag = null, genKey = '';
 NS.nextMC = function (o) {
   o = o || {}; const level = o.level || NS.cfg.level;

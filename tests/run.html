@@ -54,7 +54,7 @@ await test('Parser câu hỏi (tệp mẫu vàng)',()=>{
   const t=performance.now(); parsed=NS.parseQuestions(window.FIXTURE); const dt=performance.now()-t;
   const codes=parsed.errors.map(e=>e.code), has=c=>codes.includes(c);
   log('  → '+parsed.total+' khối, '+parsed.questions.length+' câu, '+parsed.cardSets.length+' bộ thẻ, '+parsed.puzzles.length+' ô chữ; lỗi: '+codes.join(',')+'; cảnh báo: '+parsed.warnings.map(e=>e.code).join(','));
-  ['E021','E020','E022','E030','E040','E052'].forEach(c=>ok(has(c),'thiếu lỗi '+c));
+  ['E021','E020','E022','E040','E052'].forEach(c=>ok(has(c),'thiếu lỗi '+c)); ok(!has('E030'),'từ ngoài kho không còn là lỗi'); ok(parsed.warnings.some(w=>w.code==='W030'),'có cảnh báo W030 cho từ ngoài kho');
   ok(parsed.questions.length===12,'12 câu hợp lệ (có '+parsed.questions.length+')');
   const q1=parsed.questions[0]; ok(q1.type==='trac-nghiem'&&q1.answers[0]==='B'&&q1.difficulty===3&&q1.topic===3&&q1.tags.join()==='lop5,on-tap,nha-o'&&q1.explanation.includes('Dòng thứ hai'),'câu 1: '+JSON.stringify([q1.type,q1.answers,q1.difficulty,q1.topic,q1.tags]));
   const q2=parsed.questions[1]; ok(q2.answers[0]==='C'&&q2.difficulty===1,'câu 2 nhãn không dấu');
@@ -170,6 +170,23 @@ await test('Định nghĩa trong từ vựng + câu hỏi theo mức',async()=>{
   const q1=NS.levelQ(1); ok(q1.kind==='mc'&&q1.listen&&q1.options.length===4,'mức vừa: nghe chọn nghĩa');
   for(let i=0;i<30;i++){ const q2=NS.levelQ(2); ok(q2.dir==='def'&&q2.sub.includes('“')&&/^[a-z]+$/.test(q2.options[q2.answer])&&q2.options.length===4,'mức khó: mô tả tiếng Anh → chọn từ'); }
   NS.setVocab(NS.SAMPLE_VOCAB,'mẫu');
+});
+await test('Nhiều bài / nhiều dạng / nhiều game trong một lần dán + từ ngoài kho',()=>{
+  const t=['@bài: Unit 1','== DỄ ==','Câu 1: Gõ từ có nghĩa là "quả bóng".','Dạng: dien-tu','Đáp án: ball','Từ: ball','',
+    '== VỪA ==','Câu 2: Nghe và chọn.','Dạng: nghe','Từ: garden','A. vườn*','B. nhà','C. xe','Đọc: garden','',
+    'Bộ thẻ: Đồ chơi','lamp :: đèn','sofa :: ghế sofa','mirror :: gương','chair :: cái ghế','',
+    'Ô chữ: LAMP','Hàng: lime | 1 | 1 | Quả chanh xanh.','Hàng: banana | 2 | 2 | Quả chuối.','Hàng: mirror | 1 | 3 | Soi mặt.','Hàng: apple | 2 | 4 | Quả táo.','',
+    '@bài: Unit 2','Câu 3: "tidy" nghĩa là "bừa bộn".','Dạng: dung-sai','Đáp án: Sai','',
+    'Bộ thẻ: Nhà cửa','Bài: Unit 3','a1 :: b1','a2 :: b2','a3 :: b3','a4 :: b4'].join('\n');
+  const r=NS.parseQuestions(t);
+  ok(r.errors.length===0,'không lỗi: '+JSON.stringify(r.errors.slice(0,2))); ok(r.questions.length===3&&r.cardSets.length===2&&r.puzzles.length===1,'đủ 3 câu, 2 bộ thẻ, 1 ô chữ');
+  ok(r.warnings.some(w=>w.code==='W030'),'cảnh báo từ ngoài kho (ball/garden) nhưng vẫn nhận');
+  ok(r.lessons.join()==='Unit 1,Unit 2,Unit 3','danh sách bài: '+r.lessons);
+  ok(r.questions[0].lesson==='Unit 1'&&r.questions[2].lesson==='Unit 2'&&r.cardSets[0].lesson==='Unit 1'&&r.cardSets[1].lesson==='Unit 3'&&r.puzzles[0].lesson==='Unit 1','gán bài đúng cho câu/thẻ/ô chữ');
+  ok(r.questions[1].say==='garden','từ ngoài kho vẫn đọc được (Đọc:)');
+  const back=NS.parseQuestions(NS.serializeQuestions(r)); ok(back.cardSets[1].lesson==='Unit 3'&&back.puzzles[0].lesson==='Unit 1'&&back.questions.length===3,'xuất ngược và đọc lại giữ bài');
+  NS.handAll=r; NS.cfg.lesson='Unit 2'; NS.applyLesson(); ok(NS.hand.questions.length===1&&NS.hand.cardSets.length===0&&NS.hand.puzzles.length===0,'lọc theo bài Unit 2'); NS.cfg.lesson=''; NS.applyLesson(); ok(NS.hand.questions.length===3,'tất cả các bài');
+  NS.handAll={questions:[],cardSets:[],puzzles:[],lessons:[]}; NS.applyLesson();
 });
 await test('Cú pháp chia mức dễ/vừa/khó',()=>{
   const t='== DỄ ==\nCâu 1: A?\nA. x*\nB. y\n\n## Vừa\nCâu 2: B?\nA. x*\nB. y\n\n[KHÓ]\nCâu 3: C?\nA. x*\nB. y\n\n@hết\nCâu D4: D?\nA. x*\nB. y\nCâu 5 [khó]: E?\nA. x*\nB. y\nCâu 6 (dễ): F?\nA. x*\nB. y\nCâu 7: G?\nA. x*\nB. y\nĐộ khó: Khó\n--- Dễ ---\nCâu 8: H?\nA. x*\nB. y\n@vừa\nCâu 9: I?\nA. x*\nB. y';
