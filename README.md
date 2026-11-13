@@ -85,7 +85,7 @@ Tùy chọn "Hiện TOÀN BỘ các câu trên một màn hình" (mặc định 
 
 ## Ô chữ bí mật: không đổi lượt
 
-Bấm một hàng → tick tên người trả lời → nhập đáp án. Đúng thì tự cộng điểm cho người đó; sai thì không đổi lượt, bấm lại câu để thử tiếp (có thể chọn người khác, tùy chọn trừ điểm khi sai). Đoán từ khóa cũng chọn người trả lời trước. Giải hết các hàng KHÔNG tự hiện từ khóa và không tự kết thúc: các chữ ở ô cam hiện lộn xộn trong khay "Chữ ở ô cam đã tìm được", người chơi tự xếp rồi bấm "Đoán từ khóa" (đúng được +5 điểm, cộng thêm 3 điểm cho mỗi hàng chưa giải). Nút "Kết thúc, hiện từ khóa" để dừng sớm.
+Bấm một hàng → tick tên người trả lời → nhập đáp án. Đúng thì tự cộng điểm cho người đó; sai thì không đổi lượt, bấm lại câu để thử tiếp (có thể chọn người khác, tùy chọn trừ điểm khi sai). Đoán từ khóa cũng chọn người trả lời trước. Giải hết các hàng KHÔNG tự hiện từ khóa và không tự kết thúc: mỗi hàng giải xong, chữ ở ô cam rơi LỘN XỘN vào các ô của khu "Xếp từ khóa" phía trên; người chơi bấm 2 ô để đổi chỗ, tự xếp rồi bấm "✔ Kiểm tra thứ tự đã xếp" (hoặc "🔑 Đoán từ khóa" để gõ) (đúng được +5 điểm, cộng thêm 3 điểm cho mỗi hàng chưa giải). Nút "Kết thúc, hiện từ khóa" để dừng sớm.
 
 ## Nút Quay lại xuyên suốt app
 
