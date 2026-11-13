@@ -109,6 +109,7 @@ NS.games.push({
   _base: [
     { key: 'kw', label: 'Từ khóa (để trống nếu dùng ô chữ soạn tay)', type: 'text', def: 'SKIPPING ROPE', suggest: ['ANNIVERSARY', 'LIVINGROOM', 'SKIPPING ROPE', 'HIDE AND SEEK', 'SING KARAOKE'] },
     { key: 'fitAll', label: 'Hiện TOÀN BỘ các câu trên một màn hình (tự thu nhỏ, không phải cuộn)', type: 'toggle', def: true },
+    { key: 'showSlots', label: 'Hiện số thứ tự chữ trong từ khóa (ô tròn vàng bên phải mỗi hàng — tắt để học sinh tự suy luận)', type: 'toggle', def: false },
     { key: 'showKey', label: 'Hiện khu xếp từ khóa phía trên (tắt = chỉ đoán bằng cách gõ)', type: 'toggle', def: true },
     { key: 'qtime', label: 'Thời gian trả lời mỗi lượt', type: 'select', choices: [[0, 'Không giới hạn'], [20, '20 giây'], [30, '30 giây'], [60, '60 giây']], def: 0 },
     { key: 'wrongPenalty', label: 'Điểm trừ khi trả lời sai một hàng', type: 'select', choices: [[0, 'Không trừ'], [1, '−1'], [2, '−2']], def: 0 },
@@ -155,7 +156,7 @@ NS.games.push({
         NS.tap(h('button', { class: 'small', type: 'button' }, '🖼 PNG'), () => { [false, true].forEach((a, i) => setTimeout(() => { const c = NS.drawPuzzle(puzzle, a); const l = h('a', { href: c.toDataURL('image/png'), download: 'o-chu-' + NS.slug(puzzle.keyword) + (a ? '-dap-an' : '') + '.png' }); document.body.append(l); l.click(); l.remove(); }, i * 400)); }),
         NS.tap(h('button', { class: 'small', type: 'button' }, '📋 Chép văn bản'), () => { const t = NS.puzzleToText(puzzle); try { navigator.clipboard.writeText(t); sh.toast('Đã chép ô chữ dạng văn bản'); } catch (e) { sh.overlay(h('div', { class: 'gdlg wide' }, h('textarea', { class: 'bigta', readonly: true }, t), h('button', { onclick: sh.closeOverlay }, 'Đóng'))); } }));
     }
-    const table = h('div', { class: 'ctable' }), rowEls = [];
+    const table = h('div', { class: 'ctable' + (o.showSlots ? '' : ' noslot') }), rowEls = [];
     const maxLen = Math.max(...rows.map(r => r.up.length));
     rows.forEach((r, k) => {
       const cells = [...r.up].map((ch, i) => h('span', { class: 'cc' + (i + 1 === r.hi ? ' hi' : '') }, ''));

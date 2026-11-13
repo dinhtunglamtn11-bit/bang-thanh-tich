@@ -328,3 +328,4 @@ button.big{font-size:30px;padding:10px 28px;min-height:64px}
 .gcontent{border:3px solid var(--gold);background:#0003;padding:6px 10px;margin:8px 0;font-size:20px}
 .rnote{background:#0004;border:3px solid var(--cyan);padding:4px 10px;margin:4px 0;font-size:18px;color:var(--cyan)}
 .sugg .mine{background:var(--lime)}
+.ctable.noslot .cslot{display:none}.ctable.noslot .crow{grid-template-columns:44px auto 1fr}.ctable.fit.noslot .crow{grid-template-columns:40px auto 1fr}
