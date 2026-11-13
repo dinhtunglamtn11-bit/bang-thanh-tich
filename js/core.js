@@ -220,6 +220,7 @@ NS.typedQ = function (o) {
 };
 /* lv: 0 dễ, 1 vừa, 2 khó. Trả về câu hỏi kind 'type' hoặc 'mc' (mc có thể có listen:true) */
 NS.levelQ = function (lv) {
+  if (NS.customArenaQ) { const cq = NS.customArenaQ(lv); if (cq) return cq; } /* nội dung giáo viên soạn riêng cho Đấu trường */
   if (lv === 0) { const q = NS.typedQ(); if (q) return q; }
   if (lv === 1) { const q = NS.nextMC({ listen: true, dir: 'en2vi', level: 2, phrases: false }); if (q) { q.listen = true; q.stem = q.hand ? q.stem : 'Nghe và chọn nghĩa đúng.'; if (!q.hand) q.sub = ''; return q; } }
   if (lv === 2 && NS.pool({ phrases: false }).some(w => w.def)) { const q = NS.nextMC({ dir: 'def', level: 3, phrases: false }); if (q && (q.dir === 'def' || q.hand)) return q; }

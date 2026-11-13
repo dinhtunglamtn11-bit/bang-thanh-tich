@@ -94,3 +94,16 @@ Nút Back của tablet / điện thoại / trình duyệt và nút "◀ Quay l�
 ## Nhập nhiều bài, nhiều dạng, nhiều game trong một lần dán
 
 Trong **Game → 📝 Soạn câu hỏi** có thể dán một văn bản dài chứa nhiều bài; mỗi bài gồm nhiều câu và nhiều dạng game (câu hỏi, bộ thẻ, ô chữ). Chia bài bằng dòng `@bài: Tên bài`, chia mức bằng `== DỄ ==` / `== VỪA ==` / `== KHÓ ==`. Chế độ **NỐI THÊM** cho dán nhiều lần mà giữ nội dung cũ. Ở menu Game, chọn "📖 Dùng bài soạn tay" để chỉ dùng một bài (nội dung chưa gán bài luôn được dùng). Từ chưa có trong kho từ vựng chỉ bị cảnh báo (W030), câu hỏi vẫn được nhận, giáo viên tự duyệt.
+
+## Soạn nội dung riêng cho từng game (mới)
+
+**Game → 📝 Soạn nội dung từng game**: mỗi game một tab, có cú pháp riêng, ví dụ mẫu, nút **📋 Chép prompt** riêng cho game đó, kiểm tra ĐỊNH DẠNG (không đối chiếu kho từ vựng: từ nào bạn nhập app cũng nhận) và lưu. Lưu xong, game đó tự dùng nội dung này (có công tắc bật/tắt và nút soạn nhanh ngay trong hộp chọn game).
+
+- 🃏 Lật thẻ: `Bộ thẻ: Tên` rồi `từ :: nghĩa`.
+- 🔤 Đảo chữ: `từ | gợi ý`, chia mức bằng `== DỄ ==` / `== VỪA ==` / `== KHÓ ==` (tùy chọn).
+- 🎧 Đua nghe: `từ đọc | nghĩa đúng | sai | sai | sai`.
+- 🧩 Ô chữ: `Ô chữ: TỪ KHÓA` rồi `Hàng: từ | gợi ý` (app tự ghép cột cam), hoặc kiểu thủ công 4 ô.
+- 🎲 Đấu trường: DỄ `đáp án | đề bài`, VỪA `từ nghe | đúng | sai | sai`, KHÓ `mô tả tiếng Anh | từ đúng | sai | sai`.
+- 🔗 Ghép chữ hai đầu: không cần nhập (giáo viên duyệt khi chơi).
+
+Cú pháp chung cũ (`Câu 1:`, `@bài:`...) vẫn còn ở nút "🧰 Cú pháp chung (cũ)".

@@ -320,3 +320,9 @@ button.big{font-size:30px;padding:10px 28px;min-height:64px}
 .ckwrap{display:flex;flex-direction:column;gap:2px}.ckwrap small{font-size:15px;color:var(--cyan)}
 .ckc{width:46px;height:58px;cursor:pointer}.ckc b{font-size:34px}.ckc.on{background:var(--c0);color:var(--ink)}.ckc.sel{outline:4px solid var(--gold);transform:translateY(-4px)}
 .garea.cfit .ckc{width:42px;height:50px}.garea.cfit .ckc b{font-size:30px}
+
+/* ===== soạn nội dung theo game ===== */
+.ctabs{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:6px}.ctab{font-size:18px;padding:4px 10px}.ctab.act{background:var(--cyan)}
+.ctitle{margin:6px 0;color:var(--gold);font-size:28px}.cinfo{font-size:19px;background:#0003;border:3px solid var(--ink);padding:6px 12px;margin-bottom:6px}.cinfo ul{margin:4px 0;padding-left:20px}.cinfo p{margin:4px 0}
+.cprompt{margin:8px 0;border:3px solid var(--ink);padding:6px 10px;background:#0003}.cprompt summary{cursor:pointer;font-size:20px;color:var(--cyan)}.bigta.small{min-height:140px;font-size:15px}
+.gcontent{border:3px solid var(--gold);background:#0003;padding:6px 10px;margin:8px 0;font-size:20px}

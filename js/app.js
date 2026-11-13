@@ -40,7 +40,8 @@ function renderMenu() {
   const tools = h('div', { class: 'gtools' },
     h('button', { type: 'button', onclick: settingsDialog }, '⚙ Cài đặt chung'),
     h('button', { type: 'button', onclick: vocabDialog }, '📚 Từ vựng'),
-    h('button', { type: 'button', onclick: questionDialog }, '📝 Soạn câu hỏi'),
+    h('button', { type: 'button', onclick: () => NS.contentDialog() }, '📝 Soạn nội dung từng game'),
+    h('button', { type: 'button', class: 'small', onclick: questionDialog }, '🧰 Cú pháp chung (cũ)'),
     h('button', { type: 'button', onclick: () => guideDialog() }, '📖 Ký hiệu Đấu trường'),
     h('button', { type: 'button', onclick: musicDialog }, '🎵 Nhạc nền'),
     h('button', { type: 'button', onclick: voiceTest }, '🔊 Thử giọng đọc'));
@@ -64,7 +65,9 @@ function startDialog(g) {
     }
   });
   const guideBtn = g.guide ? h('button', { type: 'button', onclick: () => guideDialog(opt.map) }, '📖 Hướng dẫn ký hiệu') : null;
-  const m = modal(g.icon + ' ' + g.name, h('div', {}, h('p', {}, g.desc), body, h('div', { class: 'rbtns' }, guideBtn, h('button', { class: 'green', type: 'button', onclick: () => { NS.LS.set('pg-opt-' + g.id, opt); m.remove(); launch(g, opt); } }, '▶ BẮT ĐẦU'))));
+  const cdef = NS.content && NS.content.defs[g.id], cn = cdef ? NS.content.items(g.id).length : 0;
+  const contentBox = cdef && cdef.parse ? h('div', { class: 'gcontent' }, h('div', {}, cn ? '✍ Có ' + cn + ' ' + cdef.unit + ' do bạn soạn cho game này.' : '✍ Chưa có nội dung soạn riêng: game dùng kho từ vựng.'), cn ? toggle('Dùng nội dung soạn riêng', NS.content.on(g.id), v => NS.content.setOn(g.id, v)) : null, h('button', { class: 'small', type: 'button', onclick: () => NS.contentDialog(g.id) }, '📝 Soạn / sửa nội dung cho game này')) : null;
+  const m = modal(g.icon + ' ' + g.name, h('div', {}, h('p', {}, g.desc), contentBox, body, h('div', { class: 'rbtns' }, guideBtn, h('button', { class: 'green', type: 'button', onclick: () => { NS.LS.set('pg-opt-' + g.id, opt); m.remove(); launch(g, opt); } }, '▶ BẮT ĐẦU'))));
 }
 function launch(g, opt) {
   NS.handUsed.clear();

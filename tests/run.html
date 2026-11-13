@@ -1,6 +1,6 @@
 <!doctype html><meta charset="utf-8"><title>Kiểm thử</title>
 <body style="font:14px monospace;background:#111;color:#eee"><pre id="out"></pre>
-<script src="../js/sample.js"></script><script src="../js/core.js"></script><script src="../js/qparser.js"></script>
+<script src="../js/sample.js"></script><script src="../js/core.js"></script><script src="../js/qparser.js"></script><script src="../js/content.js"></script>
 <script src="../js/g_memory.js"></script><script src="../js/g_anagram.js"></script><script src="../js/g_listen.js"></script><script src="../js/g_cross.js"></script><script src="../js/g_arena.js"></script><script src="../js/g_wordlink.js"></script>
 <script src="fixtures/questions.sample.js"></script>
 <script>
@@ -170,6 +170,32 @@ await test('Định nghĩa trong từ vựng + câu hỏi theo mức',async()=>{
   const q1=NS.levelQ(1); ok(q1.kind==='mc'&&q1.listen&&q1.options.length===4,'mức vừa: nghe chọn nghĩa');
   for(let i=0;i<30;i++){ const q2=NS.levelQ(2); ok(q2.dir==='def'&&q2.sub.includes('“')&&/^[a-z]+$/.test(q2.options[q2.answer])&&q2.options.length===4,'mức khó: mô tả tiếng Anh → chọn từ'); }
   NS.setVocab(NS.SAMPLE_VOCAB,'mẫu');
+});
+await test('Soạn nội dung theo game: chỉ kiểm tra định dạng, không cần có trong kho từ',()=>{
+  const D=NS.content.defs;
+  /* Lật thẻ */
+  let r=D.memory.parse('Bộ thẻ: Lạ\nzzzfoo /fu/ :: xyz một\nqqqbar :: xyz hai\nbazqux :: xyz ba\nplugh :: xyz bốn\n\nBộ thẻ: Thiếu\na :: b\nc :: d\nthiếu dấu hai chấm');
+  ok(r.items.length===1&&r.items[0].pairs.length===4&&r.items[0].pairs[0].ipa==='fu','thẻ: nhận từ lạ ngoài kho'); ok(r.errors.length===2,'thẻ: lỗi thiếu :: và bộ thiếu cặp ('+r.errors.length+')');
+  /* Đảo chữ */
+  r=D.anagram.parse('== DỄ ==\nzorb | quả cầu lạ\n== KHÓ ==\nrefrigerator | tủ lạnh\nab | quá ngắn\nbad1 | chứa số');
+  ok(r.items.length===2&&r.items[0].level===1&&r.items[1].level===3,'đảo chữ: nhận từ lạ + mức'); ok(r.errors.length===2,'đảo chữ: lỗi từ quá ngắn / có số ('+r.errors.length+')');
+  /* Đua nghe */
+  r=D.listen.parse('flurb | cái gì đó | sai a | sai b\nbad | chỉ hai\nx | a | b | c | d | e | f | g');
+  ok(r.items.length===1&&r.items[0].say==='flurb'&&r.items[0].wrong.length===2,'nghe: nhận câu'); ok(r.errors.length===2,'nghe: thiếu đáp án sai / quá nhiều');
+  /* Ô chữ: tự ghép */
+  r=D.cross.parse('Ô chữ: ZAP\nHàng: zoo | con thú\nHàng: apple | quả táo\nHàng: pie | bánh\nHàng: dummy | dự phòng');
+  ok(r.errors.length===0&&r.items.length===1&&r.items[0].auto&&r.items[0].rows.length===3,'ô chữ: tự ghép cột cam ('+JSON.stringify(r.errors)+')');
+  r=D.cross.parse('Ô chữ: QQQ\nHàng: cat | mèo\nHàng: dog | chó'); ok(r.errors.length===1,'ô chữ: thiếu từ -> lỗi rõ ràng');
+  r=D.cross.parse('Ô chữ: SOFA\nHàng: sofa | 1 | 1 | a\nHàng: horse | 2 | 2 | b\nHàng: rice | 4 | 3 | c\nHàng: cat | 3 | 4 | d'); ok(r.errors.length===2&&r.items.length===0,'ô chữ thủ công sai cột cam bị báo lỗi');
+  r=D.cross.parse('Ô chữ: LAMP\nHàng: lime | 1 | 1 | a\nHàng: banana | 2 | 2 | b\nHàng: mirror | 1 | 3 | c\nHàng: apple | 2 | 4 | d'); ok(r.errors.length===0&&r.items.length===1&&!r.items[0].auto,'ô chữ thủ công đúng');
+  /* Đấu trường */
+  r=D.arena.parse('lạc dòng | x\n== DỄ ==\nflurb | cái gì đó\n== VỪA ==\nzonk | nghĩa đúng | sai 1 | sai 2\n== KHÓ ==\na strange round thing | blip | blop | blup | blap\nlỗi | chỉ hai');
+  ok(r.items.length===3&&r.items.map(x=>x.level).join('')==='123','đấu trường: 3 mức nhận từ lạ'); ok(r.errors.length===2,'đấu trường: lỗi thiếu dòng mức / thiếu đáp án sai ('+r.errors.length+')');
+  /* dùng trong game */
+  const keep=NS.content.data.arena; NS.content.data.arena=r; localStorage.setItem('pg-content-on-arena','true');
+  const q0=NS.customArenaQ(0), q1=NS.customArenaQ(1), q2=NS.customArenaQ(2);
+  ok(q0.kind==='type'&&q0.text==='flurb','Dễ: gõ từ lạ'); ok(q1.kind==='mc'&&q1.listen&&q1.say==='zonk'&&q1.options[q1.answer]==='nghĩa đúng','Vừa: nghe'); ok(q2.dir==='def'&&q2.options[q2.answer]==='blip'&&q2.sub.includes('strange'),'Khó: mô tả');
+  ok(NS.levelQ(0).text==='flurb','levelQ ưu tiên nội dung soạn riêng'); NS.content.data.arena=keep;
 });
 await test('Nhiều bài / nhiều dạng / nhiều game trong một lần dán + từ ngoài kho',()=>{
   const t=['@bài: Unit 1','== DỄ ==','Câu 1: Gõ từ có nghĩa là "quả bóng".','Dạng: dien-tu','Đáp án: ball','Từ: ball','',

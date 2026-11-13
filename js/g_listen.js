@@ -25,10 +25,18 @@ NS.games.push({
       sh.toast('⚠ Máy chưa có giọng đọc tiếng Anh. Hãy cài giọng en-US trong cài đặt thiết bị.', 4000);
     }
 
+    /* nội dung giáo viên soạn riêng cho game này (không đối chiếu kho từ vựng) */
+    let cbag = [];
+    function customQ() {
+      if (!(NS.content && NS.content.active('listen'))) return null;
+      if (!cbag.length) cbag = NS.shuffle(NS.content.items('listen'));
+      const it = cbag.pop(), opts = NS.shuffle([it.correct].concat(it.wrong));
+      return { kind: 'mc', hand: true, word: null, say: it.say, stem: 'Nghe và chọn nghĩa đúng.', sub: '', options: opts, answer: opts.indexOf(it.correct), explanation: it.say + ' = ' + it.correct };
+    }
     function round(num) {
       return new Promise(resolve => {
         const d = o.mode === 'mix' ? (num % 2 ? 'en2vi' : 'spell') : o.mode === 'meaning' ? 'en2vi' : 'spell';
-        const q = NS.nextMC({ listen: true, dir: d, level: d === 'spell' ? 3 : NS.cfg.level, phrases: false });
+        const q = customQ() || NS.nextMC({ listen: true, dir: d, level: d === 'spell' ? 3 : NS.cfg.level, phrases: false });
         if (!q) { sh.plainView().append(h('div', { class: 'gdlg' }, h('h2', {}, 'Chưa đủ từ vựng'), h('p', {}, 'Cần ít nhất 4 từ khác nghĩa nhau.'))); return resolve(); }
         if (!q.hand) { q.stem = d === 'spell' ? 'Nghe và chọn từ viết đúng.' : 'Nghe và chọn nghĩa đúng.'; q.sub = ''; }
         const word = q.word, say = q.say || (word && word.text) || '';
@@ -91,7 +99,7 @@ NS.games.push({
           if (team < 0) { NS.sfx('bad'); if (word) { NS.markWrong(word); wrongWords.set(word.id, word); } }
           /* chỉ hiện đáp án đúng ở phía người thắng; khi không ai đúng thì viền xanh ở cả hai phía */
           panels.forEach((pp, t) => { pp.p.classList.remove('locked'); pp.btns.forEach((b, i) => { b.classList.add('locked'); if (i === q.answer && team < 0) b.classList.add('reveal'); }); });
-          const ans = () => h('div', { class: 'aans' }, '✅ ' + (word ? word.text + (word.ipa ? '  /' + word.ipa + '/' : '') + ' — ' + word.meaning : q.options[q.answer]));
+          const ans = () => h('div', { class: 'aans' }, '✅ ' + (word ? word.text + (word.ipa ? '  /' + word.ipa + '/' : '') + ' — ' + word.meaning : (q.explanation || q.options[q.answer])));
           if (split) V.halves.forEach(hv => hv.append(ans())); else plain.append(ans());
           await NS.speak(say, { rate: .85 }); await sh.sleep(1600); resolve();
         }

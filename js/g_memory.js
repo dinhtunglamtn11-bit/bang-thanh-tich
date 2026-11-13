@@ -4,7 +4,11 @@
 const NS = window.PG, h = NS.h;
 NS.games = NS.games || [];
 
-NS.buildMemoryPairs = function (nPairs) {
+NS.buildMemoryPairs = function (nPairs, setName) {
+  if (NS.content && NS.content.active('memory')) {
+    const sets = NS.content.items('memory'), set = (setName && setName !== '__rand' && sets.find(s => s.name === setName)) || NS.pick(sets);
+    return NS.shuffle(set.pairs).slice(0, nPairs).map(p => ({ en: p.left, ipa: p.ipa, vi: p.right, word: null }));
+  }
   const src = NS.cfg.source;
   if (src !== 'auto' && NS.hand.cardSets.length) {
     const set = NS.pick(NS.hand.cardSets);
@@ -26,7 +30,11 @@ NS.buildMemoryPairs = function (nPairs) {
 
 NS.games.push({
   id: 'memory', name: 'Lật thẻ ghép cặp', icon: '🃏', desc: 'Lật 2 thẻ, ghép từ tiếng Anh với nghĩa tiếng Việt. Ghép đúng thì chơi tiếp!',
-  options: [
+  get options() {
+    const base = this._base, sets = NS.content && NS.content.active('memory') ? NS.content.items('memory') : [];
+    return sets.length ? [{ key: 'set', label: '✍ Bộ thẻ bạn đã soạn', type: 'select', choices: [['__rand', '🎲 Ngẫu nhiên'], ...sets.map(s => [s.name, s.name + ' (' + s.pairs.length + ' cặp)'])], def: '__rand' }].concat(base) : base;
+  },
+  _base: [
     { key: 'size', label: 'Kích thước bảng', type: 'select', choices: [['4x4', '4x4 (8 cặp)'], ['4x5', '4x5 (10 cặp)'], ['5x6', '5x6 (15 cặp)']], def: '4x4' },
     { key: 'special', label: 'Thẻ đặc biệt', type: 'select', choices: [['off', 'Không dùng'], ['classic', 'Cổ điển: ⭐ cặp sao + 💣 bom'], ['many', 'Nhiều thẻ: ⚡ lượt thêm, 🧊 đóng băng, 👁 soi bài, 🎁 quà, 🔀 xáo, 💣 bom']], def: 'off' },
     { key: 'speed', label: 'Chế độ tốc độ (giới hạn thời gian mỗi lượt)', type: 'toggle', def: false },
@@ -36,13 +44,14 @@ NS.games.push({
   ],
   start(ctx) {
     const o = ctx.opt, sh = NS.shell(ctx.root, { title: '🃏 Lật thẻ', onRestart: ctx.restart, onExit: ctx.exit });
-    const [a, b] = o.size.split('x').map(Number); const cells = a * b, cols = Math.max(a, b), rows = Math.min(a, b);
+    const [a, b] = o.size.split('x').map(Number); const cells = a * b; let cols = Math.max(a, b), rows = Math.min(a, b);
     const mode = o.special === true || o.special === 'true' ? 'classic' : (o.special === false || !o.special ? 'off' : o.special);
     const SPECIALS = { bomb: ['💣', 'Bom'], flash: ['⚡', 'Lượt thêm'], freeze: ['🧊', 'Đóng băng'], peek: ['👁', 'Soi bài'], gift: ['🎁', 'Quà +2'], shuffle: ['🔀', 'Xáo bài'] };
     const kSpecial = mode === 'classic' ? 1 : mode === 'many' ? (cells === 16 ? 2 : 4) : 0;
     const specials = mode === 'classic' ? ['bomb'] : NS.shuffle(Object.keys(SPECIALS)).slice(0, kSpecial);
     let nPairs = Math.floor((cells - specials.length) / 2);
-    const pairs = NS.buildMemoryPairs(nPairs); nPairs = pairs.length;
+    const pairs = NS.buildMemoryPairs(nPairs, o.set); nPairs = pairs.length;
+    { const need = nPairs * 2 + specials.length; if (need !== cells) { cols = Math.min(6, Math.ceil(Math.sqrt(need * 1.4))); rows = Math.ceil(need / cols); } }
     if (nPairs < 4) { sh.area.append(h('div', { class: 'gdlg' }, h('h2', {}, 'Chưa đủ từ vựng'), h('p', {}, 'Cần ít nhất 4 từ khác nghĩa nhau. Hãy bật thêm chủ đề hoặc nhập từ vựng.'))); return; }
     const starIdx = mode !== 'off' ? NS.randInt(0, nPairs - 1) : -1;
     let cards = [];

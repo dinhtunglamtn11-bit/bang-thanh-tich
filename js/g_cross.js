@@ -101,7 +101,11 @@ NS.drawPuzzle = function (p, showAns) {
 
 NS.games.push({
   id: 'cross', name: 'Ô chữ bí mật', icon: '🧩', desc: 'Bấm một hàng, tick tên người trả lời rồi nhập đáp án: đúng thì tự cộng điểm cho người đó. Không đổi lượt!',
-  options: [
+  get options() {
+    const cp = NS.content && NS.content.active('cross') ? NS.content.items('cross') : [];
+    return cp.length ? [{ key: 'src', label: '✍ Nguồn ô chữ', type: 'select', choices: [['custom', 'Ô chữ tôi đã soạn (' + cp.length + ')'], ['auto', 'Tự tạo từ từ khóa bên dưới']], def: 'custom' }, { key: 'pz', label: '✍ Chọn ô chữ đã soạn', type: 'select', choices: [['__rand', '🎲 Ngẫu nhiên'], ...cp.map(p => [p.keyword, p.keyword + ' (' + p.rows.length + ' hàng)'])], def: '__rand' }].concat(this._base) : this._base;
+  },
+  _base: [
     { key: 'kw', label: 'Từ khóa (để trống nếu dùng ô chữ soạn tay)', type: 'text', def: 'SKIPPING ROPE', suggest: ['ANNIVERSARY', 'LIVINGROOM', 'SKIPPING ROPE', 'HIDE AND SEEK', 'SING KARAOKE'] },
     { key: 'fitAll', label: 'Hiện TOÀN BỘ các câu trên một màn hình (tự thu nhỏ, không phải cuộn)', type: 'toggle', def: true },
     { key: 'showKey', label: 'Hiện khu xếp từ khóa phía trên (tắt = chỉ đoán bằng cách gõ)', type: 'toggle', def: true },
@@ -116,7 +120,9 @@ NS.games.push({
     const names = NS.cfg.teams;
     let puzzle = null;
     const kw = (o.kw || '').trim();
-    if (!kw || NS.cfg.source === 'hand') {
+    const cp = NS.content && NS.content.active('cross') ? NS.content.items('cross') : [];
+    if (cp.length && o.src !== 'auto') { const it = (o.pz && o.pz !== '__rand' && cp.find(x => x.keyword === o.pz)) || NS.pick(cp); puzzle = { keyword: it.keyword, rows: it.rows.map(r => Object.assign({}, r)) }; }
+    if (!puzzle && (!kw || NS.cfg.source === 'hand')) {
       if (NS.hand.puzzles.length) { const p = NS.pick(NS.hand.puzzles); puzzle = { keyword: p.keyword, rows: p.rows.map(r => Object.assign({}, r)) }; }
       else if (!kw) { fail('Chưa có ô chữ soạn tay. Hãy nhập từ khóa hoặc dán ô chữ trong mục "Soạn câu hỏi".'); return; }
     }

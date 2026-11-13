@@ -533,7 +533,7 @@ NS.games.push({
         for (const id of path) { place(t, id); NS.sfx('tick'); await wait(230); }
       },
       ask: (t, lv, opt) => new Promise(async res => {
-        const mkQ = () => (o.levelTypes ? NS.levelQ(lv) : NS.nextMC({ level: lv + 1 }));
+        const mkQ = () => ((o.levelTypes || (NS.content && NS.content.active('arena'))) ? NS.levelQ(lv) : NS.nextMC({ level: lv + 1 }));
         let q = mkQ(); if (!q) { res({ correct: true }); return; }
         const used = []; let done = false, tm = null;
         const finishQ = (ok, i, box, bs, btn) => {
@@ -591,7 +591,7 @@ NS.games.push({
         render();
       }),
       race: () => new Promise(res => {
-        const q = NS.nextMC({ level: 2 }); if (!q) return res(-1);
+        const q = (NS.customRaceQ && NS.customRaceQ()) || NS.nextMC({ level: 2 }); if (!q) return res(-1);
         let done = false, out = [false, false];
         const bar = h('div', { class: 'tbar' }, h('i', {}));
         const ps = [0, 1].map(t => { const bs = q.options.map((tx, i) => { const b = h('button', { type: 'button', class: 'lopt' }, tx); NS.tap(b, () => ans(t, i, b)); return b; }); return h('div', { class: 'lpanel t' + t }, h('div', { class: 'aname' }, ic(t) + ' ' + names[t]), h('div', { class: 'lopts' }, bs)); });

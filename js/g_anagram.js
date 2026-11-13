@@ -34,7 +34,14 @@ NS.games.push({
     const stats = [{ right: 0, wrong: 0, t: 0 }, { right: 0, wrong: 0, t: 0 }], wrongWords = new Map(), hints = [+o.hints, +o.hints];
     const handQs = () => NS.hand.questions.filter(q => q.type === 'sap-xep-chu' && !NS.handUsed.has(q.id));
 
+    const usedC = new Set();
     function pickWord(lv) {
+      if (NS.content && NS.content.active('anagram')) {
+        const all = NS.content.items('anagram'); let pool = all.filter(x => !usedC.has(x.text.toLowerCase())); if (!pool.length) { usedC.clear(); pool = all; }
+        const auto = x => { const len = x.text.replace(/[^A-Za-z]/g, '').length, ph = /[\s-]/.test(x.text); return ph || len >= 9 ? 3 : len >= 6 ? 2 : 1; };
+        const lp = pool.filter(x => (x.level || auto(x)) === lv + 1), it = NS.pick(lp.length ? lp : pool); usedC.add(it.text.toLowerCase());
+        return { text: it.text, meaning: it.hint || '', ipa: '', id: NS.slug(it.text), length: it.text.replace(/[^A-Za-z]/g, '').length };
+      }
       const hq = handQs();
       if (NS.cfg.source !== 'auto' && hq.length) {
         const c = hq.filter(q => q.difficulty === lv + 1), q = NS.pick(c.length ? c : hq); NS.handUsed.add(q.id);
