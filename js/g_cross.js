@@ -100,12 +100,13 @@ NS.drawPuzzle = function (p, showAns) {
 };
 
 NS.games.push({
-  id: 'cross', name: 'Ô chữ bí mật', icon: '🧩', desc: 'Đoán từng hàng, ghép các chữ ở ô cam thành từ khóa bí mật!',
+  id: 'cross', name: 'Ô chữ bí mật', icon: '🧩', desc: 'Bấm một hàng, tick tên người trả lời rồi nhập đáp án: đúng thì tự cộng điểm cho người đó. Không đổi lượt!',
   options: [
     { key: 'kw', label: 'Từ khóa (để trống nếu dùng ô chữ soạn tay)', type: 'text', def: 'SKIPPING ROPE', suggest: ['ANNIVERSARY', 'LIVINGROOM', 'SKIPPING ROPE', 'HIDE AND SEEK', 'SING KARAOKE'] },
     { key: 'fitAll', label: 'Hiện TOÀN BỘ các câu trên một màn hình (tự thu nhỏ, không phải cuộn)', type: 'toggle', def: true },
     { key: 'showKey', label: 'Hiện thanh từ khóa (tắt = ẩn các ô từ khóa cho đến khi kết thúc)', type: 'toggle', def: true },
     { key: 'qtime', label: 'Thời gian trả lời mỗi lượt', type: 'select', choices: [[0, 'Không giới hạn'], [20, '20 giây'], [30, '30 giây'], [60, '60 giây']], def: 0 },
+    { key: 'wrongPenalty', label: 'Điểm trừ khi trả lời sai một hàng', type: 'select', choices: [[0, 'Không trừ'], [1, '−1'], [2, '−2']], def: 0 },
     { key: 'keyPenalty', label: 'Điểm trừ khi đoán sai từ khóa', type: 'select', choices: [[0, 'Không trừ'], [3, '−3'], [5, '−5'], [10, '−10']], def: 5 },
     { key: 'golden', label: 'Hàng vàng (điểm x2, ẩn)', type: 'toggle', def: true },
     { key: 'tools', label: 'Công cụ giáo viên (xem đáp án, xuất PNG)', type: 'toggle', def: true }
@@ -162,8 +163,15 @@ NS.games.push({
       if (typeof ResizeObserver !== 'undefined') new ResizeObserver(fit).observe(table); else window.addEventListener('resize', fit);
       setTimeout(fit, 0); setTimeout(fit, 300);
     }
-    const setTurn = () => { sh.setActive(turn); sh.setInfo('Lượt: ' + NS.TEAM_ICON[turn] + ' ' + names[turn]); };
+    const setTurn = () => { sh.setActive(-1); sh.setInfo('Bấm câu hỏi → chọn ai trả lời'); };
     setTurn();
+    /* không có đổi lượt: bấm câu hỏi, chọn tên người trả lời, rồi nhập đáp án */
+    function pickWho(title, fn) {
+      sh.overlay(h('div', { class: 'gdlg' }, h('h3', {}, title), h('p', {}, 'Ai trả lời? (bấm tên để tick)'),
+        h('div', { class: 'rbtns whobtns' }, [0, 1].map(t => NS.tap(h('button', { class: 'big t' + t, type: 'button' }, '☑ ' + NS.TEAM_ICON[t] + ' ' + names[t]), () => { turn = t; sh.setActive(t); sh.closeOverlay(); fn(t); }))),
+        h('div', { class: 'rbtns' }, NS.tap(h('button', { class: 'small', type: 'button' }, '↩ Quay lại bảng'), () => { sh.closeOverlay(); sh.setActive(-1); }))));
+    }
+    const wrongHit = who => { const pen = +o.wrongPenalty; if (pen) sh.addScore(who, -pen, 0); stats[who].wrong++; NS.sfx('bad'); NS.vibe(80); sh.setActive(-1); return pen; };
 
     function solveRow(r, team) {
       r.solved = true; r.el.classList.add('solved', 't' + team);
@@ -192,7 +200,7 @@ NS.games.push({
         if (!pool2.length) return; const i = NS.pick(pool2); buf[i] = extra.answer[i]; fixed[i] = true; hints[turn]--; sh.addScore(turn, -1, 0); hintBtn.textContent = '💡 Mở 1 chữ (' + hints[turn] + ') −1đ'; paint();
       }) : null;
       let tm = null; const bar = h('div', { class: 'tbar' }, h('i', {}));
-      const close = () => { if (tm) tm.stop(); sh.closeOverlay(); };
+      const close = () => { if (tm) tm.stop(); sh.closeOverlay(); sh.setActive(-1); };
       const qs = +o.qtime;
       if (qs > 0) tm = NS.timer(qs * 1000, l => { bar.firstChild.style.width = (l / (qs * 1000) * 100) + '%'; bar.classList.toggle('low', l < 6000); }, () => { sh.closeOverlay(); if (extra && extra.onTimeout) extra.onTimeout(); });
       sh.overlay(h('div', { class: 'gdlg tm t' + turn }, h('h3', {}, NS.TEAM_ICON[turn] + ' ' + names[turn] + ' — ' + title), extra && extra.clue ? h('p', { class: 'clue' }, extra.clue) : null, qs > 0 ? bar : null, cellsEl, kb,
@@ -201,21 +209,21 @@ NS.games.push({
     function openRow(k) {
       const r = rows[k]; if (over || sh.paused || r.solved) return;
       if (r.golden && !r.shown) { r.shown = true; sh.toast('⭐ Hàng vàng — điểm x2!', 1600); r.el.classList.add('gold'); }
-      typeModal('Hàng #' + (k + 1) + (r.golden ? ' ⭐' : ''), r.up.length, null, (guess, close) => {
+      pickWho('Hàng #' + (k + 1) + (r.golden ? ' ⭐' : ''), () => typeModal('Hàng #' + (k + 1) + (r.golden ? ' ⭐' : ''), r.up.length, null, (guess, close) => {
         close();
         if (guess === r.up) {
           const pts = Math.max(3, r.up.length) * (r.golden ? 2 : 1); stats[turn].right++; sh.addScore(turn, pts); NS.sfx('ok'); NS.vibe(40); sh.toast('+' + pts + ' điểm! Chữ "' + r.up[r.hi - 1] + '" bay lên từ khóa', 1800);
           solveRow(r, turn); if (!checkAllDone()) setTurn();
-        } else { stats[turn].wrong++; NS.sfx('bad'); NS.vibe(80); sh.toast('❌ Chưa đúng — đổi lượt', 1500); turn = 1 - turn; setTurn(); }
-      }, { clue: r.clue, hi: r.hi - 1, hint: true, answer: r.up, onTimeout: () => { stats[turn].wrong++; NS.sfx('bad'); sh.toast('⏰ Hết giờ — đổi lượt', 1500); turn = 1 - turn; setTurn(); } });
+        } else { const pen = wrongHit(turn); sh.toast('❌ Chưa đúng' + (pen ? ' −' + pen + ' điểm' : '') + ' — bấm lại câu để thử tiếp', 1800); }
+      }, { clue: r.clue, hi: r.hi - 1, hint: true, answer: r.up, onTimeout: () => { wrongHit(turn); sh.toast('⏰ Hết giờ', 1500); } }));
     }
     function guessKey() {
       if (over || sh.paused) return;
-      typeModal('Đoán từ khóa (' + N + ' chữ cái)', N, null, (guess, close) => {
+      pickWho('Đoán từ khóa', () => typeModal('Đoán từ khóa (' + N + ' chữ cái)', N, null, (guess, close) => {
         close();
         if (guess === L) { const left = keyFilled.filter(x => !x).length, b = left * 3; sh.addScore(turn, b); sh.toast('🎉 Đúng rồi! +' + b + ' điểm thưởng', 2000); NS.sfx('win'); stats[turn].right++; endGame(turn); }
-        else { const pen = +o.keyPenalty; if (pen) sh.addScore(turn, -pen, 0); stats[turn].wrong++; NS.sfx('bad'); sh.toast('❌ Sai từ khóa!' + (pen ? ' −' + pen + ' điểm,' : '') + ' mất lượt', 1800); turn = 1 - turn; setTurn(); }
-      }, { clue: 'Gõ cả từ khóa (bỏ khoảng trắng).' + (+o.keyPenalty ? ' Sai bị trừ ' + o.keyPenalty + ' điểm.' : ''), onTimeout: () => { sh.toast('⏰ Hết giờ — đổi lượt', 1500); turn = 1 - turn; setTurn(); } });
+        else { const pen = +o.keyPenalty; if (pen) sh.addScore(turn, -pen, 0); stats[turn].wrong++; NS.sfx('bad'); sh.setActive(-1); sh.toast('❌ Sai từ khóa!' + (pen ? ' −' + pen + ' điểm' : ''), 1800); }
+      }, { clue: 'Gõ cả từ khóa (bỏ khoảng trắng).' + (+o.keyPenalty ? ' Sai bị trừ ' + o.keyPenalty + ' điểm.' : ''), onTimeout: () => { sh.setActive(-1); sh.toast('⏰ Hết giờ', 1500); } }));
     }
     function showAnswers() {
       const t = h('table', { class: 'ans' }, h('tr', {}, h('th', {}, '#'), h('th', {}, 'Từ'), h('th', {}, 'Nghĩa'), h('th', {}, 'Ô số')),

@@ -12,9 +12,17 @@ function loadHand() {
 NS.loadHand = loadHand;
 
 function modal(title, body, onClose) {
-  const m = h('div', { class: 'gmodal' }, h('div', { class: 'gbox pix' }, h('div', { class: 'ghead' }, h('h2', {}, title), h('button', { class: 'small red', type: 'button', onclick: () => { m.remove(); onClose && onClose(); } }, '✕')), body));
-  root.append(m); return m;
+  let tok = 0, m = null;
+  const release = () => { if (tok && window.NAV) { const t = tok; tok = 0; NAV.done(t); } };
+  const close = fromBack => { if (!m.isConnected) return; rm(); if (fromBack) tok = 0; else release(); onClose && onClose(); };
+  m = h('div', { class: 'gmodal' }, h('div', { class: 'gbox pix' }, h('div', { class: 'ghead' },
+    h('button', { class: 'small', type: 'button', onclick: () => close() }, '◀ Quay lại'), h('h2', {}, title), h('button', { class: 'small red', type: 'button', onclick: () => close() }, '✕')), body));
+  const rm = Element.prototype.remove.bind(m);
+  m.remove = () => { rm(); release(); }; /* các chỗ khác gọi m.remove() trực tiếp vẫn đồng bộ lịch sử */
+  root.append(m); if (window.NAV) tok = NAV.push(() => close(true));
+  return m;
 }
+NS.modal = modal;
 const toggle = (label, val, on) => { const c = h('input', { type: 'checkbox' }); c.checked = !!val; c.addEventListener('change', () => on(c.checked)); return h('label', { class: 'tg' }, c, ' ' + label); };
 const select = (choices, val, on) => { const s = h('select', {}, choices.map(([v, t]) => h('option', { value: v }, t))); s.value = String(val); s.addEventListener('change', () => on(s.value)); return s; };
 
@@ -36,7 +44,7 @@ function renderMenu() {
     h('button', { type: 'button', onclick: musicDialog }, '🎵 Nhạc nền'),
     h('button', { type: 'button', onclick: voiceTest }, '🔊 Thử giọng đọc'));
   const how = h('div', { class: 'ghow' }, '👫 Hai bạn ngồi hai bên: ', h('b', {}, NS.TEAM_ICON[0] + ' ' + NS.cfg.teams[0]), ' và ', h('b', {}, NS.TEAM_ICON[1] + ' ' + NS.cfg.teams[1]), (NS.cfg.split ? ' (màn hình chia đôi: bạn thứ nhất ngồi phía dưới, bạn thứ hai ngồi phía đối diện). ' : '. '), 'Chọn một trò chơi để bắt đầu!');
-  root.append(h('h2', { class: 'gh2' }, '🎮 CHỌN TRÒ CHƠI'), how, cards, status, tools);
+  root.append(h('div', { class: 'gmenuhead' }, h('button', { class: 'small', type: 'button', onclick: () => window.showTab && window.showTab('learn') }, '◀ Quay lại bảng thành tích'), h('h2', { class: 'gh2' }, '🎮 CHỌN TRÒ CHƠI')), how, cards, status, tools);
 }
 NS.renderMenu = renderMenu;
 
@@ -145,7 +153,8 @@ NS.initGameUI = async function () {
 (function () {
   const NS = window.PG, h = NS.h;
   const root = () => document.getElementById('gameRoot');
-  const mod = (title, body, onClose) => {
+  const mod = (title, body, onClose) => NS.modal(title, body, onClose);
+  const modOld = (title, body, onClose) => {
     const m = h('div', { class: 'gmodal' }, h('div', { class: 'gbox pix' }, h('div', { class: 'ghead' }, h('h2', {}, title), h('button', { class: 'small red', type: 'button', onclick: () => { m.remove(); onClose && onClose(); } }, '✕')), body));
     root().append(m); return m;
   };

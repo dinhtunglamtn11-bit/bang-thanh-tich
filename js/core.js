@@ -384,9 +384,9 @@ NS.shell = function (root, o) {
   };
   const t0 = tbox(0), t1 = tbox(1), tb = [t0, t1];
   const info = h('div', { class: 'ginfo' }), title = h('div', { class: 'gtitle' }, o.title || '');
-  const pauseBtn = h('button', { class: 'small', type: 'button' }, '⏸');
+  const pauseBtn = h('button', { class: 'small', type: 'button' }, '⏸'), backBtn = h('button', { class: 'small', type: 'button', title: 'Quay lại' }, '◀');
   const area = h('div', { class: 'garea' }), ov = h('div', { class: 'govl' });
-  const el = h('div', { class: 'gshell' }, h('div', { class: 'gbar' }, t0.el, h('div', { class: 'gmid' }, title, info, pauseBtn), t1.el), area, ov);
+  const el = h('div', { class: 'gshell' }, h('div', { class: 'gbar' }, t0.el, h('div', { class: 'gmid' }, title, info, h('div', { class: 'gmbtns' }, backBtn, pauseBtn)), t1.el), area, ov);
   root.append(el);
   sh.el = el; sh.area = area;
   sh.setScore = (i, v) => { sh.scores[i] = v; tb[i].pts.textContent = v; sh.tags[i].forEach(e => { e.textContent = v; }); tb[i].pts.classList.remove('bump'); void tb[i].pts.offsetWidth; tb[i].pts.classList.add('bump'); };
@@ -404,11 +404,11 @@ NS.shell = function (root, o) {
   sh.setName = (i, n) => { names[i] = n; const tn = tb[i].el.querySelector('.tname'); if (tn && tn.firstChild) tn.firstChild.nodeValue = n; };
   sh.setActive = i => { tb[0].el.classList.toggle('active', i === 0); tb[1].el.classList.toggle('active', i === 1); };
   sh.overlay = (node, team) => { ov.innerHTML = ''; node.classList.toggle('flip', !!(sh.split && team === 1)); ov.append(node); ov.classList.add('show'); };
-  sh.closeOverlay = () => { ov.classList.remove('show'); ov.innerHTML = ''; };
+  sh.closeOverlay = () => { ov.classList.remove('show'); ov.innerHTML = ''; sh._backFn = null; };
   sh.sleep = ms => new Promise(res => { if (sh.dead) return res(false); NS.timer(Math.max(1, ms), null, () => res(!sh.dead)); sh.sleepers = (sh.sleepers || []).concat(res); });
-  sh.destroy = () => { sh.dead = true; sh.timers.forEach(s => s()); sh.timers.clear(); try { speechSynthesis.cancel(); } catch (e) {} (sh.sleepers || []).forEach(r => r(false)); NS.music.stop(); document.body.classList.remove('playing'); if (NS.curShell === sh) NS.curShell = null; };
+  sh.destroy = () => { sh.dead = true; if (window.NAV && sh._navTok) { const tk = sh._navTok; sh._navTok = 0; NAV.done(tk); } sh.timers.forEach(s => s()); sh.timers.clear(); try { speechSynthesis.cancel(); } catch (e) {} (sh.sleepers || []).forEach(r => r(false)); NS.music.stop(); document.body.classList.remove('playing'); if (NS.curShell === sh) NS.curShell = null; };
   sh.toast = (msg, ms) => { const t = h('div', { class: 'gtoast' }, msg); el.append(t); setTimeout(() => t.remove(), ms || 1500); };
-  pauseBtn.addEventListener('click', () => {
+  const openPause = () => {
     sh.paused = true; NS.music.pause();
     const mbtn = h('button', { class: 'small', type: 'button' }, NS.music.on ? '🎵 Nhạc: BẬT' : '🎵 Nhạc: TẮT');
     mbtn.addEventListener('click', () => { const on = NS.music.toggle(); NS.music.pause(); mbtn.textContent = on ? '🎵 Nhạc: BẬT' : '🎵 Nhạc: TẮT'; });
@@ -418,14 +418,20 @@ NS.shell = function (root, o) {
       h('button', { onclick: () => { sh.destroy(); o.onRestart && o.onRestart(); } }, '↺ Chơi lại'), ' ',
       h('button', { class: 'red', onclick: () => { sh.destroy(); o.onExit && o.onExit(); } }, '⌂ Về menu'),
       h('div', { class: 'rbtns' }, mbtn, o.onGuide ? h('button', { class: 'small', type: 'button', onclick: o.onGuide }, '📖 Hướng dẫn ký hiệu') : null)));
-  });
+    sh._backFn = resume;
+  };
+  pauseBtn.addEventListener('click', openPause);
+  /* nút Quay lại / phím Back: đóng hộp đang mở (tạm dừng, hướng dẫn...), nếu không có thì mở menu tạm dừng */
+  sh.openPause = openPause;
+  sh.back = () => { if (sh.dead) return; if (sh._backFn) { sh._backFn(); return; } if (ov.classList.contains('show')) return; openPause(); };
+  backBtn.addEventListener('click', () => sh.back());
   sh.result = function (r) {
     sh.setActive(-1);
     const sc = r.scores || sh.scores, st = r.stats || [{ right: 0, wrong: 0 }, { right: 0, wrong: 0 }];
     let head, cls = '';
     const tb = r.tie && sc[0] === sc[1] && r.tie[0] !== r.tie[1] ? (r.tie[0] > r.tie[1] ? 0 : 1) : -1;
     if (sc[0] === sc[1] && tb < 0) head = '🤝 HÒA!'; else { const w = tb >= 0 ? tb : (sc[0] > sc[1] ? 0 : 1); head = '🏆 ' + (names[w] || NS.TEAM_TAG[w]).toUpperCase() + ' THẮNG!'; cls = 't' + w; }
-    NS.sfx('win'); NS.music.stop();
+    NS.sfx('win'); NS.music.stop(); setTimeout(() => { if (!sh.dead) sh._backFn = () => { sh.destroy(); o.onExit && o.onExit(); }; }, 0);
     const col = i => h('div', { class: 'rcol t' + i }, h('div', { class: 'rname' }, NS.TEAM_ICON[i] + ' ' + (names[i] || NS.TEAM_TAG[i])), h('div', { class: 'rpts' }, sc[i] + ' điểm'),
       h('div', {}, '✔ ' + st[i].right + '  ✘ ' + st[i].wrong + (st[i].avg ? '  ⏱ ' + st[i].avg.toFixed(1) + 's' : '')));
     const wr = r.wrong || [];
@@ -446,7 +452,7 @@ NS.shell = function (root, o) {
       h('div', { class: 'rbtns' }, addBtn(0), addBtn(1)),
       h('div', { class: 'rbtns' }, h('button', { class: 'green', onclick: () => { sh.destroy(); o.onRestart && o.onRestart(); } }, '↺ Chơi lại'), h('button', { onclick: () => { sh.destroy(); o.onExit && o.onExit(); } }, '⌂ Về menu'))));
   };
-  NS.curShell = sh; document.body.classList.add('playing'); NS.music.play();
+  NS.curShell = sh; document.body.classList.add('playing'); NS.music.play(); sh._navTok = window.NAV ? NAV.push(() => sh.back(), true) : 0;
   return sh;
 };
 

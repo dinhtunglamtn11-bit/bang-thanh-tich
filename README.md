@@ -82,3 +82,11 @@ Tùy chọn "Hiện TOÀN BỘ các câu trên một màn hình" (mặc định 
 2. **Chọn kín (chia đôi màn hình):** mỗi bạn chọn chữ cái của mình cho từng câu, bấm Chốt; cả hai chốt xong thì tự chuyển sang câu kế tiếp, cứ thế đến hết số câu. Chữ vừa chọn chỉ hiện một chấm rất nhỏ (không đổi màu) để bạn kia không nhìn được.
 3. **Bảng chung (không chia đôi nữa):** hiện các cặp chữ của tất cả câu kèm hình người đã chọn. Bấm vào BẤT KỲ ô nào để giải câu đó (không cần theo thứ tự), giải xong quay lại bảng; ví dụ N … N thì gõ NOON. Ô của câu ghi tên người ghi điểm. Khi giải một câu chỉ có MỘT bàn phím chung: gõ phần giữa rồi bấm "Gửi để duyệt"; app tự đối chiếu với các từ đã dùng (lặp thì bị từ chối, nói rõ lặp ở câu nào), nếu chưa lặp thì giáo viên bấm ✔ cho bạn A hoặc bạn B ghi điểm, hoặc ✘ không hợp lệ. Bảng hiện to, chỉnh cỡ bằng tùy chọn trước khi chơi hoặc nút 🔍− / 🔍+ trên bảng; nút "Kết thúc game" để dừng sớm.
 4. Mặc định **giáo viên quyết định từ hợp lệ** (hộp ✔ / ✘, từ không cần có trong kho từ vựng); có thể chuyển sang tự động chỉ nhận từ trong kho. Từ đã dùng không được lặp lại ở các câu sau. Tùy chọn khác: thời gian chọn chữ cái, thời gian nhập từ, cách tính điểm, đổi vai sau mỗi câu, cụm từ, trừ điểm khi sai.
+
+## Ô chữ bí mật: không đổi lượt
+
+Bấm một hàng → tick tên người trả lời → nhập đáp án. Đúng thì tự cộng điểm cho người đó; sai thì không đổi lượt, bấm lại câu để thử tiếp (có thể chọn người khác, tùy chọn trừ điểm khi sai). Đoán từ khóa cũng chọn người trả lời trước.
+
+## Nút Quay lại xuyên suốt app
+
+Nút Back của tablet / điện thoại / trình duyệt và nút "◀ Quay lại" trên màn hình đều lùi một bước: đóng hộp thoại đang mở, từ Game về bảng thành tích, và trong lúc chơi game thì mở menu tạm dừng (Back lần nữa thì chơi tiếp, chọn "Về menu" để thoát). Màn hình kết quả: Back về menu. Mã nằm ở `js/nav.js`.

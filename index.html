@@ -214,8 +214,9 @@ document.addEventListener('click',e=>{
 /* ---------- settings modal ---------- */
 let tab='general';
 const modal=document.getElementById('modal'), box=document.getElementById('box');
-const openSettings=()=>{modal.classList.add('open');drawModal()};
-const closeSettings=()=>{modal.classList.remove('open');render()};
+let setTok=0;
+const openSettings=()=>{modal.classList.add('open');drawModal();if(window.NAV&&!setTok)setTok=NAV.push(()=>{setTok=0;closeSettings(true)})};
+const closeSettings=(fromBack)=>{modal.classList.remove('open');if(setTok&&!fromBack){const t=setTok;setTok=0;NAV.done(t)}render()};
 function drawModal(){
   const max=maxScore();
   const tabs=[['general','Chung'],['ms','Mốc thưởng'],...S.students.map((s,i)=>['s'+i,s.name||('HS '+(i+1))])];
@@ -295,6 +296,7 @@ document.getElementById('btnReplay').onclick=()=>render();
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&modal.classList.contains('open'))closeSettings()});
 render();
 </script>
+<script src="js/nav.js"></script>
 <script src="js/sample.js"></script>
 <script src="js/core.js"></script>
 <script src="js/qparser.js"></script>
@@ -308,11 +310,14 @@ render();
 <script>
 (function(){
   var tl=document.getElementById("tabLearn"),tg=document.getElementById("tabGame"),vl=document.getElementById("viewLearn"),vg=document.getElementById("viewGame"),inited=false;
-  function show(w){var g=w==="game";vl.hidden=g;vg.hidden=!g;tl.classList.toggle("act",!g);tg.classList.toggle("act",g);try{localStorage.setItem("pg-tab",w)}catch(e){}
+  var gameTok=0;
+  function show(w,fromBack){var g=w==="game";if(!g&&window.PG&&PG.curShell)PG.curShell.destroy();vl.hidden=g;vg.hidden=!g;if(g&&!gameTok&&window.NAV&&!fromBack){gameTok=NAV.push(function(){gameTok=0;show("learn",true)});}else if(!g&&gameTok&&!fromBack){var tk=gameTok;gameTok=0;NAV.done(tk);}if(!g&&fromBack)gameTok=0;tl.classList.toggle("act",!g);tg.classList.toggle("act",g);try{localStorage.setItem("pg-tab",w)}catch(e){}
     if(g&&!inited){inited=true;PG.initGameUI();} else if(!g){if(PG.curShell)PG.curShell.destroy();render();}}
   tl.onclick=function(){show("learn")};tg.onclick=function(){show("game")};
   var last="learn";try{last=localStorage.getItem("pg-tab")||"learn"}catch(e){}
-  show(last);
+  if(window.NAV)NAV.root=function(){if(!vg.hidden)show("learn",true)};
+  window.showTab=show;
+  show(last,true);
   if("serviceWorker" in navigator&&location.protocol.indexOf("http")===0)navigator.serviceWorker.register("sw.js").catch(function(){});
 })();
 </script>

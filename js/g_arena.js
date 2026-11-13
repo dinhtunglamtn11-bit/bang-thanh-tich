@@ -441,7 +441,7 @@ NS.games.push({
   ],
   start(ctx) {
     const o = ctx.opt;
-    const openGuide = () => { const was = sh.paused; sh.paused = true; const box = h('div', { class: 'gdlg wide' }, h('h2', {}, '📖 Hướng dẫn ký hiệu'), NS.arenaGuide(map.id), h('button', { class: 'green', type: 'button', onclick: () => { sh.paused = was; sh.closeOverlay(); } }, '✔ Đã hiểu, chơi tiếp')); sh.overlay(box); };
+    const openGuide = () => { const was = sh.paused; sh.paused = true; const closeG = () => { sh.closeOverlay(); if (was) sh.openPause(); else sh.paused = false; }; const box = h('div', { class: 'gdlg wide' }, h('h2', {}, '📖 Hướng dẫn ký hiệu'), NS.arenaGuide(map.id), h('button', { class: 'green', type: 'button', onclick: closeG }, '◀ Đã hiểu, quay lại')); sh.overlay(box); sh._backFn = closeG; };
     const sh = NS.shell(ctx.root, { title: '🎲 Đấu trường', onRestart: ctx.restart, onExit: ctx.exit, onGuide: () => openGuide() });
     const names = NS.cfg.teams, map = NS.arenaBoard(null, o.map), nodes = map.nodes, split = sh.split, rule = map.rule || {};
     const qsec = +o.qtime * (rule.timeMul || 1);
