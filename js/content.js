@@ -89,7 +89,8 @@ function parseCross(text) {
     const L = c.kw.replace(/[^A-Za-z]/g, '').toUpperCase();
     if (auto.length) {
       if (auto.length < N) { E(r, c.line, 'Từ khóa "' + c.kw + '" có ' + N + ' chữ cái nhưng mới có ' + auto.length + ' từ.', 'Ô chữ: ' + c.kw, 'Cần ít nhất ' + N + ' từ, mỗi từ chứa một chữ của từ khóa.'); return; }
-      const rows = solveAuto(c.kw, auto, r, c.line); if (rows) r.items.push({ keyword: c.kw, rows, auto: true, line: c.line });
+      const rows = solveAuto(c.kw, auto, r, c.line);
+      if (rows) { r.items.push({ keyword: c.kw, rows, auto: true, pool: auto.map(x => ({ word: x.word, clue: x.clue })), line: c.line }); (r.notes = r.notes || []).push({ line: c.line, msg: 'Ô chữ "' + c.kw + '": mỗi lần chơi dùng ' + N + ' từ (một từ cho mỗi chữ cái của từ khóa) trong ' + auto.length + ' từ bạn nhập' + (auto.length > N ? '; ' + (auto.length - N) + ' từ còn lại là dự phòng, mỗi lần chơi app chọn lại ngẫu nhiên.' : '.') + ' Muốn có NHIỀU ô chữ khác nhau thì viết thêm các dòng "Ô chữ: TỪ KHÓA" mới.' }); }
       return;
     }
     if (c.rows.length !== N) { E(r, c.line, 'Từ khóa "' + c.kw + '" có ' + N + ' chữ cái nhưng có ' + c.rows.length + ' hàng.', 'Ô chữ: ' + c.kw); return; }
@@ -206,4 +207,6 @@ NS.customRaceQ = function () {
   if (!C.active('arena')) return null; const it = nextItem(NS.rand() < 0.5 ? 2 : 3) || nextItem(3) || nextItem(2); if (!it) return null;
   return mcOf(it, { stem: it.level === 2 ? 'Nghĩa của "' + it.head + '" là gì?' : 'Từ nào được miêu tả như sau?', sub: it.level === 3 ? '“' + it.head + '”' : '' });
 };
+/* giải lại ô chữ tự ghép mỗi lần chơi (chọn ngẫu nhiên trong kho từ bạn đã nhập) */
+NS.solveCrossAuto = function (keyword, pool) { const tmp = mk(); return solveAuto(keyword, pool.map(x => ({ word: x.word, clue: x.clue })), tmp, 0); };
 })();

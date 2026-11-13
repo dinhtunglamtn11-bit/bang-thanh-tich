@@ -121,7 +121,7 @@ NS.games.push({
     let puzzle = null;
     const kw = (o.kw || '').trim();
     const cp = NS.content && NS.content.active('cross') ? NS.content.items('cross') : [];
-    if (cp.length && o.src !== 'auto') { const it = (o.pz && o.pz !== '__rand' && cp.find(x => x.keyword === o.pz)) || NS.pick(cp); puzzle = { keyword: it.keyword, rows: it.rows.map(r => Object.assign({}, r)) }; }
+    if (cp.length && o.src !== 'auto') { const it = (o.pz && o.pz !== '__rand' && cp.find(x => x.keyword === o.pz)) || NS.pick(cp); const rr = it.auto && it.pool ? (NS.solveCrossAuto(it.keyword, it.pool) || it.rows) : it.rows; puzzle = { keyword: it.keyword, rows: rr.map(r => Object.assign({}, r)) }; }
     if (!puzzle && (!kw || NS.cfg.source === 'hand')) {
       if (NS.hand.puzzles.length) { const p = NS.pick(NS.hand.puzzles); puzzle = { keyword: p.keyword, rows: p.rows.map(r => Object.assign({}, r)) }; }
       else if (!kw) { fail('Chưa có ô chữ soạn tay. Hãy nhập từ khóa hoặc dán ô chữ trong mục "Soạn câu hỏi".'); return; }

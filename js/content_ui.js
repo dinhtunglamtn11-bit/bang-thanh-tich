@@ -24,6 +24,7 @@ NS.contentDialog = function (startId) {
       rep.append(h('div', { class: 'rsum' }, '📊 ' + r.items.length + ' ' + d.unit + ' hợp lệ · ❌ ' + r.errors.length + ' lỗi định dạng · ⚠ ' + r.warnings.length + ' cảnh báo  (chỉ kiểm tra định dạng, không đối chiếu kho từ vựng)'));
       const item = (e, cls) => h('button', { class: 'ritem ' + cls, type: 'button', onclick: () => { const ls = ta.value.split(/\r\n|\r|\n/); let pos = 0; for (let i = 0; i < e.line - 1; i++) pos += ls[i].length + 1; ta.focus(); ta.setSelectionRange(pos, pos + (ls[e.line - 1] || '').length); } },
         h('b', {}, 'dòng ' + e.line), ' ' + e.msg, e.excerpt ? h('code', {}, e.excerpt) : null, e.hint ? h('i', {}, '💡 ' + e.hint) : null);
+      (r.notes || []).forEach(e => rep.append(h('div', { class: 'rnote' }, 'ℹ dòng ' + e.line + ': ' + e.msg)));
       r.errors.slice(0, 50).forEach(e => rep.append(item(e, 'err'))); r.warnings.slice(0, 30).forEach(e => rep.append(item(e, 'wrn')));
       return r;
     };

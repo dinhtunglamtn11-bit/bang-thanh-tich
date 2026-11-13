@@ -326,3 +326,4 @@ button.big{font-size:30px;padding:10px 28px;min-height:64px}
 .ctitle{margin:6px 0;color:var(--gold);font-size:28px}.cinfo{font-size:19px;background:#0003;border:3px solid var(--ink);padding:6px 12px;margin-bottom:6px}.cinfo ul{margin:4px 0;padding-left:20px}.cinfo p{margin:4px 0}
 .cprompt{margin:8px 0;border:3px solid var(--ink);padding:6px 10px;background:#0003}.cprompt summary{cursor:pointer;font-size:20px;color:var(--cyan)}.bigta.small{min-height:140px;font-size:15px}
 .gcontent{border:3px solid var(--gold);background:#0003;padding:6px 10px;margin:8px 0;font-size:20px}
+.rnote{background:#0004;border:3px solid var(--cyan);padding:4px 10px;margin:4px 0;font-size:18px;color:var(--cyan)}
