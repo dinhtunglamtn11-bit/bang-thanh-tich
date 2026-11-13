@@ -103,7 +103,8 @@ NS.games.push({
   id: 'cross', name: 'Ô chữ bí mật', icon: '🧩', desc: 'Bấm một hàng, tick tên người trả lời rồi nhập đáp án: đúng thì tự cộng điểm cho người đó. Không đổi lượt!',
   get options() {
     const cp = NS.content && NS.content.active('cross') ? NS.content.items('cross') : [];
-    return cp.length ? [{ key: 'src', label: '✍ Nguồn ô chữ', type: 'select', choices: [['custom', 'Ô chữ tôi đã soạn (' + cp.length + ')'], ['auto', 'Tự tạo từ từ khóa bên dưới']], def: 'custom' }, { key: 'pz', label: '✍ Chọn ô chữ đã soạn', type: 'select', choices: [['__rand', '🎲 Ngẫu nhiên'], ...cp.map(p => [p.keyword, p.keyword + ' (' + p.rows.length + ' hàng)'])], def: '__rand' }].concat(this._base) : this._base;
+    const base = cp.length ? this._base.map(o => (o.key === 'kw' ? Object.assign({}, o, { suggest: cp.map(p => ({ text: p.keyword, set: { src: 'custom', pz: p.keyword } })).concat(o.suggest || []) }) : o)) : this._base;
+    return cp.length ? [{ key: 'src', label: '✍ Nguồn ô chữ', type: 'select', choices: [['custom', 'Ô chữ tôi đã soạn (' + cp.length + ')'], ['auto', 'Tự tạo từ từ khóa bên dưới']], def: 'custom' }, { key: 'pz', label: '✍ Chọn ô chữ đã soạn', type: 'select', choices: [['__rand', '🎲 Ngẫu nhiên'], ...cp.map(p => [p.keyword, p.keyword + ' (' + p.rows.length + ' hàng)'])], def: '__rand' }].concat(base) : base;
   },
   _base: [
     { key: 'kw', label: 'Từ khóa (để trống nếu dùng ô chữ soạn tay)', type: 'text', def: 'SKIPPING ROPE', suggest: ['ANNIVERSARY', 'LIVINGROOM', 'SKIPPING ROPE', 'HIDE AND SEEK', 'SING KARAOKE'] },

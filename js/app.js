@@ -55,13 +55,14 @@ NS.renderMenu = renderMenu;
 function startDialog(g) {
   const saved = NS.LS.get('pg-opt-' + g.id, {}), opt = {};
   g.options.forEach(o => { opt[o.key] = saved[o.key] !== undefined ? saved[o.key] : o.def; });
-  const body = h('div', { class: 'gform' });
+  const body = h('div', { class: 'gform' }), sels = {};
   g.options.forEach(o => {
-    if (o.type === 'select') body.append(h('label', {}, o.label), select(o.choices, opt[o.key], v => { opt[o.key] = isNaN(+v) ? v : +v; }));
+    if (o.type === 'select') { const el = select(o.choices, opt[o.key], v => { opt[o.key] = isNaN(+v) ? v : +v; }); sels[o.key] = el; body.append(h('label', {}, o.label), el); }
     else if (o.type === 'toggle') body.append(toggle(o.label, opt[o.key], v => { opt[o.key] = v; }));
     else if (o.type === 'text') {
       const inp = h('input', { type: 'text', value: opt[o.key] || '', maxlength: 24 }); inp.addEventListener('input', () => { opt[o.key] = inp.value; });
-      body.append(h('label', {}, o.label), inp, o.suggest ? h('div', { class: 'sugg' }, o.suggest.map(s => h('button', { class: 'small', type: 'button', onclick: () => { inp.value = s; opt[o.key] = s; } }, s))) : null);
+      const pickSug = it => { if (it.set) { Object.keys(it.set).forEach(k => { opt[k] = it.set[k]; if (sels[k]) sels[k].value = String(it.set[k]); }); } else { inp.value = it.text; opt[o.key] = it.text; if (sels.src) { opt.src = 'auto'; sels.src.value = 'auto'; } } };
+      body.append(h('label', {}, o.label), inp, o.suggest ? h('div', { class: 'sugg' }, o.suggest.map(s => { const it = typeof s === 'string' ? { text: s } : s; return h('button', { class: 'small' + (it.set ? ' mine' : ''), type: 'button', onclick: () => pickSug(it) }, (it.set ? '✍ ' : '') + it.text); })) : null);
     }
   });
   const guideBtn = g.guide ? h('button', { type: 'button', onclick: () => guideDialog(opt.map) }, '📖 Hướng dẫn ký hiệu') : null;
