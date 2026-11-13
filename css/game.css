@@ -314,3 +314,5 @@ button.big{font-size:30px;padding:10px 28px;min-height:64px}
 .ghead{display:flex;align-items:center;gap:10px}.ghead h2{flex:1;margin:0}
 .gmenuhead{display:flex;align-items:center;gap:14px;flex-wrap:wrap}.gmenuhead .gh2{margin:6px 0}
 .gmbtns{display:flex;gap:6px;justify-content:center}
+.ctray{display:flex;flex-wrap:wrap;gap:4px;align-items:center;font-size:18px;color:var(--grey)}
+.cchip2{width:34px;height:40px;background:var(--c0);border:3px solid var(--ink);color:var(--ink);font-size:26px;display:grid;place-items:center}

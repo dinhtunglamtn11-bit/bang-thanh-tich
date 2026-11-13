@@ -134,8 +134,13 @@ NS.games.push({
 
     const keyStrip = h('div', { class: 'ckey' }), keyCells = [];
     for (let i = 0; i < N; i++) { const c = h('div', { class: 'ckc' }, h('small', {}, i + 1), h('b', {}, '')); keyCells.push(c); keyStrip.append(c); }
+    /* chữ ở ô cam đã tìm được: hiện LỘN XỘN (không theo thứ tự), người chơi tự xếp thành từ khóa */
+    const gotLetters = [], trayEl = h('div', { class: 'ctray' });
+    const trayChips = () => gotLetters.length ? gotLetters.map(c => h('span', { class: 'cchip2' }, c)) : [h('i', {}, 'chưa có chữ nào')];
+    const paintTray = () => { trayEl.innerHTML = ''; trayEl.append(h('small', {}, 'Chữ ở ô cam đã tìm được (hãy tự xếp): '), ...trayChips()); };
+    paintTray();
     const guessBtn = NS.tap(h('button', { class: 'red', type: 'button' }, '🔑 Đoán từ khóa'), () => guessKey());
-    const tools = h('div', { class: 'ctools' }, guessBtn);
+    const tools = h('div', { class: 'ctools' }, guessBtn, NS.tap(h('button', { class: 'small red', type: 'button' }, '🏁 Kết thúc, hiện từ khóa'), () => { if (!over && confirm('Kết thúc ô chữ và hiện từ khóa?')) endGame(null); }));
     if (o.tools) {
       tools.append(NS.tap(h('button', { class: 'small', type: 'button' }, '👁 Đáp án'), showAnswers),
         NS.tap(h('button', { class: 'small', type: 'button' }, '🖼 PNG'), () => { [false, true].forEach((a, i) => setTimeout(() => { const c = NS.drawPuzzle(puzzle, a); const l = h('a', { href: c.toDataURL('image/png'), download: 'o-chu-' + NS.slug(puzzle.keyword) + (a ? '-dap-an' : '') + '.png' }); document.body.append(l); l.click(); l.remove(); }, i * 400)); }),
@@ -149,7 +154,7 @@ NS.games.push({
       NS.tap(el, () => openRow(k)); r.el = el; r.cells = cells; rowEls.push(el); table.append(el);
     });
     if (!o.showKey) keyStrip.style.display = 'none';
-    const cwrap = h('div', { class: 'cwrap' }, h('div', { class: 'ctop' }, keyStrip, tools), table);
+    const cwrap = h('div', { class: 'cwrap' }, h('div', { class: 'ctop' }, keyStrip, trayEl, tools), table);
     sh.area.append(cwrap);
     if (o.fitAll) {
       /* thu nhỏ ô chữ, chữ và khoảng cách để vừa khít chiều cao màn hình */
@@ -176,10 +181,10 @@ NS.games.push({
     function solveRow(r, team) {
       r.solved = true; r.el.classList.add('solved', 't' + team);
       [...r.up].forEach((ch, i) => r.cells[i].textContent = ch);
-      const slot = r.slot - 1; keyFilled[slot] = true; keyCells[slot].querySelector('b').textContent = L[slot]; keyCells[slot].classList.add('on');
+      const slot = r.slot - 1; keyFilled[slot] = true; gotLetters.splice(NS.randInt(0, gotLetters.length), 0, L[slot]); paintTray();
       const flyTo = r.cells[r.hi - 1]; flyTo.classList.add('fly');
     }
-    function checkAllDone() { if (rows.every(r => r.solved)) { endGame(null); return true; } return false; }
+    function checkAllDone() { if (rows.every(r => r.solved)) sh.toast('🎉 Đã giải hết các hàng! Hãy xếp các chữ ở ô cam thành từ khóa rồi bấm 🔑 Đoán từ khóa', 5000); return false; }
     function endGame(winner, bonus) {
       if (over) return; over = true; sh.setActive(-1);
       rows.forEach(r => { if (!r.solved) { [...r.up].forEach((ch, i) => r.cells[i].textContent = ch); } });
@@ -203,7 +208,7 @@ NS.games.push({
       const close = () => { if (tm) tm.stop(); sh.closeOverlay(); sh.setActive(-1); };
       const qs = +o.qtime;
       if (qs > 0) tm = NS.timer(qs * 1000, l => { bar.firstChild.style.width = (l / (qs * 1000) * 100) + '%'; bar.classList.toggle('low', l < 6000); }, () => { sh.closeOverlay(); if (extra && extra.onTimeout) extra.onTimeout(); });
-      sh.overlay(h('div', { class: 'gdlg tm t' + turn }, h('h3', {}, NS.TEAM_ICON[turn] + ' ' + names[turn] + ' — ' + title), extra && extra.clue ? h('p', { class: 'clue' }, extra.clue) : null, qs > 0 ? bar : null, cellsEl, kb,
+      sh.overlay(h('div', { class: 'gdlg tm t' + turn }, h('h3', {}, NS.TEAM_ICON[turn] + ' ' + names[turn] + ' — ' + title), extra && extra.clue ? h('p', { class: 'clue' }, extra.clue) : null, extra && extra.chips ? h('div', { class: 'ctray' }, h('small', {}, 'Chữ cam đã tìm được: '), ...trayChips()) : null, qs > 0 ? bar : null, cellsEl, kb,
         h('div', { class: 'rbtns' }, hintBtn, NS.tap(h('button', { class: 'small', type: 'button' }, '✕ Hủy'), close))), turn);
     }
     function openRow(k) {
@@ -221,9 +226,9 @@ NS.games.push({
       if (over || sh.paused) return;
       pickWho('Đoán từ khóa', () => typeModal('Đoán từ khóa (' + N + ' chữ cái)', N, null, (guess, close) => {
         close();
-        if (guess === L) { const left = keyFilled.filter(x => !x).length, b = left * 3; sh.addScore(turn, b); sh.toast('🎉 Đúng rồi! +' + b + ' điểm thưởng', 2000); NS.sfx('win'); stats[turn].right++; endGame(turn); }
+        if (guess === L) { const left = keyFilled.filter(x => !x).length, b = 5 + left * 3; sh.addScore(turn, b); sh.toast('🎉 Đúng rồi! +' + b + ' điểm thưởng', 2000); NS.sfx('win'); stats[turn].right++; endGame(turn); }
         else { const pen = +o.keyPenalty; if (pen) sh.addScore(turn, -pen, 0); stats[turn].wrong++; NS.sfx('bad'); sh.setActive(-1); sh.toast('❌ Sai từ khóa!' + (pen ? ' −' + pen + ' điểm' : ''), 1800); }
-      }, { clue: 'Gõ cả từ khóa (bỏ khoảng trắng).' + (+o.keyPenalty ? ' Sai bị trừ ' + o.keyPenalty + ' điểm.' : ''), onTimeout: () => { sh.setActive(-1); sh.toast('⏰ Hết giờ', 1500); } }));
+      }, { chips: true, clue: 'Tự xếp các chữ ở ô cam thành từ khóa (bỏ khoảng trắng).' + (+o.keyPenalty ? ' Sai bị trừ ' + o.keyPenalty + ' điểm.' : ''), onTimeout: () => { sh.setActive(-1); sh.toast('⏰ Hết giờ', 1500); } }));
     }
     function showAnswers() {
       const t = h('table', { class: 'ans' }, h('tr', {}, h('th', {}, '#'), h('th', {}, 'Từ'), h('th', {}, 'Nghĩa'), h('th', {}, 'Ô số')),
