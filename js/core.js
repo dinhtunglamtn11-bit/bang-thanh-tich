@@ -2,11 +2,17 @@
 (function () {
 'use strict';
 const NS = (window.PG = window.PG || {});
+/* Các khóa được đồng bộ giữa các thiết bị (nội dung soạn riêng, từ vựng dán tay, câu hỏi cũ, cài đặt chung, tùy chọn từng game) */
+const SYNC_RE = /^(pg-content-|pg-vocab-text$|pg-questions-text$|pg-cfg$|pg-opt-)/;
 const LS = {
   get(k, d) { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch (e) { return d; } },
-  set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
+  set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} if (SYNC_RE.test(k)) LS.touch(); },
+  touch() { try { localStorage.setItem('pg-sync-ts', String(Date.now())); } catch (e) {} if (window.onLocalSave) window.onLocalSave(); }
 };
 NS.LS = LS;
+NS.isSyncKey = k => SYNC_RE.test(k);
+/* lần đầu sau khi nâng cấp: dữ liệu game đã có trên máy được coi là "mới nhất" để đẩy lên tài khoản */
+try { if (!localStorage.getItem('pg-sync-ts') && Object.keys(localStorage).some(k => SYNC_RE.test(k))) localStorage.setItem('pg-sync-ts', String(Date.now())); } catch (e) {}
 
 /* ---------- RNG có seed ---------- */
 NS.mulberry = function (seed) {

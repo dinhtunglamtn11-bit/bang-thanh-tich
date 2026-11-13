@@ -107,3 +107,7 @@ Trong **Game → 📝 Soạn câu hỏi** có thể dán một văn bản dài c
 - 🔗 Ghép chữ hai đầu: không cần nhập (giáo viên duyệt khi chơi).
 
 Cú pháp chung cũ (`Câu 1:`, `@bài:`...) vẫn còn ở nút "🧰 Cú pháp chung (cũ)".
+
+## Đồng bộ giữa các thiết bị
+
+Đăng nhập Google (nút góc trên) trên cả hai thiết bị. Ngoài thành tích học sinh, giờ còn đồng bộ: nội dung soạn riêng của từng game, bộ từ vựng dán tay, câu hỏi cú pháp cũ, cài đặt chung và tùy chọn từng game. Bên nào sửa sau cùng thì thắng (so theo thời gian). Không đồng bộ: nhạc bật/tắt, tab đang xem, thống kê từ hay sai, file `data/vocab.txt` (file này đi theo GitHub).

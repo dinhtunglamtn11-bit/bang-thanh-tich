@@ -341,9 +341,17 @@ const btn=document.getElementById('btnLogin'), st=document.getElementById('sync'
 let user=null, unsub=null, timer=null, firstSnap=true;
 btn.style.display='';
 const setSt=t=>st.textContent=t;
+const gameBundle=()=>{ const items={}; Object.keys(localStorage).forEach(k=>{ if(window.PG&&PG.isSyncKey(k)) items[k]=localStorage.getItem(k); }); return {updatedAt:+(localStorage.getItem('pg-sync-ts')||0), items}; };
+const applyGame=g=>{
+  const items=g.items||{};
+  Object.keys(localStorage).filter(k=>PG.isSyncKey(k)&&!(k in items)).forEach(k=>localStorage.removeItem(k));
+  Object.keys(items).forEach(k=>{try{localStorage.setItem(k,items[k])}catch(e){}});
+  try{localStorage.setItem('pg-sync-ts',String(num(g.updatedAt)))}catch(e){}
+  if(PG.reloadFromStorage)PG.reloadFromStorage();
+};
 const push=async()=>{
   if(!user)return;
-  try{setSt('☁ Đang lưu...');await setDoc(doc(db,'users',user.uid),JSON.parse(JSON.stringify(S)));setSt('☁ Đã đồng bộ ✔');}
+  try{setSt('☁ Đang lưu...');const payload=JSON.parse(JSON.stringify(S));payload.game=gameBundle();await setDoc(doc(db,'users',user.uid),payload);setSt('☁ Đã đồng bộ ✔');}
   catch(e){console.error(e);setSt('⚠ Lỗi đồng bộ');}
 };
 window.onLocalSave=()=>{ if(!user)return; setSt('☁ Chờ lưu...'); clearTimeout(timer); timer=setTimeout(push,800); };
@@ -364,11 +372,12 @@ onAuthStateChanged(auth,u=>{
     if(snap.metadata.hasPendingWrites)return;
     const d=snap.data();
     if(!d||!d.students){ push(); return; }            // tài khoản mới: đưa dữ liệu trên máy lên
-    const local=num(S.updatedAt), remote=num(d.updatedAt);
-    if(remote>local){ applyRemote(d); setSt('☁ Đã đồng bộ ✔'); }
-    else if(local>remote){ push(); }
-    else setSt('☁ Đã đồng bộ ✔');
-    firstSnap=false;
+    const {game,...chart}=d;
+    const local=num(S.updatedAt), remote=num(chart.updatedAt); let needPush=false;
+    if(remote>local){ applyRemote(chart); } else if(local>remote){ needPush=true; }
+    const lg=num(localStorage.getItem('pg-sync-ts')), rg=game?num(game.updatedAt):0;   // nội dung game: câu hỏi soạn riêng, từ vựng, cài đặt
+    if(game&&rg>lg){ applyGame(game); } else if(lg>rg){ needPush=true; }
+    if(needPush) push(); else setSt('☁ Đã đồng bộ ✔');
   },err=>{console.error(err);setSt('⚠ Lỗi: '+(err.code||''));});
 });
 </script>

@@ -155,7 +155,7 @@ function questionDialog() {
       h('button', { type: 'button', onclick: check }, '🔍 Kiểm tra'),
       h('button', { class: 'green', type: 'button', onclick: importIt }, '✔ Nhập các khối hợp lệ'),
       h('button', { class: 'small', type: 'button', onclick: () => { const r = NS.parseQuestions(NS.handText || ''), t = NS.serializeQuestions(r); const a = h('a', { href: URL.createObjectURL(new Blob([t], { type: 'text/plain;charset=utf-8' })), download: 'cau-hoi-da-luu.txt' }); document.body.append(a); a.click(); a.remove(); } }, '⬇ Tải toàn bộ đã lưu'),
-      h('button', { class: 'small red', type: 'button', onclick: () => { if (confirm('Xóa toàn bộ câu hỏi soạn tay đã lưu?')) { ta.value = ''; try { localStorage.removeItem('pg-questions-text'); } catch (e) {} loadHand(); showSaved(); rep.innerHTML = ''; } } }, 'Xóa hết')));
+      h('button', { class: 'small red', type: 'button', onclick: () => { if (confirm('Xóa toàn bộ câu hỏi soạn tay đã lưu?')) { ta.value = ''; try { localStorage.removeItem('pg-questions-text'); } catch (e) {} NS.LS.touch(); loadHand(); showSaved(); rep.innerHTML = ''; } } }, 'Xóa hết')));
   modal('📝 Soạn câu hỏi', body, renderMenu);
 }
 
@@ -165,6 +165,12 @@ function voiceTest() {
   if (!v) alert('Chưa tìm thấy giọng tiếng Anh. Hãy cài giọng English (US/UK) trong phần cài đặt giọng nói của thiết bị.');
 }
 
+NS.reloadFromStorage = async function () {
+  const saved = NS.LS.get('pg-cfg', null); if (saved) Object.assign(NS.cfg, saved);
+  if (NS.content) NS.content.load();
+  await NS.loadVocab(); loadHand();
+  if (root && !NS.curShell && root.querySelector('.gcards')) renderMenu();
+};
 NS.initGameUI = async function () {
   root = document.getElementById('gameRoot'); if (!root) return;
   await NS.loadVocab(); loadHand(); NS.music.load(); renderMenu();
