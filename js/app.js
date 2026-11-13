@@ -36,7 +36,7 @@ function renderMenu() {
     const c = h('button', { class: 'gcard', type: 'button' }, h('span', { class: 'gic' }, g.icon), h('b', {}, g.name), h('small', {}, g.desc));
     c.addEventListener('click', () => startDialog(g)); return c;
   }));
-  const status = h('div', { class: 'gstatus' }, '📚 Từ vựng: ' + v.words.length + ' từ · ' + v.topics.length + ' chủ đề · nguồn: ' + v.source + (NS.hand.questions.length + NS.hand.cardSets.length + NS.hand.puzzles.length ? ' · ✍ ' + NS.hand.questions.length + ' câu, ' + NS.hand.cardSets.length + ' bộ thẻ, ' + NS.hand.puzzles.length + ' ô chữ soạn tay' : ''));
+  const status = h('div', { class: 'gstatus' }, '📚 Từ vựng: ' + v.words.length + ' từ · ' + v.topics.length + ' chủ đề · nguồn: ' + v.source + ' · bản ' + NS.BUILD + (NS.hand.questions.length + NS.hand.cardSets.length + NS.hand.puzzles.length ? ' · ✍ ' + NS.hand.questions.length + ' câu, ' + NS.hand.cardSets.length + ' bộ thẻ, ' + NS.hand.puzzles.length + ' ô chữ soạn tay' : ''));
   const tools = h('div', { class: 'gtools' },
     h('button', { type: 'button', onclick: settingsDialog }, '⚙ Cài đặt chung'),
     h('button', { type: 'button', onclick: vocabDialog }, '📚 Từ vựng'),
@@ -44,6 +44,7 @@ function renderMenu() {
     h('button', { type: 'button', class: 'small', onclick: questionDialog }, '🧰 Cú pháp chung (cũ)'),
     h('button', { type: 'button', onclick: () => guideDialog() }, '📖 Ký hiệu Đấu trường'),
     h('button', { type: 'button', onclick: musicDialog }, '🎵 Nhạc nền'),
+    h('button', { type: 'button', onclick: async () => { const r = window.syncNow ? await window.syncNow() : { msg: 'Chưa tải xong phần đồng bộ, thử lại sau vài giây.' }; alert(r.msg); } }, '🔄 Đồng bộ ngay'),
     h('button', { type: 'button', onclick: voiceTest }, '🔊 Thử giọng đọc'));
   const how = h('div', { class: 'ghow' }, '👫 Hai bạn ngồi hai bên: ', h('b', {}, NS.TEAM_ICON[0] + ' ' + NS.cfg.teams[0]), ' và ', h('b', {}, NS.TEAM_ICON[1] + ' ' + NS.cfg.teams[1]), (NS.cfg.split ? ' (màn hình chia đôi: bạn thứ nhất ngồi phía dưới, bạn thứ hai ngồi phía đối diện). ' : '. '), 'Chọn một trò chơi để bắt đầu!');
   const lessons = (NS.handAll && NS.handAll.lessons) || [];
@@ -115,7 +116,7 @@ function vocabDialog() {
     ta, msg,
     h('div', { class: 'rbtns' },
       h('button', { class: 'green', type: 'button', onclick: () => { const r = NS.parseVocab(ta.value); if (!r.words.length) { msg.textContent = '❌ Không đọc được từ nào. Kiểm tra định dạng (tiêu đề "## 1. ..." và khối ```).'; return; } NS.LS.set('pg-vocab-text', ta.value); NS.setVocab(ta.value, 'đã nhập tay'); msg.textContent = '✔ Đã dùng ' + r.words.length + ' từ, ' + r.topics.length + ' chủ đề' + (r.warn.length ? ' (bỏ qua ' + r.warn.length + ' dòng lỗi: ' + r.warn.slice(0, 3).join('; ') + ')' : ''); NS.cfg.topics = []; NS.saveCfg(); } }, 'Dùng bộ từ này'),
-      h('button', { class: 'small red', type: 'button', onclick: async () => { NS.LS.set('pg-vocab-text', null); try { localStorage.removeItem('pg-vocab-text'); } catch (e) {} await NS.loadVocab(); msg.textContent = '↺ Đã quay về nguồn: ' + NS.vocab.source + ' (' + NS.vocab.words.length + ' từ)'; } }, 'Bỏ từ đã nhập')));
+      h('button', { class: 'small red', type: 'button', onclick: async () => { NS.LS.set('pg-vocab-text', null); await NS.loadVocab(); msg.textContent = '↺ Đã quay về nguồn: ' + NS.vocab.source + ' (' + NS.vocab.words.length + ' từ)'; } }, 'Bỏ từ đã nhập')));
   modal('📚 Từ vựng', body, renderMenu);
 }
 
@@ -155,7 +156,7 @@ function questionDialog() {
       h('button', { type: 'button', onclick: check }, '🔍 Kiểm tra'),
       h('button', { class: 'green', type: 'button', onclick: importIt }, '✔ Nhập các khối hợp lệ'),
       h('button', { class: 'small', type: 'button', onclick: () => { const r = NS.parseQuestions(NS.handText || ''), t = NS.serializeQuestions(r); const a = h('a', { href: URL.createObjectURL(new Blob([t], { type: 'text/plain;charset=utf-8' })), download: 'cau-hoi-da-luu.txt' }); document.body.append(a); a.click(); a.remove(); } }, '⬇ Tải toàn bộ đã lưu'),
-      h('button', { class: 'small red', type: 'button', onclick: () => { if (confirm('Xóa toàn bộ câu hỏi soạn tay đã lưu?')) { ta.value = ''; try { localStorage.removeItem('pg-questions-text'); } catch (e) {} NS.LS.touch(); loadHand(); showSaved(); rep.innerHTML = ''; } } }, 'Xóa hết')));
+      h('button', { class: 'small red', type: 'button', onclick: () => { if (confirm('Xóa toàn bộ câu hỏi soạn tay đã lưu?')) { ta.value = ''; NS.LS.set('pg-questions-text', ''); loadHand(); showSaved(); rep.innerHTML = ''; } } }, 'Xóa hết')));
   modal('📝 Soạn câu hỏi', body, renderMenu);
 }
 

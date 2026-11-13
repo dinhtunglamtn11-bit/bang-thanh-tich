@@ -326,7 +326,7 @@ render();
 <script type="module">
 import {initializeApp} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
 import {getAuth,GoogleAuthProvider,signInWithPopup,signInWithRedirect,signOut,onAuthStateChanged} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
-import {getFirestore,doc,setDoc,onSnapshot} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
+import {getFirestore,doc,setDoc,getDoc,onSnapshot} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
 
 const firebaseConfig={
   apiKey:"AIzaSyDOHGGes8fuB_rzycXMJ9-j4JPW94Qm9Wg",
@@ -341,20 +341,49 @@ const btn=document.getElementById('btnLogin'), st=document.getElementById('sync'
 let user=null, unsub=null, timer=null, firstSnap=true;
 btn.style.display='';
 const setSt=t=>st.textContent=t;
-const gameBundle=()=>{ const items={}; Object.keys(localStorage).forEach(k=>{ if(window.PG&&PG.isSyncKey(k)) items[k]=localStorage.getItem(k); }); return {updatedAt:+(localStorage.getItem('pg-sync-ts')||0), items}; };
-const applyGame=g=>{
-  const items=g.items||{};
-  Object.keys(localStorage).filter(k=>PG.isSyncKey(k)&&!(k in items)).forEach(k=>localStorage.removeItem(k));
-  Object.keys(items).forEach(k=>{try{localStorage.setItem(k,items[k])}catch(e){}});
-  try{localStorage.setItem('pg-sync-ts',String(num(g.updatedAt)))}catch(e){}
-  if(PG.reloadFromStorage)PG.reloadFromStorage();
+/* ---- đồng bộ nội dung game: gộp TỪNG KHÓA theo thời gian sửa (không ghi đè cả gói, không làm mất nội dung của máy kia) ---- */
+const metaGet=()=>{try{return JSON.parse(localStorage.getItem('pg-sync-meta')||'{}')}catch(e){return {}}};
+const metaSet=m=>{try{localStorage.setItem('pg-sync-meta',JSON.stringify(m))}catch(e){}};
+const syncKeys=()=>Object.keys(localStorage).filter(k=>window.PG&&PG.isSyncKey(k));
+const gameBundle=()=>{ const m=metaGet(), items={}, now=Date.now(); let ch=false;
+  syncKeys().forEach(k=>{ if(!m[k]){m[k]=now;ch=true;} items[k]={v:localStorage.getItem(k),t:m[k]}; });
+  if(ch)metaSet(m); return {v:2,items}; };
+const normRemote=g=>{ if(!g||!g.items)return {}; if(g.v===2)return g.items; const t=num(g.updatedAt)||1, o={}; Object.keys(g.items).forEach(k=>{o[k]={v:g.items[k],t}}); return o; };
+const mergeGame=g=>{
+  const ri=normRemote(g), m=metaGet(); let changed=false, needPush=false; const local=syncKeys();
+  Object.keys(ri).forEach(k=>{
+    if(!(window.PG&&PG.isSyncKey(k)))return;
+    const l=localStorage.getItem(k), lt=m[k]||0, r=ri[k];
+    if(l===null||num(r.t)>lt){ if(l!==r.v){ try{localStorage.setItem(k,r.v)}catch(e){} changed=true; } m[k]=num(r.t); }
+    else if(lt>num(r.t)) needPush=true;
+  });
+  local.forEach(k=>{ if(!(k in ri)) needPush=true; });
+  metaSet(m); if(changed&&PG.reloadFromStorage)PG.reloadFromStorage();
+  return {changed,needPush};
 };
 const push=async()=>{
   if(!user)return;
-  try{setSt('☁ Đang lưu...');const payload=JSON.parse(JSON.stringify(S));payload.game=gameBundle();await setDoc(doc(db,'users',user.uid),payload);setSt('☁ Đã đồng bộ ✔');}
-  catch(e){console.error(e);setSt('⚠ Lỗi đồng bộ');}
+  try{setSt('☁ Đang lưu...');const payload=JSON.parse(JSON.stringify(S));payload.game=gameBundle();await setDoc(doc(db,'users',user.uid),payload);setSt('☁ Đã đồng bộ ✔ '+new Date().toTimeString().slice(0,5));}
+  catch(e){console.error(e);setSt('⚠ Lỗi đồng bộ: '+(e.code||e.message||''));}
 };
 window.onLocalSave=()=>{ if(!user)return; setSt('☁ Chờ lưu...'); clearTimeout(timer); timer=setTimeout(push,800); };
+const handleRemote=d=>{
+  if(!d||!d.students){ push(); return 'new'; }            // tài khoản mới: đưa dữ liệu trên máy lên
+  const {game,...chart}=d;
+  const local=num(S.updatedAt), remote=num(chart.updatedAt); let needPush=false;
+  if(remote>local){ applyRemote(chart); } else if(local>remote){ needPush=true; }
+  const mg=mergeGame(game); if(mg.needPush)needPush=true;
+  if(needPush) push(); else setSt('☁ Đã đồng bộ ✔ '+new Date().toTimeString().slice(0,5));
+  return mg.changed?'changed':'same';
+};
+/* nút "Đồng bộ ngay" trong menu Game */
+window.syncNow=async()=>{
+  if(!user)return {ok:false,msg:'Chưa đăng nhập Google. Bấm nút "Đăng nhập Google" ở góc trên bên phải trước.'};
+  try{ const snap=await getDoc(doc(db,'users',user.uid)); const r=handleRemote(snap.data()); const keys=syncKeys().length;
+    return {ok:true,msg:'Đã đồng bộ với tài khoản '+(user.email||'')+'. '+(r==='changed'?'Đã nhận nội dung mới từ thiết bị khác. ':'')+'Trên máy này có '+keys+' mục dữ liệu game được đồng bộ.'}; }
+  catch(e){ return {ok:false,msg:'Lỗi đồng bộ: '+(e.code||e.message||e)}; }
+};
+window.syncUser=()=>user;
 
 btn.onclick=async()=>{
   if(user){ if(confirm('Đăng xuất? Dữ liệu vẫn được giữ trên tài khoản Google.')) await signOut(auth); return; }
@@ -370,14 +399,7 @@ onAuthStateChanged(auth,u=>{
   setSt('☁ Đang tải...'); firstSnap=true;
   unsub=onSnapshot(doc(db,'users',u.uid),snap=>{
     if(snap.metadata.hasPendingWrites)return;
-    const d=snap.data();
-    if(!d||!d.students){ push(); return; }            // tài khoản mới: đưa dữ liệu trên máy lên
-    const {game,...chart}=d;
-    const local=num(S.updatedAt), remote=num(chart.updatedAt); let needPush=false;
-    if(remote>local){ applyRemote(chart); } else if(local>remote){ needPush=true; }
-    const lg=num(localStorage.getItem('pg-sync-ts')), rg=game?num(game.updatedAt):0;   // nội dung game: câu hỏi soạn riêng, từ vựng, cài đặt
-    if(game&&rg>lg){ applyGame(game); } else if(lg>rg){ needPush=true; }
-    if(needPush) push(); else setSt('☁ Đã đồng bộ ✔');
+    handleRemote(snap.data());
   },err=>{console.error(err);setSt('⚠ Lỗi: '+(err.code||''));});
 });
 </script>

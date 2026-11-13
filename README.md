@@ -110,4 +110,4 @@ Cú pháp chung cũ (`Câu 1:`, `@bài:`...) vẫn còn ở nút "🧰 Cú pháp
 
 ## Đồng bộ giữa các thiết bị
 
-Đăng nhập Google (nút góc trên) trên cả hai thiết bị. Ngoài thành tích học sinh, giờ còn đồng bộ: nội dung soạn riêng của từng game, bộ từ vựng dán tay, câu hỏi cú pháp cũ, cài đặt chung và tùy chọn từng game. Bên nào sửa sau cùng thì thắng (so theo thời gian). Không đồng bộ: nhạc bật/tắt, tab đang xem, thống kê từ hay sai, file `data/vocab.txt` (file này đi theo GitHub).
+Đăng nhập Google (nút góc trên) trên cả hai thiết bị. Ngoài thành tích học sinh, giờ còn đồng bộ: nội dung soạn riêng của từng game, bộ từ vựng dán tay, câu hỏi cú pháp cũ, cài đặt chung và tùy chọn từng game. Gộp theo TỪNG mục (mỗi ô nội dung có thời điểm sửa riêng): mục nào sửa sau cùng thì thắng, máy nào chỉ có thêm mục mới thì mục đó được đưa lên và không làm mất nội dung của máy kia. Nút "🔄 Đồng bộ ngay" trong menu Game ép đồng bộ và báo kết quả; dòng trạng thái trong menu có ghi số bản để kiểm tra hai máy đã dùng cùng bản mới chưa. Không đồng bộ: nhạc bật/tắt, tab đang xem, thống kê từ hay sai, file `data/vocab.txt` (file này đi theo GitHub).

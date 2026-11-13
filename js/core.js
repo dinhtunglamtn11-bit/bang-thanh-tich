@@ -6,13 +6,13 @@ const NS = (window.PG = window.PG || {});
 const SYNC_RE = /^(pg-content-|pg-vocab-text$|pg-questions-text$|pg-cfg$|pg-opt-)/;
 const LS = {
   get(k, d) { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch (e) { return d; } },
-  set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} if (SYNC_RE.test(k)) LS.touch(); },
-  touch() { try { localStorage.setItem('pg-sync-ts', String(Date.now())); } catch (e) {} if (window.onLocalSave) window.onLocalSave(); }
+  set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} if (SYNC_RE.test(k)) LS.touch(k); },
+  /* ghi lại thời điểm sửa của từng khóa để gộp đúng khi đồng bộ giữa các thiết bị */
+  touch(k) { try { if (k) { const m = JSON.parse(localStorage.getItem('pg-sync-meta') || '{}'); m[k] = Date.now(); localStorage.setItem('pg-sync-meta', JSON.stringify(m)); } } catch (e) {} if (window.onLocalSave) window.onLocalSave(); }
 };
 NS.LS = LS;
 NS.isSyncKey = k => SYNC_RE.test(k);
-/* lần đầu sau khi nâng cấp: dữ liệu game đã có trên máy được coi là "mới nhất" để đẩy lên tài khoản */
-try { if (!localStorage.getItem('pg-sync-ts') && Object.keys(localStorage).some(k => SYNC_RE.test(k))) localStorage.setItem('pg-sync-ts', String(Date.now())); } catch (e) {}
+NS.BUILD = '2026-11-13 · đồng bộ v2';
 
 /* ---------- RNG có seed ---------- */
 NS.mulberry = function (seed) {
