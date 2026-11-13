@@ -36,7 +36,7 @@ function renderMenu() {
     const c = h('button', { class: 'gcard', type: 'button' }, h('span', { class: 'gic' }, g.icon), h('b', {}, g.name), h('small', {}, g.desc));
     c.addEventListener('click', () => startDialog(g)); return c;
   }));
-  const status = h('div', { class: 'gstatus' }, '📚 Từ vựng: ' + v.words.length + ' từ · ' + v.topics.length + ' chủ đề · nguồn: ' + v.source + ' · bản ' + NS.BUILD + (NS.hand.questions.length + NS.hand.cardSets.length + NS.hand.puzzles.length ? ' · ✍ ' + NS.hand.questions.length + ' câu, ' + NS.hand.cardSets.length + ' bộ thẻ, ' + NS.hand.puzzles.length + ' ô chữ soạn tay' : ''));
+  const status = h('div', { class: 'gstatus' }, '📚 Từ vựng: ' + v.words.length + ' từ · ' + v.topics.length + ' chủ đề · nguồn: ' + v.source + ' · bản ' + NS.BUILD + ' · ' + ((document.getElementById('sync') && document.getElementById('sync').textContent) || '☁ chưa đăng nhập Google (nội dung chưa đồng bộ)') + (NS.hand.questions.length + NS.hand.cardSets.length + NS.hand.puzzles.length ? ' · ✍ ' + NS.hand.questions.length + ' câu, ' + NS.hand.cardSets.length + ' bộ thẻ, ' + NS.hand.puzzles.length + ' ô chữ soạn tay' : ''));
   const tools = h('div', { class: 'gtools' },
     h('button', { type: 'button', onclick: settingsDialog }, '⚙ Cài đặt chung'),
     h('button', { type: 'button', onclick: vocabDialog }, '📚 Từ vựng'),
@@ -44,6 +44,8 @@ function renderMenu() {
     h('button', { type: 'button', class: 'small', onclick: questionDialog }, '🧰 Cú pháp chung (cũ)'),
     h('button', { type: 'button', onclick: () => guideDialog() }, '📖 Ký hiệu Đấu trường'),
     h('button', { type: 'button', onclick: musicDialog }, '🎵 Nhạc nền'),
+    h('button', { type: 'button', class: 'small', onclick: () => { const n = NS.exportContent(); alert('Đã tạo file noi-dung-game.json (' + n + ' mục). Gửi file này sang máy kia rồi bấm "📂 Nhập sao lưu".'); } }, '💾 Sao lưu nội dung (file)'),
+    h('button', { type: 'button', class: 'small', onclick: () => { const inp = h('input', { type: 'file', accept: '.json,application/json' }); inp.addEventListener('change', () => { if (inp.files[0]) NS.importContent(inp.files[0], n => alert(n < 0 ? 'File không hợp lệ.' : 'Đã nhập ' + n + ' mục nội dung. Vào 📝 Soạn nội dung từng game để xem.')); }); inp.click(); } }, '📂 Nhập sao lưu'),
     h('button', { type: 'button', onclick: async () => { const r = window.syncNow ? await window.syncNow() : { msg: 'Chưa tải xong phần đồng bộ, thử lại sau vài giây.' }; alert(r.msg); } }, '🔄 Đồng bộ ngay'),
     h('button', { type: 'button', onclick: voiceTest }, '🔊 Thử giọng đọc'));
   const how = h('div', { class: 'ghow' }, '👫 Hai bạn ngồi hai bên: ', h('b', {}, NS.TEAM_ICON[0] + ' ' + NS.cfg.teams[0]), ' và ', h('b', {}, NS.TEAM_ICON[1] + ' ' + NS.cfg.teams[1]), (NS.cfg.split ? ' (màn hình chia đôi: bạn thứ nhất ngồi phía dưới, bạn thứ hai ngồi phía đối diện). ' : '. '), 'Chọn một trò chơi để bắt đầu!');
@@ -198,5 +200,30 @@ NS.initGameUI = async function () {
     const list = M.list.length ? h('ol', { class: 'tl' }, M.list.map((t, i) => h('li', {}, h('span', {}, t.name + ' '), h('button', { class: 'small', type: 'button', onclick: () => { M.on = true; cb.checked = true; M.play(false, i); st.textContent = '▶ Đang nghe thử: ' + t.name; } }, '▶ Nghe thử')))) :
       h('p', { class: 'note' }, 'Chưa có bài nào. Để thêm nhạc: (1) chép file mp3 vào thư mục ', h('code', {}, 'music/'), ' cạnh index.html; (2) tạo file ', h('code', {}, 'music/list.txt'), ', mỗi dòng một bài, dạng ', h('code', {}, 'Tên bài | ten-file.mp3'), ' hoặc chỉ ', h('code', {}, 'ten-file.mp3'), '; (3) đẩy lên GitHub. Nhạc sẽ tự phát khi chơi, tự giảm nhỏ khi máy đọc từ.');
     mod('🎵 Nhạc nền', h('div', { class: 'gform' }, tg, h('label', {}, 'Âm lượng'), vol, list, st, h('div', { class: 'rbtns' }, h('button', { class: 'small', type: 'button', onclick: () => { M.stop(); st.textContent = '■ Đã dừng'; } }, '■ Dừng'))), () => M.stop());
+  };
+})();
+
+/* ===== Sao lưu / khôi phục nội dung game bằng file (dự phòng khi đồng bộ đám mây chưa chạy) ===== */
+(function () {
+  const NS = window.PG, h = NS.h;
+  NS.exportContent = function () {
+    let meta = {}; try { meta = JSON.parse(localStorage.getItem('pg-sync-meta') || '{}'); } catch (e) {}
+    const items = {}; Object.keys(localStorage).filter(k => NS.isSyncKey(k)).forEach(k => { items[k] = { v: localStorage.getItem(k), t: meta[k] || Date.now() }; });
+    const blob = new Blob([JSON.stringify({ app: 'pixel-game-content', v: 2, items }, null, 1)], { type: 'application/json' });
+    const a = h('a', { href: URL.createObjectURL(blob), download: 'noi-dung-game.json' }); document.body.append(a); a.click(); a.remove();
+    return Object.keys(items).length;
+  };
+  NS.importContent = function (file, done) {
+    const r = new FileReader();
+    r.onload = () => {
+      try {
+        const d = JSON.parse(r.result); if (!d || d.app !== 'pixel-game-content' || !d.items) throw 0;
+        let n = 0; const meta = {}; const now = Date.now();
+        Object.keys(d.items).forEach(k => { if (!NS.isSyncKey(k)) return; const v = d.items[k] && d.items[k].v; if (typeof v !== 'string') return; localStorage.setItem(k, v); meta[k] = now; n++; });
+        try { const old = JSON.parse(localStorage.getItem('pg-sync-meta') || '{}'); localStorage.setItem('pg-sync-meta', JSON.stringify(Object.assign(old, meta))); } catch (e) {}
+        NS.LS.touch(); NS.reloadFromStorage().then(() => done && done(n));
+      } catch (e) { done && done(-1); }
+    };
+    r.readAsText(file);
   };
 })();
